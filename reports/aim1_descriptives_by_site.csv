@@ -1,0 +1,7 @@
+group,score,n,mean,sd,median,iqr_low,iqr_high
+radinfo,fkre,1,50.64,,50.64,50.64,50.64
+radinfo,fkgl,1,10.27,,10.27,10.27,10.27
+radinfo,gfi,1,13.18,,13.18,13.18,13.18
+radinfo,smog,1,12.77,,12.77,12.77,12.77
+radinfo,cli,1,10.35,,10.35,10.35,10.35
+radinfo,ari,1,9.85,,9.85,9.85,9.85

@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.env
+
+# Raw captures and derived artifacts (regenerable + potentially large)
+data/raw/
+data/cleaned/
+data/rewrites/
+data/scores/
+data/review/
+
+# But keep the manifest checked in
+!data/manifest.csv
+!data/urls.csv
+
+# Macroses
+.DS_Store
+.vscode/
+.idea/

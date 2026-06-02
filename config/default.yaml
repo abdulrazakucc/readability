@@ -1,0 +1,26 @@
+# Locked project config. Bump version + commit when any value here changes.
+config_version: 1
+
+random_seed: 42
+
+# 6th-grade NIH/AMA reading-level benchmark on FKGL
+benchmark_fkgl: 6.0
+
+# Sample selection target (n included pages overall)
+sample_target_min: 20
+sample_target_max: 40
+per_procedure_min: 5
+
+# Polite scraping
+user_agent: >-
+  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+  (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+  (cardiac-ct-readability-research; contact via repo)
+request_timeout_seconds: 30
+polite_delay_seconds: 1.5
+
+prompt_version: v1
+prompt_path: prompts/rewrite_v1.txt
+
+# Cost guardrail (USD) — script requires --confirm-cost above this
+cost_warn_usd: 20

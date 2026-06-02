@@ -1,0 +1,51 @@
+1. J Vasc Interv Radiol. 2015 Aug;26(8):1164-8. doi: 10.1016/j.jvir.2015.03.019. 
+Epub 2015 Apr 29.
+
+Readability of Online Patient Education Materials Related to IR.
+
+McEnteggart GE(1), Naeem M(2), Skierkowski D(3), Baird GL(3), Ahn SH(1), Soares 
+G(1).
+
+Author information:
+(1)Vascular Disease Research Center, Division of Vascular and Interventional 
+Radiology, Department of Diagnostic Imaging, Rhode Island Hospital, The Warren 
+Alpert Medical School of Brown University, 593 Eddy Street, 338 Gerry House, 
+Providence, RI 02903.
+(2)Vascular Disease Research Center, Division of Vascular and Interventional 
+Radiology, Department of Diagnostic Imaging, Rhode Island Hospital, The Warren 
+Alpert Medical School of Brown University, 593 Eddy Street, 338 Gerry House, 
+Providence, RI 02903. Electronic address: mnaeem@lifespan.org.
+(3)Biostatistics Core, Rhode Island Hospital, The Warren Alpert Medical School 
+of Brown University, 593 Eddy Street, 338 Gerry House, Providence, RI 02903.
+
+PURPOSE: To assess the readability of online patient education materials (OPEM) 
+related to common diseases treated by and procedures performed by interventional 
+radiology (IR).
+MATERIALS AND METHODS: The following websites were chosen based on their average 
+Google search return for each IR OPEM content area examined in this study: 
+Society of Interventional Radiology (SIR), Cardiovascular and Interventional 
+Radiological Society of Europe (CIRSE), National Library of Medicine, 
+RadiologyInfo, Mayo Clinic, WebMD, and Wikipedia. IR OPEM content area was 
+assessed for the following: peripheral arterial disease, central venous 
+catheter, varicocele, uterine artery embolization, vertebroplasty, transjugular 
+intrahepatic portosystemic shunt, and deep vein thrombosis. The following 
+algorithms were used to estimate and compare readability levels: Flesch-Kincaid 
+Grade Formula, Flesch Reading Ease Score, Gunning Frequency of Gobbledygook, 
+Simple Measure of Gobbledygook, and Coleman-Liau Index. Data were analyzed using 
+general mixed modeling.
+RESULTS: On average, online sources that required beyond high school grade-level 
+readability were Wikipedia (15.0), SIR (14.2), and RadiologyInfo (12.4); sources 
+that required high school grade-level readability were CIRSE (11.3), Mayo Clinic 
+(11.0), WebMD (10.6), and National Library of Medicine (9.0). On average, OPEM 
+on uterine artery embolization, vertebroplasty, varicocele, and peripheral 
+arterial disease required the highest level of readability (12.5, 12.3, 12.3, 
+and 12.2, respectively).
+CONCLUSIONS: The IR OPEM assessed in this study were written above the 
+recommended sixth-grade reading level and the health literacy level of the 
+average American adult. Many patients in the general public may not have the 
+ability to read and understand health information in IR OPEM.
+
+Copyright © 2015 SIR. Published by Elsevier Inc. All rights reserved.
+
+DOI: 10.1016/j.jvir.2015.03.019
+PMID: 25935147 [Indexed for MEDLINE]

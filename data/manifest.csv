@@ -1,0 +1,2 @@
+page_id,procedure,site,url,captured_at,http_status,raw_path,cleaned_path,word_count_raw,word_count_cleaned,include,exclusion_reason,notes,git_sha_at_capture
+radinfo__cta__6925659a,cta,radinfo,https://www.radiologyinfo.org/en/info/angiocoroct,2026-06-02T19:13:51Z,200,data/raw/radinfo__cta__6925659a.html,data/cleaned/radinfo__cta__6925659a.txt,,3153,Y,,RadiologyInfo Coronary CTA patient page (seed example),218ca62256e958e174ba6052918f39c659ddd736-dirty

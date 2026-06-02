@@ -1,0 +1,19 @@
+# Fixed search queries used for sample selection. Run these exactly,
+# in one private/incognito browser session, within a single week.
+# Record date range in data/manifest.csv.
+
+queries:
+  tavr:
+    - "pre-TAVR cardiac CT patient information"
+    - "transcatheter aortic valve replacement CT scan what to expect"
+    - "TAVR CT preparation patient"
+
+  cta:
+    - "coronary CT angiography what to expect"
+    - "coronary CTA patient preparation"
+    - "CT coronary angiogram patient instructions"
+
+  laao:
+    - "Watchman procedure CT scan preparation"
+    - "left atrial appendage closure CT patient information"
+    - "LAAO cardiac CT what to expect"

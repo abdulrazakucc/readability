@@ -1,0 +1,22 @@
+# Locked model versions for the AI rewrite arm.
+# Lock these with a git commit before generating any rewrites.
+# Updating a model snapshot starts a new study — log the change and rerun the full arm.
+
+models:
+  - id: claude
+    provider: anthropic
+    model: claude-opus-4-7
+    temperature: 0
+    max_tokens: 8192
+
+  - id: openai
+    provider: openai
+    model: gpt-4o-2024-08-06
+    temperature: 0
+    max_tokens: 8192
+
+  - id: gemini
+    provider: google
+    model: gemini-1.5-pro-002
+    temperature: 0
+    max_tokens: 8192

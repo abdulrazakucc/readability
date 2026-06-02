@@ -1,0 +1,43 @@
+# Allowlist of patient-facing sites for sample selection.
+# Lock with a git commit before Phase 1. Any addition logged in docs/stats_deviations.md.
+
+sites:
+  - short: radinfo
+    domain: radiologyinfo.org
+    label: RadiologyInfo.org
+
+  - short: aha
+    domain: heart.org
+    label: American Heart Association
+
+  - short: acc
+    domain: cardiosmart.org
+    label: ACC CardioSmart
+
+  - short: bhf
+    domain: bhf.org.uk
+    label: British Heart Foundation
+
+  - short: mayo
+    domain: mayoclinic.org
+    label: Mayo Clinic
+
+  - short: cleveland
+    domain: clevelandclinic.org
+    label: Cleveland Clinic
+
+  - short: jhmi
+    domain: hopkinsmedicine.org
+    label: Johns Hopkins Medicine
+
+  - short: stanford
+    domain: stanfordhealthcare.org
+    label: Stanford Health Care
+
+  - short: ucsf
+    domain: ucsfhealth.org
+    label: UCSF Health
+
+  - short: bwh
+    domain: brighamandwomens.org
+    label: Brigham and Women's Hospital

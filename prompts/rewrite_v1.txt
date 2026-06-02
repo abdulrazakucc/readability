@@ -1,0 +1,8 @@
+Rewrite the following patient education text at a 6th-grade reading level. Keep all medical facts accurate. Do not add new medical claims. Do not remove important safety or preparation information. Use plain words and short sentences.
+
+ORIGINAL TEXT:
+<<<
+{ORIGINAL_TEXT}
+>>>
+
+Provide only the rewritten text. Do not add headings, summaries, disclaimers, or commentary.
