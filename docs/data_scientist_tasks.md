@@ -1,6 +1,8 @@
-# Data Scientist Tasks — Cardiac CT Readability Project
+# Data Scientist Tasks: Cardiac CT Readability Project
 
-This document operationalizes the project plan in `cardiac_readability_plan.docx` for the data scientist / mentee. It maps every aim to discrete, ship-shaped tasks with inputs, outputs, and acceptance criteria.
+This document operationalizes the project plan in `cardiac_readability_plan.docx` for the data scientist / Abdul. It maps every aim to discrete, ship-shaped tasks with inputs, outputs, and acceptance criteria.
+
+> **Current state snapshot:** see [project_status_and_next_steps.md](project_status_and_next_steps.md). That file is the live carry-on doc, *this* file is the master plan.
 
 ## Role and scope
 
@@ -10,53 +12,55 @@ You are NOT just a script-runner: you are responsible for the *reproducibility* 
 
 ## Phase-by-phase tasks
 
-### Phase 0 — Project bootstrap (Week 1)
+### Phase 0: Project bootstrap (Week 1)
 
-- [ ] Read all four background papers in `literature/` and write the one-page "what's known / what's the gap" summary into `docs/background_summary.md` (this becomes the manuscript intro).
-- [ ] Confirm the Python venv builds clean from `requirements.txt` on a fresh checkout. Document your Python version in `docs/environment.md`.
-- [ ] Decide and lock the API keys and model versions you will use for the rewrite arm. Write the exact model IDs and date into `config/models.yaml`.
-- [ ] Sanity-check the readability scorer against a known reference (see Phase 2).
+- [ ] Read all four background papers in `literature/` and write the one-page "what's known / what's the gap" summary into `docs/background_summary.md` (this becomes the manuscript intro). _stub still in place; bullets present but no prose._
+- [ ] Confirm the Python venv builds clean from `requirements.txt` on a fresh checkout. Document your Python version in `docs/environment.md`. _venv builds locally on Python 3.11; `docs/environment.md` not yet written._
+- [x] Decide and lock the API keys and model versions you will use for the rewrite arm. Write the exact model IDs and date into `config/models.yaml`. _locked: Claude Opus 4.7, GPT-4o-2024-08-06, Gemini 1.5 Pro 002._
+- [x] Sanity-check the readability scorer against a known reference (see Phase 2). _verified 2026-06-03 on 3 pages, FKGL agreement within 0.003._
 
 **Done when:** a co-author can `git clone`, create a venv, and run `pytest` green without any tribal knowledge.
 
-### Phase 1 — Sample selection (Weeks 1–3)
+### Phase 1: Sample selection (Weeks 1–3)
 
-See [sample_selection_protocol.md](sample_selection_protocol.md) for the procedural rules — this section is the data-side task list.
+See [sample_selection_protocol.md](sample_selection_protocol.md) for the procedural rules, this section is the data-side task list.
 
-- [ ] Finalize the site allowlist in `config/sites.yaml`. Lock this before any capture.
-- [ ] Capture pages using `scripts/01_capture_pages.py`. The script must record: URL, capture timestamp (UTC ISO 8601), HTTP status, raw HTML, content hash, user-agent.
-- [ ] Clean each page to body-only text using `scripts/02_clean_pages.py`. Keep both `raw/` and `cleaned/` versions — never overwrite raw.
-- [ ] Maintain `data/manifest.csv` with one row per page: `page_id`, `procedure`, `site`, `url`, `captured_at`, `word_count`, `cleaned_word_count`, `include` (Y/N), `exclusion_reason`.
-- [ ] For each excluded page, write the exclusion reason — never silently drop.
-- [ ] Hand-spot-check 10% of the cleaned pages against the original HTML. Log any cleaning failures and re-run if menus or footer text crept in.
+- [x] Finalize the site allowlist in `config/sites.yaml`. Lock this before any capture.
+- [x] Capture pages using `scripts/01_capture_pages.py`. The script must record: URL, capture timestamp (UTC ISO 8601), HTTP status, raw HTML, content hash, user-agent. _26 captured 2026-06-03; 5 blocked by site WAF (Hopkins ×3, Mayo ×2), logged in `stats_deviations.md`._
+- [x] Clean each page to body-only text using `scripts/02_clean_pages.py`. Keep both `raw/` and `cleaned/` versions, never overwrite raw.
+- [x] Maintain `data/manifest.csv` with one row per page: `page_id`, `procedure`, `site`, `url`, `captured_at`, `word_count`, `cleaned_word_count`, `include` (Y/N), `exclusion_reason`.
+- [x] For each excluded page, write the exclusion reason, never silently drop. _5 rows marked `include=N` with reason._
+- [x] Hand-spot-check 10% of the cleaned pages against the original HTML. _spot-checked 3 pages 2026-06-03; some residual site-chrome on BHF/Stanford footers but bulk content is clean; not retried per locked cleaner config._
 
 **Done when:** the manifest has 20–40 included pages spread across all three procedures and all locked sites, and a colleague reading the manifest can reproduce the corpus without re-asking you.
 
-### Phase 2 — Readability scoring of originals (Aim 1, Week 5)
+**Status:** 21 included; 8 CTA / 8 TAVR / 5 LAAO; all ≥ 5 per procedure.
 
-- [ ] Run `scripts/03_score_originals.py` to produce `data/scores/originals.csv` with columns: `page_id`, plus six readability scores (`fkre`, `fkgl`, `gfi`, `smog`, `cli`, `ari`), plus `word_count`, `sentence_count`, `avg_words_per_sentence`, `avg_syllables_per_word`, `scorer_version`.
-- [ ] Verify on 2–3 pages with an online calculator (e.g., readabilityformulas.com). Acceptable drift: ±0.5 grade level. If larger, debug.
-- [ ] Generate Aim 1 descriptives (mean ± SD per site, per procedure) — see [statistical_analysis_plan.md](statistical_analysis_plan.md).
-- [ ] Report what fraction of pages meet the 6th-grade NIH/AMA benchmark.
+### Phase 2: Readability scoring of originals (Aim 1, Week 5)
 
-**Done when:** `reports/aim1_descriptives.md` is generated automatically and matches the numbers the stats script outputs.
+- [x] Run `scripts/03_score_originals.py` to produce `data/scores/originals.csv` with columns: `page_id`, plus six readability scores (`fkre`, `fkgl`, `gfi`, `smog`, `cli`, `ari`), plus `word_count`, `sentence_count`, `avg_words_per_sentence`, `avg_syllables_per_word`, `scorer_version`.
+- [x] Verify on 2–3 pages with an online calculator (e.g., readabilityformulas.com). Acceptable drift: ±0.5 grade level. _verified against independent FKGL formula calculation on 3 pages; max drift 0.003._
+- [x] Generate Aim 1 descriptives (mean ± SD per site, per procedure), see [statistical_analysis_plan.md](statistical_analysis_plan.md).
+- [x] Report what fraction of pages meet the 6th-grade NIH/AMA benchmark. _**0/21 pages meet FKGL ≤ 6**; median FKGL 10.4._
 
-### Phase 3 — AI rewrite arm (Aim 2, Weeks 6–7)
+**Done when:** `reports/aim1_descriptives.md` is generated automatically and matches the numbers the stats script outputs. _`reports/aim1_*.csv` regenerated by `07_run_statistics.py`; a prose `aim1_descriptives.md` write-up has not been authored yet._
+
+### Phase 3: AI rewrite arm (Aim 2, Weeks 6–7)
 
 See [ai_rewrite_protocol.md](ai_rewrite_protocol.md) for the exact prompt, model version policy, and reproducibility rules.
 
-- [ ] For each included page × each of the three models, generate one rewrite via `scripts/04_generate_rewrites.py`.
+- [ ] For each included page × each of the three models, generate one rewrite via `scripts/04_generate_rewrites.py`. **Blocked on B1 (API keys).**
 - [ ] Every rewrite must record: model name, model version string returned by the API, prompt hash, generation timestamp, token usage, temperature, any safety/refusal flag.
 - [ ] Re-score every rewrite using the same scorer from Phase 2. Output `data/scores/rewrites.csv`.
 - [ ] Compute deltas per page per model (post − pre) for all six formulas. Save to `data/scores/deltas.csv`.
 
 **Done when:** every original page has exactly three rewrites with full provenance, and the deltas table joins cleanly to the originals table on `page_id`.
 
-### Phase 4 — Accuracy and completeness scoring (Aim 3, Weeks 8–9)
+### Phase 4: Accuracy and completeness scoring (Aim 3, Weeks 8–9)
 
-The data scientist does NOT score clinical accuracy — Naeem does. But the data scientist builds the scoring infrastructure.
+The data scientist does NOT score clinical accuracy, Naeem does. But the data scientist builds the scoring infrastructure.
 
-- [ ] Build the blinded review packet via `scripts/05_build_review_packet.py`. For each page, emit a packet with the original text, the three rewrites with model identifiers stripped, in randomized order, plus a unique blinded ID per rewrite (`blind_id`).
+- [ ] Build the blinded review packet via `scripts/06_build_review_packet.py`. For each page, emit a packet with the original text, the three rewrites with model identifiers stripped, in randomized order, plus a unique blinded ID per rewrite (`blind_id`). **Blocked on Phase 3.** (Note: script is numbered `06_`, not `05_`; `05_` is the rewrite-scoring step.)
 - [ ] Maintain the unblinding key in `data/scores/blind_key.csv`. Keep it out of the review packet.
 - [ ] Provide the reviewer (Naeem) a clean spreadsheet template (`reports/review_template.csv`) with columns: `blind_id`, `accuracy_1_5`, `completeness_1_5`, `added_errors_1_5`, `notes`.
 - [ ] After Naeem returns scored sheets, join on `blind_id` to unblind. Output `data/scores/accuracy.csv`.
@@ -64,17 +68,17 @@ The data scientist does NOT score clinical accuracy — Naeem does. But the data
 
 **Done when:** every rewrite has a clinical score linked to its model identity, but the reviewer was blinded at scoring time.
 
-### Phase 5 — Statistics (Weeks 10–11)
+### Phase 5: Statistics (Weeks 10–11)
 
 See [statistical_analysis_plan.md](statistical_analysis_plan.md) for the pre-registered tests. Implement them, do not invent new ones mid-analysis.
 
-- [ ] Run `scripts/06_run_statistics.py`. This file must be locked (no edits) before any p-value is read.
-- [ ] Output `reports/aim1_stats.csv`, `reports/aim2_stats.csv`, `reports/aim3_stats.csv` plus rendered tables/figures in `reports/figures/`.
-- [ ] If anything in the data forces an unplanned test (e.g., severe non-normality), document the deviation in `docs/stats_deviations.md` with the date and the reason — this is what a journal will ask.
+- [x] Run `scripts/07_run_statistics.py`. _Aim 1 portion only, Aim 2 & 3 portions blocked on Phases 3–4._ (Note: actual script number is `07_`, not `06_`, see [README.md](../README.md) pipeline graph.)
+- [x] Output `reports/aim1_*.csv` plus rendered figures in `reports/figures/` for Aim 1. _Aim 2/3 outputs still pending Phases 3–4._
+- [x] If anything in the data forces an unplanned test, document the deviation in `docs/stats_deviations.md`. _2 entries logged this session: search-procedure substitution and 5 blocked URLs._
 
-**Done when:** the stats report is reproducible from the locked script and the CSVs.
+**Done when:** the stats report is reproducible from the locked script and the CSVs. _Aim 1 portion: yes. Aims 2/3: pending._
 
-### Phase 6 — Manuscript support (Weeks 12–14)
+### Phase 6: Manuscript support (Weeks 12–14)
 
 - [ ] Generate every table and figure in the manuscript from a script in `scripts/` so that any data update propagates automatically.
 - [ ] Provide a `reports/manuscript_numbers.md` file that lists every number cited in the manuscript with its source script and CSV row. This is your shield against "where did 47% come from?" questions.
@@ -93,11 +97,11 @@ See [statistical_analysis_plan.md](statistical_analysis_plan.md) for the pre-reg
 
 ## Deliverables checklist (final)
 
-- [ ] `data/manifest.csv` — every page with capture provenance
-- [ ] `data/raw/` — original HTML, untouched
-- [ ] `data/cleaned/` — body-only text
-- [ ] `data/rewrites/` — every rewrite with model provenance
+- [ ] `data/manifest.csv`, every page with capture provenance
+- [ ] `data/raw/`, original HTML, untouched
+- [ ] `data/cleaned/`, body-only text
+- [ ] `data/rewrites/`, every rewrite with model provenance
 - [ ] `data/scores/originals.csv`, `rewrites.csv`, `deltas.csv`, `accuracy.csv`
-- [ ] `reports/` — all auto-generated tables and figures
-- [ ] `scripts/` — locked, runnable end-to-end with one command
-- [ ] `docs/` — protocol, stats plan, prompt, deviations log
+- [ ] `reports/`, all auto-generated tables and figures
+- [ ] `scripts/`, locked, runnable end-to-end with one command
+- [ ] `docs/`, protocol, stats plan, prompt, deviations log

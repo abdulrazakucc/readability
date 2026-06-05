@@ -1,2 +1,27 @@
 procedure,url,notes
 cta,https://www.radiologyinfo.org/en/info/angiocoroct,RadiologyInfo Coronary CTA patient page (seed example)
+cta,https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/coronary-computed-tomography-angiography-ccta,Johns Hopkins CCTA patient page
+cta,https://www.mayoclinic.org/tests-procedures/ct-coronary-angiogram/about/pac-20385117,Mayo Clinic CT coronary angiogram
+cta,https://my.clevelandclinic.org/health/diagnostics/ct-angiogram,Cleveland Clinic CT Angiogram (covers coronary CTA)
+cta,https://www.heart.org/en/health-topics/heart-attack/diagnosing-a-heart-attack/cardiac-computed-tomography,AHA Cardiac CCTA
+cta,https://www.bhf.org.uk/informationsupport/heart-matters-magazine/medical/tests/ct-scans-of-the-heart,BHF CT scans of the heart
+cta,https://www.brighamandwomens.org/heart-and-vascular-center/procedures/cardiac-ct,Brigham and Women's Cardiac CT
+cta,https://www.ucsfhealth.org/medical-tests/coronary-ct-angiography,UCSF Coronary CT angiography
+cta,https://stanfordhealthcare.org/medical-tests/c/ct-coronary-angiogram.html,Stanford CT coronary angiogram
+cta,https://www.cardiosmart.org/topics/coronary-artery-disease/exams-and-tests,CardioSmart CAD exams and tests (includes CCTA)
+tavr,https://my.clevelandclinic.org/health/treatments/17570-transcatheter-aortic-valve-replacement-tavr,Cleveland Clinic TAVR
+tavr,https://www.mayoclinic.org/tests-procedures/transcatheter-aortic-valve-replacement/about/pac-20384698,Mayo Clinic TAVR
+tavr,https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/transcatheter-aortic-valve-replacement-tavr,Johns Hopkins TAVR
+tavr,https://stanfordhealthcare.org/medical-treatments/t/transcatheter-aortic-valve-replacement-tavr.html,Stanford TAVR
+tavr,https://www.ucsfhealth.org/care/treatments/transcatheter-aortic-valve-replacement,UCSF TAVR
+tavr,https://www.heart.org/en/health-topics/heart-valve-problems-and-disease/understanding-your-heart-valve-treatment-options/what-is-tavr,AHA What is TAVR
+tavr,https://www.cardiosmart.org/topics/aortic-stenosis/treatment/choosing-tavr-surgery-or-symptom-management,CardioSmart Choosing TAVR
+tavr,https://www.brighamandwomens.org/heart-and-vascular-center/procedures/transcatheter-aortic-valve-replacement-tavr,Brigham and Women's TAVR
+tavr,https://www.bhf.org.uk/informationsupport/treatments/tavi,BHF TAVI procedure
+tavr,https://www.radiologyinfo.org/en/info/acs-transcatheter-aortic-valve-replacement,RadiologyInfo Pre-procedural planning for TAVR
+laao,https://www.ucsfhealth.org/care/treatments/left-atrial-appendage-closure-with-watchman-or-lariat,UCSF LAA closure Watchman / Lariat
+laao,https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/left-atrial-appendage-closure-procedures,Johns Hopkins LAA closure procedures
+laao,https://stanfordhealthcare.org/medical-treatments/l/left-atrial-appendage-closure.html,Stanford LAA closure
+laao,https://stanfordhealthcare.org/medical-treatments/l/left-atrial-appendage-closure/types/watchman-flx.html,Stanford Watchman FLX
+laao,https://my.clevelandclinic.org/health/treatments/17167-left-atrial-appendage--closure,Cleveland Clinic LAA closure
+laao,https://www.heart.org/en/health-topics/atrial-fibrillation/treatment-and-prevention-of-atrial-fibrillation/surgical-procedures-for-afib,AHA Surgical procedures for AFib (covers LAAO)
