@@ -1,0 +1,14 @@
+{
+  "page_id": "aha__laao__f078cd99",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:46Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "Medication benefit is overstated as best rather than may be best for most people.",
+  "flagged_claims": [
+    "For most people, medicine is the best way to treat AFib."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "page_id": "ucsf__tavr__ebb4143e",
+  "model_id": "gemini",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:54:24Z",
+  "accuracy_1_5": 3,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "Rewrite incorrectly states the new valve pumps blood, whereas valves only regulate blood flow.",
+  "flagged_claims": [
+    "The new valve takes over to pump blood."
+  ]
+}

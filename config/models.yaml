@@ -1,22 +1,31 @@
 # Locked model versions for the AI rewrite arm.
 # Lock these with a git commit before generating any rewrites.
 # Updating a model snapshot starts a new study — log the change and rerun the full arm.
+#
+# Note on sampling parameters (logged in docs/stats_deviations.md 2026-06-08):
+#   The current flagship models are reasoning models that no longer expose a
+#   sampling temperature. Claude Opus 4.8 and GPT-5.x return HTTP 400 if a
+#   `temperature` is sent, so `temperature` is intentionally omitted for those.
+#   Determinism is no longer tunable via temperature on these models.
 
 models:
   - id: claude
     provider: anthropic
-    model: claude-opus-4-7
-    temperature: 0
+    model: claude-opus-4-8
     max_tokens: 8192
+    # temperature omitted: Opus 4.8 removed sampling params (400 if sent).
 
   - id: openai
     provider: openai
-    model: gpt-4o-2024-08-06
-    temperature: 0
-    max_tokens: 8192
+    model: gpt-5.5-2026-04-23
+    max_completion_tokens: 16000   # reasoning + visible output share this budget
+    reasoning_effort: low          # rewriting is not a hard reasoning task; keeps cost down
+    # temperature omitted: gpt-5.x reasoning models require the default.
 
   - id: gemini
     provider: google
-    model: gemini-1.5-pro-002
-    temperature: 0
-    max_tokens: 8192
+    model: gemini-3.1-pro-preview  # flagship-tier parity with Opus 4.8 / GPT-5.5.
+    temperature: 0                 # Requires billing enabled on the Google key.
+    max_tokens: 32768              # 3.1 Pro is a thinking model; reasoning + output share
+                                   # this budget, so it is set high to avoid truncating the
+                                   # rewrites of the longest pages. See docs/stats_deviations.md.

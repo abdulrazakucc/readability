@@ -1,0 +1,14 @@
+{
+  "page_id": "aha__cta__665795d9",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:22Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "Premedication may reduce, not stop, contrast allergic reactions.",
+  "flagged_claims": [
+    "You might get medicine before the test to stop an allergic reaction."
+  ]
+}

@@ -34,16 +34,18 @@ from src.config import (  # noqa: E402
 
 log = logging.getLogger("rewrite")
 
-# Rough per-1k-token USD pricing (UPDATE before any real run; verify with provider)
+# Rough per-1k-token USD pricing for the cost guardrail only. Approximate list
+# prices for the locked panel (Opus 4.8, GPT-5.5, Gemini 3.5 Flash); the true
+# cost is computed from per-call token counts in each rewrite's provenance JSON.
 PRICE_PER_1K_INPUT_USD = {
-    "claude": 0.015,
-    "openai": 0.005,
-    "gemini": 0.0035,
+    "claude": 0.005,
+    "openai": 0.00125,
+    "gemini": 0.0003,
 }
 PRICE_PER_1K_OUTPUT_USD = {
-    "claude": 0.075,
-    "openai": 0.015,
-    "gemini": 0.0105,
+    "claude": 0.025,
+    "openai": 0.010,
+    "gemini": 0.0025,
 }
 
 

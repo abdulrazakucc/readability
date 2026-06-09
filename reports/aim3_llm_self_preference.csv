@@ -1,0 +1,10 @@
+judge_id,dimension,own_model_mean,other_models_mean,delta_own_minus_other,mannwhitney_p
+claude,accuracy_1_5,4.962,4.922,0.04,0.5117
+claude,completeness_1_5,4.885,4.765,0.12,0.2771
+claude,added_errors_1_5,1.038,1.157,-0.118,0.1822
+gemini,accuracy_1_5,4.769,4.98,-0.211,0.073
+gemini,completeness_1_5,5.0,5.0,0.0,1.0
+gemini,added_errors_1_5,1.269,1.059,0.21,0.3538
+openai,accuracy_1_5,5.0,4.635,0.365,0.0014
+openai,completeness_1_5,4.96,4.808,0.152,0.0771
+openai,added_errors_1_5,1.16,1.596,-0.436,0.0544

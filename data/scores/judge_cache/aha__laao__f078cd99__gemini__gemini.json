@@ -1,0 +1,12 @@
+{
+  "page_id": "aha__laao__f078cd99",
+  "model_id": "gemini",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:36:37Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "none",
+  "flagged_claims": []
+}

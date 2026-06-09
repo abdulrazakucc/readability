@@ -1,0 +1,19 @@
+{
+  "page_id": "cleveland__laao__58be2f5f",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:37:33Z",
+  "accuracy_1_5": 3,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 4,
+  "note": "Rewrite overstates eligibility as only for Afib without valve disease and adds specific risks/symptoms not shown in original.",
+  "flagged_claims": [
+    "This procedure is for people with Afib who do not have heart valve disease.",
+    "Problems can include bleeding, fluid around the heart, or a stroke.",
+    "The device could also move, or a clot could form on the device itself.",
+    "Call your doctor right away if you have chest pain or trouble breathing.",
+    "call if you feel dizzy or if you are bleeding where the tube went into your body.",
+    "guides it to your heart using X-rays and ultrasounds."
+  ]
+}

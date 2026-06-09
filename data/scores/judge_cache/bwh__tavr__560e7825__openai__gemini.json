@@ -1,0 +1,12 @@
+{
+  "page_id": "bwh__tavr__560e7825",
+  "model_id": "openai",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:41:49Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "none",
+  "flagged_claims": []
+}

@@ -1,0 +1,15 @@
+{
+  "page_id": "cleveland__laao__58be2f5f",
+  "model_id": "gemini",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:44:07Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 4,
+  "note": "The rewrite invented lists of complications and symptoms to report, which were missing from the original text due to formatting errors.",
+  "flagged_claims": [
+    "Problems can include bleeding, fluid around the heart, or a stroke. The device could also move, or a clot could form on the device itself.",
+    "Call your doctor right away if you have chest pain or trouble breathing. You should also call if you feel dizzy or if you are bleeding where the tube went into your body."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "page_id": "stanford__laao__46fbd5cc",
+  "model_id": "claude",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:51:13Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 2,
+  "note": "Added a basic, accurate definition of AFib not present in the original text.",
+  "flagged_claims": [
+    "AFib is a kind of irregular heartbeat."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "page_id": "ucsf__tavr__ebb4143e",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:43:17Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 4,
+  "note": "Most important issue: rewrite incorrectly says the new valve pumps blood; valves regulate flow, the heart pumps.",
+  "flagged_claims": [
+    "The new valve takes over to pump blood."
+  ]
+}

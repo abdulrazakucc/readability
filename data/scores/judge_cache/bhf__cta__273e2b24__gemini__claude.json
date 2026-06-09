@@ -1,0 +1,12 @@
+{
+  "page_id": "bhf__cta__273e2b24",
+  "model_id": "gemini",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:03Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 1,
+  "note": "Rewrite says calcium score uses MRI-free radiation but omits MRI contrast; also drops that risk decisions are usually based on risk factors",
+  "flagged_claims": []
+}

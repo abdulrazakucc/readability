@@ -9,11 +9,11 @@ __pycache__/
 publication/
 
 # Raw captures and derived artifacts (regenerable + potentially large)
-data/raw/
-data/cleaned/
-data/rewrites/
-data/scores/
-data/review/
+# data/raw/
+# data/cleaned/
+# data/rewrites/
+# data/scores/
+# data/review/
 
 # But keep the manifest checked in
 !data/manifest.csv

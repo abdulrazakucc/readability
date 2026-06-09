@@ -1,0 +1,14 @@
+{
+  "page_id": "cleveland__cta__2327f207",
+  "model_id": "openai",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:37:13Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 2,
+  "note": "Rewrite mostly preserves content; added generic preparation items not visible in original.",
+  "flagged_claims": [
+    "Tell your provider about your health history, allergies, medicines and any concerns you have."
+  ]
+}

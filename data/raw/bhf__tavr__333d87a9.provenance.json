@@ -1,0 +1,10 @@
+{
+  "bytes_size": 134054,
+  "captured_at_utc": "2026-06-03T18:42:35Z",
+  "content_sha256": "6e2d951695c5eec7bf65a93a48ebe9822ee0e344689c15f78a7f3d82066139da",
+  "http_status": 200,
+  "page_id": "bhf__tavr__333d87a9",
+  "procedure": "tavr",
+  "url": "https://www.bhf.org.uk/informationsupport/treatments/tavi",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

@@ -1,0 +1,4 @@
+dimension,n_items,n_judges,mean_pairwise_spearman,kendall_w,within_1_point_agreement
+accuracy_1_5,77,3,0.255,0.091,0.961
+completeness_1_5,77,3,0.489,0.118,0.987
+added_errors_1_5,77,3,0.527,0.198,0.896

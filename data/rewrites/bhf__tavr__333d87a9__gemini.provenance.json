@@ -1,0 +1,19 @@
+{
+  "elapsed_seconds": 47.8,
+  "finish_reason": "1",
+  "generated_at_utc": "2026-06-09T08:08:49Z",
+  "input_tokens": 1387,
+  "max_tokens": 32768,
+  "model_id": "gemini",
+  "model_requested": "gemini-3.1-pro-preview",
+  "model_returned": "gemini-3.1-pro-preview",
+  "output_tokens": 847,
+  "page_id": "bhf__tavr__333d87a9",
+  "prompt_sha256": "e5ccbc81f17baa3a6f8ac6715e7e1e65b1a96ed3c158e38faa0c13d0e8833d08",
+  "prompt_version": "v1",
+  "provider": "google",
+  "reasoning_effort": null,
+  "refusal_flag": false,
+  "refusal_text": null,
+  "temperature": 0
+}

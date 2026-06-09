@@ -1,0 +1,10 @@
+{
+  "bytes_size": 478,
+  "captured_at_utc": "2026-06-03T18:42:18Z",
+  "content_sha256": "1ec5d4b6c7dcb5553bcd916dec7719730bcf87796daa2f44c443b509bd9d039c",
+  "http_status": 403,
+  "page_id": "mayo__tavr__739229dd",
+  "procedure": "tavr",
+  "url": "https://www.mayoclinic.org/tests-procedures/transcatheter-aortic-valve-replacement/about/pac-20384698",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

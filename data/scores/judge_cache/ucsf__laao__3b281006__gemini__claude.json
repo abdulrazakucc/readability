@@ -1,0 +1,14 @@
+{
+  "page_id": "ucsf__laao__3b281006",
+  "model_id": "gemini",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:36:07Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 3,
+  "note": "Femoral artery changed to generic 'blood vessel'; added claim equating all A-fib stroke with ischemic stroke/CVA terminology",
+  "flagged_claims": [
+    "closing the pouch lowers risk of a stroke, which is also called an ischemic stroke or cerebrovascular accident"
+  ]
+}

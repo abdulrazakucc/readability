@@ -1,0 +1,12 @@
+{
+  "page_id": "cleveland__cta__2327f207",
+  "model_id": "gemini",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:29Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 1,
+  "note": "Vague 'call your doctor if you have any problems' replaces specific warning criteria; minor omission.",
+  "flagged_claims": []
+}

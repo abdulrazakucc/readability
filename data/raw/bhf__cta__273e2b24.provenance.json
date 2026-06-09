@@ -1,0 +1,10 @@
+{
+  "bytes_size": 127341,
+  "captured_at_utc": "2026-06-03T18:42:04Z",
+  "content_sha256": "58110a990060aa9427edbf51ef228a8c2b50f617cb1f71a1dde7ba4bdd0725db",
+  "http_status": 200,
+  "page_id": "bhf__cta__273e2b24",
+  "procedure": "cta",
+  "url": "https://www.bhf.org.uk/informationsupport/heart-matters-magazine/medical/tests/ct-scans-of-the-heart",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

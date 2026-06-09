@@ -1,0 +1,10 @@
+{
+  "bytes_size": 251587,
+  "captured_at_utc": "2026-06-03T18:42:24Z",
+  "content_sha256": "98f7e5e8a2e7a8eb56e3c0392fd5d8ac9747a72dcd53143ded672db966a54b75",
+  "http_status": 200,
+  "page_id": "ucsf__tavr__ebb4143e",
+  "procedure": "tavr",
+  "url": "https://www.ucsfhealth.org/care/treatments/transcatheter-aortic-valve-replacement",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

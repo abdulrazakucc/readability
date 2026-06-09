@@ -1,0 +1,10 @@
+{
+  "bytes_size": 174528,
+  "captured_at_utc": "2026-06-03T18:42:14Z",
+  "content_sha256": "d8be351a7660486ad860c41175dd3a9d702a28be995a0eaae2591b7934dd43d9",
+  "http_status": 200,
+  "page_id": "acc__cta__c5b9cb9c",
+  "procedure": "cta",
+  "url": "https://www.cardiosmart.org/topics/coronary-artery-disease/exams-and-tests",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

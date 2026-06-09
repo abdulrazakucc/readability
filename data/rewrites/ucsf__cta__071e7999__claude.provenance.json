@@ -1,0 +1,19 @@
+{
+  "elapsed_seconds": 23.04,
+  "finish_reason": "end_turn",
+  "generated_at_utc": "2026-06-09T06:56:27Z",
+  "input_tokens": 2522,
+  "max_tokens": 8192,
+  "model_id": "claude",
+  "model_requested": "claude-opus-4-8",
+  "model_returned": "claude-opus-4-8",
+  "output_tokens": 2264,
+  "page_id": "ucsf__cta__071e7999",
+  "prompt_sha256": "e5ccbc81f17baa3a6f8ac6715e7e1e65b1a96ed3c158e38faa0c13d0e8833d08",
+  "prompt_version": "v1",
+  "provider": "anthropic",
+  "reasoning_effort": null,
+  "refusal_flag": false,
+  "refusal_text": null,
+  "temperature": null
+}

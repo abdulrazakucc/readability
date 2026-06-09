@@ -1,0 +1,14 @@
+{
+  "page_id": "bwh__cta__41bd929e",
+  "model_id": "gemini",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:40:20Z",
+  "accuracy_1_5": 2,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 4,
+  "note": "Stating the test uses 'no needles' is incorrect, as coronary CT angiography requires an IV for contrast dye.",
+  "flagged_claims": [
+    "It does not use cuts or needles."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "page_id": "jhmi__tavr__7bdb4834",
+  "model_id": "openai",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:35:04Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "none",
+  "flagged_claims": []
+}

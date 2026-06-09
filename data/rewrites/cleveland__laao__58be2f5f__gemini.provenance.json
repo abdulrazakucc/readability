@@ -1,0 +1,19 @@
+{
+  "elapsed_seconds": 31.14,
+  "finish_reason": "1",
+  "generated_at_utc": "2026-06-09T08:12:30Z",
+  "input_tokens": 1711,
+  "max_tokens": 32768,
+  "model_id": "gemini",
+  "model_requested": "gemini-3.1-pro-preview",
+  "model_returned": "gemini-3.1-pro-preview",
+  "output_tokens": 821,
+  "page_id": "cleveland__laao__58be2f5f",
+  "prompt_sha256": "e5ccbc81f17baa3a6f8ac6715e7e1e65b1a96ed3c158e38faa0c13d0e8833d08",
+  "prompt_version": "v1",
+  "provider": "google",
+  "reasoning_effort": null,
+  "refusal_flag": false,
+  "refusal_text": null,
+  "temperature": 0
+}

@@ -1,0 +1,14 @@
+{
+  "page_id": "mayo__cta__7756ee3c",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:39:30Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 2,
+  "note": "Minor added exercise examples not in original.",
+  "flagged_claims": [
+    "Moderate exercise means activities like brisk walking; hard exercise like running."
+  ]
+}

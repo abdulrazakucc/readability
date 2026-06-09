@@ -1,0 +1,12 @@
+{
+  "page_id": "cleveland__laao__58be2f5f",
+  "model_id": "gemini",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:37Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 2,
+  "note": "Specific complication warning signs (chest pain, dizziness, bleeding) are partly inferred but reasonable; minor.",
+  "flagged_claims": []
+}

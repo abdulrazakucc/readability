@@ -1,0 +1,12 @@
+{
+  "page_id": "radinfo__tavr__b91650e4",
+  "model_id": "openai",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:40:48Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 1,
+  "note": "none",
+  "flagged_claims": []
+}

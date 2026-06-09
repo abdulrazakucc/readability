@@ -1,0 +1,10 @@
+{
+  "bytes_size": 233047,
+  "captured_at_utc": "2026-06-03T18:42:39Z",
+  "content_sha256": "1e89c801cd3dfb5cb8ee30cbdf56426e9918236a5f56d1ac4310b4d0aa29a86a",
+  "http_status": 200,
+  "page_id": "ucsf__laao__3b281006",
+  "procedure": "laao",
+  "url": "https://www.ucsfhealth.org/care/treatments/left-atrial-appendage-closure-with-watchman-or-lariat",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

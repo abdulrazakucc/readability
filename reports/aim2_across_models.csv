@@ -1,0 +1,7 @@
+score,test,statistic,p,n_pages,models
+fkre,friedman,39.920000000000016,2.145270897499704e-09,25,"['claude', 'gemini', 'openai']"
+fkgl,friedman,38.0,5.602796437537276e-09,25,"['claude', 'gemini', 'openai']"
+gfi,friedman,39.120000000000005,3.2003681080211303e-09,25,"['claude', 'gemini', 'openai']"
+smog,friedman,40.879999999999995,1.3274580022978815e-09,25,"['claude', 'gemini', 'openai']"
+cli,friedman,38.0,5.602796437537276e-09,25,"['claude', 'gemini', 'openai']"
+ari,friedman,34.56,3.128897618497131e-08,25,"['claude', 'gemini', 'openai']"

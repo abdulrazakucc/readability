@@ -1,0 +1,14 @@
+{
+  "page_id": "acc__cta__c5b9cb9c",
+  "model_id": "claude",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:33:43Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 3,
+  "note": "Rewrite overstates that high levels of all listed blood measures, including proteins, are risk factors lowered by lifestyle/medicine.",
+  "flagged_claims": [
+    "High levels are risk factors for heart disease. You can lower them by changing how you live. You can also lower them with medicine if you need it."
+  ]
+}

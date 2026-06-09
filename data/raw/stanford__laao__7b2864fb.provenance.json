@@ -1,0 +1,10 @@
+{
+  "bytes_size": 221655,
+  "captured_at_utc": "2026-06-03T18:42:45Z",
+  "content_sha256": "3bc5c281676d7c0e099a5ad35499c1568ed805f1e6731aeb61021af3e0b5c4ab",
+  "http_status": 200,
+  "page_id": "stanford__laao__7b2864fb",
+  "procedure": "laao",
+  "url": "https://stanfordhealthcare.org/medical-treatments/l/left-atrial-appendage-closure/types/watchman-flx.html",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

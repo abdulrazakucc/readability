@@ -1,0 +1,10 @@
+{
+  "bytes_size": 211127,
+  "captured_at_utc": "2026-06-03T18:42:01Z",
+  "content_sha256": "c667cb24e1f9e7e181713e11d7cb5d0235ebc80eab360a98e203d320761e6f64",
+  "http_status": 200,
+  "page_id": "aha__cta__665795d9",
+  "procedure": "cta",
+  "url": "https://www.heart.org/en/health-topics/heart-attack/diagnosing-a-heart-attack/cardiac-computed-tomography",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

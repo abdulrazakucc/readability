@@ -1,0 +1,15 @@
+{
+  "page_id": "stanford__laao__46fbd5cc",
+  "model_id": "claude",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:41:14Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 3,
+  "note": "Rewrite adds AFib definition and slightly overstates clot prevention mechanism.",
+  "flagged_claims": [
+    "AFib is a kind of irregular heartbeat.",
+    "This helps stop blood clots from forming."
+  ]
+}

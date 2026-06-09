@@ -1,0 +1,14 @@
+{
+  "page_id": "jhmi__laao__b5350128",
+  "model_id": "claude",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:38:43Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 3,
+  "note": "Atrial fibrillation is described as making the heart pump fast, which is not always true.",
+  "flagged_claims": [
+    "This makes the heart pump in a fast, uneven way."
+  ]
+}

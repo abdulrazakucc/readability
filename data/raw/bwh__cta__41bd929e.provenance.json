@@ -1,0 +1,10 @@
+{
+  "bytes_size": 44032,
+  "captured_at_utc": "2026-06-03T18:42:07Z",
+  "content_sha256": "788d029cb92c153a0166665d563b039a5f09771f63931539c87dc1a94cdba646",
+  "http_status": 200,
+  "page_id": "bwh__cta__41bd929e",
+  "procedure": "cta",
+  "url": "https://www.brighamandwomens.org/heart-and-vascular-center/procedures/cardiac-ct",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

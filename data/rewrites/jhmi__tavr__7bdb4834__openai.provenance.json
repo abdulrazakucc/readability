@@ -1,0 +1,19 @@
+{
+  "elapsed_seconds": 24.44,
+  "finish_reason": "stop",
+  "generated_at_utc": "2026-06-09T07:01:48Z",
+  "input_tokens": 1592,
+  "max_tokens": 16000,
+  "model_id": "openai",
+  "model_requested": "gpt-5.5-2026-04-23",
+  "model_returned": "gpt-5.5-2026-04-23",
+  "output_tokens": 1530,
+  "page_id": "jhmi__tavr__7bdb4834",
+  "prompt_sha256": "e5ccbc81f17baa3a6f8ac6715e7e1e65b1a96ed3c158e38faa0c13d0e8833d08",
+  "prompt_version": "v1",
+  "provider": "openai",
+  "reasoning_effort": "low",
+  "refusal_flag": false,
+  "refusal_text": null,
+  "temperature": null
+}

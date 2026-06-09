@@ -1,0 +1,10 @@
+{
+  "bytes_size": 179777,
+  "captured_at_utc": "2026-06-03T18:42:29Z",
+  "content_sha256": "97f52224728def53fde6313ac8a9d2904d8dcdcc89ddc88ab4d5daebe9833100",
+  "http_status": 200,
+  "page_id": "acc__tavr__7c9ba481",
+  "procedure": "tavr",
+  "url": "https://www.cardiosmart.org/topics/aortic-stenosis/treatment/choosing-tavr-surgery-or-symptom-management",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

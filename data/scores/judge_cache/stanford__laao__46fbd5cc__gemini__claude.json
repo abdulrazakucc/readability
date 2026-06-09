@@ -1,0 +1,14 @@
+{
+  "page_id": "stanford__laao__46fbd5cc",
+  "model_id": "gemini",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:35:43Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 2,
+  "note": "Rewrite frames LAA closure as for those who 'cannot take' blood thinners; original says 'alternative to' for eligible patients",
+  "flagged_claims": [
+    "This is a good choice for some people who cannot take blood thinners like warfarin"
+  ]
+}

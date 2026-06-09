@@ -1,0 +1,10 @@
+{
+  "bytes_size": 296025,
+  "captured_at_utc": "2026-06-03T18:42:16Z",
+  "content_sha256": "d8530cb654b4440f3912d60903e0008d4c6dc8040d15ced8b682edd6a7e27c75",
+  "http_status": 200,
+  "page_id": "cleveland__tavr__2d4c210c",
+  "procedure": "tavr",
+  "url": "https://my.clevelandclinic.org/health/treatments/17570-transcatheter-aortic-valve-replacement-tavr",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

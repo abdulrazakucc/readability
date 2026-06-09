@@ -1,0 +1,15 @@
+{
+  "page_id": "acc__cta__c5b9cb9c",
+  "model_id": "gemini",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:15Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 2,
+  "note": "Saying blood flow 'slows down' during exercise is slightly inaccurate (it fails to increase adequately). Plaque definition was added.",
+  "flagged_claims": [
+    "But it might slow down when you exercise hard.",
+    "Plaque is a fatty deposit."
+  ]
+}

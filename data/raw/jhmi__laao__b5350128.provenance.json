@@ -1,0 +1,10 @@
+{
+  "bytes_size": 6242,
+  "captured_at_utc": "2026-06-03T18:42:40Z",
+  "content_sha256": "77f31bf0389ed62f18b5ee3768e768e1ba5db81409078a169c22eb7632f6d107",
+  "http_status": 403,
+  "page_id": "jhmi__laao__b5350128",
+  "procedure": "laao",
+  "url": "https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/left-atrial-appendage-closure-procedures",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

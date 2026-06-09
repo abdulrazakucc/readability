@@ -1,0 +1,12 @@
+{
+  "page_id": "stanford__cta__80db3ba7",
+  "model_id": "gemini",
+  "judge_id": "claude",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:35:33Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 2,
+  "note": "Minor added simplification calling catheterization 'putting a small tube inside your body'\u2014accurate but slightly informal explanation, not in original.",
+  "flagged_claims": []
+}

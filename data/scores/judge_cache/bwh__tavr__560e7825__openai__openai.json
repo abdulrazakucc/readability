@@ -1,0 +1,14 @@
+{
+  "page_id": "bwh__tavr__560e7825",
+  "model_id": "openai",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:36:37Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 2,
+  "note": "Minor added definition of catheter; otherwise medically faithful.",
+  "flagged_claims": [
+    "A catheter is a thin tube."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "page_id": "stanford__laao__46fbd5cc",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:41:24Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 1,
+  "note": "Omitted some minor program details, such as interventional cardiologists and promising results.",
+  "flagged_claims": []
+}

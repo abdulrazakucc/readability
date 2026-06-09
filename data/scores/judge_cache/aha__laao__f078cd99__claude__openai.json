@@ -1,0 +1,14 @@
+{
+  "page_id": "aha__laao__f078cd99",
+  "model_id": "claude",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:34:35Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 1,
+  "note": "Minor imprecision: blood thinners prevent clot formation rather than simply \u201cstop clots.\u201d",
+  "flagged_claims": [
+    "Blood thinners are medicine that stops clots."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "bytes_size": 197594,
+  "captured_at_utc": "2026-06-03T18:42:49Z",
+  "content_sha256": "525d1318006902fa39e36c1a033668698555c47967394081f83bed8c933f4d6d",
+  "http_status": 200,
+  "page_id": "aha__laao__f078cd99",
+  "procedure": "laao",
+  "url": "https://www.heart.org/en/health-topics/atrial-fibrillation/treatment-and-prevention-of-atrial-fibrillation/surgical-procedures-for-afib",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

@@ -6,7 +6,9 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 
 ## Last updated
 
-2026-06-08, recovered and re-cleaned the 5 previously-blocked Hopkins/Mayo pages (manual browser capture); included corpus is now 26 pages. Aim 1 scoring/statistics still reflect the earlier n=21 and must be re-run (see Step 2). Phases 3–6 still blocked on API keys.
+2026-06-09, ran the full pipeline end-to-end on n=26 with all three model arms. Aim 1 re-scored (0/26 meet FKGL ≤ 6; median 10.3). AI rewrite arm complete for all 3 models — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26). Aim 2 paired tests + 3-model Friedman + figures generated; blinded review packet built; manuscript markdown + `.docx` rebuilt. A secondary, exploratory automated 3-LLM-judge accuracy panel (231 judgments) was also run and documented (`docs/aim3_automated_accuracy_assessment.md`); the PRIMARY Aim 3 (blinded human subspecialist scoring) is the only remaining step and needs Dr. Naeem (packet + guide ready). Total API cost ~\$3–6 including the judge panel. Model panel + sampling-param deviations and the Gemini/GPT-5.5 incidents are logged in stats_deviations.md.
+
+2026-06-08, recovered and re-cleaned the 5 previously-blocked Hopkins/Mayo pages (manual browser capture); included corpus is now 26 pages.
 
 2026-06-03, end of Phase 2 (Aim 1 complete on n=21 originals; Phases 3–6 blocked on API keys).
 
@@ -16,11 +18,11 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 |-------|-------------|-------|
 | 0 | Bootstrap (venv, deps, model lock, scorer sanity) | partial, `requirements.txt` works, `pytest` not yet run on fresh clone; `config/models.yaml` already locked; `docs/background_summary.md` is still a stub |
 | 1 | Sample selection, capture, clean, manifest | **done**, 26 captured, 26 included (5 Hopkins/Mayo recovered by manual capture 2026-06-08), all 3 procedures clear the 5-page floor |
-| 2 | Aim 1 readability of originals | **stale, needs re-run**, `reports/aim1_*.csv` + 2 figures were generated on n=21; 0/21 met FKGL ≤ 6. Re-score with the 5 recovered pages before citing n=26 |
-| 3 | AI rewrite arm (Aim 2) | **blocked**, needs API keys for Anthropic, OpenAI, Google |
-| 4 | Clinical accuracy scoring (Aim 3) | not started, depends on Phase 3 + reviewer Naeem's availability |
-| 5 | Statistics (Aims 2 & 3 portion) | partial, Aim 1 portion done; Aim 2/3 portion blocked on Phases 3–4 |
-| 6 | Manuscript support | not started |
+| 2 | Aim 1 readability of originals | **done (n=26)**, `reports/aim1_*.csv` + 2 figures regenerated 2026-06-09; 0/26 met FKGL ≤ 6, median 10.3 |
+| 3 | AI rewrite arm (Aim 2) | **done (all 3 models)** — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26); 77 rewrites total |
+| 4 | Clinical accuracy scoring (Aim 3) | **primary (human) pending** — packet + reviewer guide ready (`data/review/review_packet_with_text.csv`, `docs/reviewer_guide_naeem.md`), needs Dr. Naeem. **Secondary automated 3-LLM-judge panel done** (231 judgments; `docs/aim3_automated_accuracy_assessment.md`) |
+| 5 | Statistics (Aims 2 & 3 portion) | Aim 1 + Aim 2 done (paired tests all 3 models + Friedman across-models); Aim 3 portion pending clinical scores |
+| 6 | Manuscript support | Aim 1 + full 3-model Aim 2 written into `publication/draft_manuscript.md` and `publication/manuscript_jama.docx` (rebuilt 2026-06-09); Aim 3 sections are placeholders |
 
 See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in this session.
 
@@ -30,17 +32,24 @@ See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in
 - `data/raw/`, 26 captured HTML files + 26 `.provenance.json` (5 of the HTMLs are 403 error pages; the real body text for those 5 lives in `data/cleaned/`, captured manually in a browser)
 - `data/cleaned/`, 26 cleaned `.txt` + 26 `.provenance.json` (the 5 recovered pages carry `capture_method = "manual_browser"`)
 - `data/manifest.csv`, 26 rows; all 26 marked `include=Y` (5 flipped from `N` on 2026-06-08 after manual recovery)
-- `data/scores/originals.csv`, 21 scored pages (six formulas) — **does not yet include the 5 recovered pages; re-run scoring**
-- `reports/aim1_*.csv`, descriptives, inference, benchmark-meeting
-- `reports/figures/aim1_fkgl_by_*.png`, 2 figures
+- `data/scores/originals.csv`, **26** scored pages (six formulas), regenerated 2026-06-09
+- `data/rewrites/`, 77 rewrites (26 Claude + 25 GPT-5.5 + 26 Gemini) + provenance; one GPT-5.5 page quarantined as `…__openai.txt.excluded_content_filter`
+- `data/scores/rewrites.csv` + `deltas.csv`, 77 scored rewrites with post−pre deltas
+- `reports/aim1_*.csv` (n=26) + `reports/aim2_paired_tests.csv` + `reports/aim2_across_models.csv` (3-model Friedman)
+- `reports/figures/aim1_fkgl_by_*.png` (2) + `aim2_fkgl_delta_by_model.png`
+- `data/review/review_packet.csv` (77 blinded entries) + `data/review/blind_key.csv` (unblinding key, do not share)
 
-Headline finding (Aim 1, on the n=21 corpus): **0/21 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.4 (IQR 9.5–12.3). These numbers predate the 5 recovered pages and will shift slightly once scoring is re-run on n=26.
+Headline finding (Aim 1, n=26): **0/26 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.3 (IQR 8.7–11.9).
+Headline finding (Aim 2, all 3 models): Gemini 3.1 Pro lowered FKGL by 5.7 grade levels (20/26 rewrites meet ≤6); Claude Opus 4.8 by 5.5 (22/26); GPT-5.5 by 3.9 (9/25); all Holm p < 0.001; models differ (Friedman p = 5.6e-9), Claude≈Gemini > GPT-5.5.
+Headline finding (Aim 3 SECONDARY, automated LLM-judge panel — NOT human): readability–fidelity trade-off — consensus accuracy GPT-5.5 5.00 > Claude 4.91 > Gemini 4.69 (Friedman p = 2.6e-5); rewrites mostly faithful (89% accuracy ratings maximal); GPT-5.5 judge showed self-preference (p = .001). Claude Opus 4.8 = best balance of reading-level reduction and fidelity. Primary human review still pending.
 
 ## Open blockers
 
-### B1: API keys for the three rewrite models (high priority)
+### B1: API keys for the three rewrite models (RESOLVED 2026-06-09)
 
-Required to start Phase 3. Add to a local `.env` (gitignored) from `.env.example`:
+All three keys are in `.env` and all three arms ran successfully. Gemini Pro initially returned HTTP 429 (billing not enabled); after billing was enabled the `gemini-3.1-pro-preview` arm completed. Historical note on the original setup:
+
+Add to a local `.env` (gitignored) from `.env.example`:
 
 ```
 ANTHROPIC_API_KEY=...

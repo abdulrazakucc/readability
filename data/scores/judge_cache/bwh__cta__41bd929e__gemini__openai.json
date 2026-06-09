@@ -1,0 +1,15 @@
+{
+  "page_id": "bwh__cta__41bd929e",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:36:04Z",
+  "accuracy_1_5": 3,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 4,
+  "note": "Rewrite incorrectly says cardiac CT does not use needles, but coronary CT angiography often requires IV contrast.",
+  "flagged_claims": [
+    "It does not use cuts or needles.",
+    "A cardiac CT scan is a safe test that looks at your heart."
+  ]
+}

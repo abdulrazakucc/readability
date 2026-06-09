@@ -56,22 +56,27 @@ class Rewriter(Protocol):
 # --- Provider implementations ----------------------------------------------
 
 class AnthropicRewriter:
-    def __init__(self, model_id: str, model: str, temperature: float = 0.0, max_tokens: int = 8192):
+    def __init__(self, spec: dict[str, Any]):
         from anthropic import Anthropic
-        self.model_id = model_id
+        self.model_id = spec["id"]
         self.provider = "anthropic"
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
+        self.model = spec["model"]
+        self.max_tokens = spec.get("max_tokens", 8192)
+        # Opus 4.7/4.8 removed sampling params: sending `temperature` 400s.
+        # Omit `temperature` from the config to run on those models.
+        self.temperature = spec.get("temperature")
+        self.reasoning_effort = None
         self._client = Anthropic(api_key=get_api_key("anthropic"))
 
     def rewrite(self, prompt: str) -> dict[str, Any]:
-        resp = self._client.messages.create(
+        kwargs: dict[str, Any] = dict(
             model=self.model,
             max_tokens=self.max_tokens,
-            temperature=self.temperature,
             messages=[{"role": "user", "content": prompt}],
         )
+        if self.temperature is not None:
+            kwargs["temperature"] = self.temperature
+        resp = self._client.messages.create(**kwargs)
         body = "".join(block.text for block in resp.content if getattr(block, "type", "") == "text")
         return {
             "text": body,
@@ -83,22 +88,29 @@ class AnthropicRewriter:
 
 
 class OpenAIRewriter:
-    def __init__(self, model_id: str, model: str, temperature: float = 0.0, max_tokens: int = 8192):
+    def __init__(self, spec: dict[str, Any]):
         from openai import OpenAI
-        self.model_id = model_id
+        self.model_id = spec["id"]
         self.provider = "openai"
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
+        self.model = spec["model"]
+        # GPT-5.x reasoning models require `max_completion_tokens` (not `max_tokens`)
+        # and reject non-default `temperature`. Budget covers reasoning + output.
+        self.max_tokens = spec.get("max_completion_tokens", spec.get("max_tokens", 16000))
+        self.temperature = spec.get("temperature")
+        self.reasoning_effort = spec.get("reasoning_effort")
         self._client = OpenAI(api_key=get_api_key("openai"))
 
     def rewrite(self, prompt: str) -> dict[str, Any]:
-        resp = self._client.chat.completions.create(
+        kwargs: dict[str, Any] = dict(
             model=self.model,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
+            max_completion_tokens=self.max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
+        if self.temperature is not None:
+            kwargs["temperature"] = self.temperature
+        if self.reasoning_effort:
+            kwargs["reasoning_effort"] = self.reasoning_effort
+        resp = self._client.chat.completions.create(**kwargs)
         choice = resp.choices[0]
         return {
             "text": choice.message.content or "",
@@ -109,29 +121,43 @@ class OpenAIRewriter:
         }
 
 
+def _gemini_text(resp: Any) -> str:
+    """Extract text without tripping the `.text` accessor, which raises when a
+    candidate returns no text part (e.g. truncated by a thinking budget)."""
+    try:
+        return resp.text or ""
+    except (ValueError, AttributeError):
+        pass
+    parts: list[str] = []
+    for cand in getattr(resp, "candidates", []) or []:
+        content = getattr(cand, "content", None)
+        for part in getattr(content, "parts", []) or []:
+            t = getattr(part, "text", "")
+            if t:
+                parts.append(t)
+    return "".join(parts)
+
+
 class GoogleRewriter:
-    def __init__(self, model_id: str, model: str, temperature: float = 0.0, max_tokens: int = 8192):
+    def __init__(self, spec: dict[str, Any]):
         import google.generativeai as genai
         genai.configure(api_key=get_api_key("google"))
-        self.model_id = model_id
+        self.model_id = spec["id"]
         self.provider = "google"
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        self._model = genai.GenerativeModel(model)
+        self.model = spec["model"]
+        self.max_tokens = spec.get("max_tokens", spec.get("max_output_tokens", 8192))
+        self.temperature = spec.get("temperature")
+        self.reasoning_effort = None
+        self._model = genai.GenerativeModel(self.model)
 
     def rewrite(self, prompt: str) -> dict[str, Any]:
-        resp = self._model.generate_content(
-            prompt,
-            generation_config={
-                "temperature": self.temperature,
-                "max_output_tokens": self.max_tokens,
-            },
-        )
-        text = getattr(resp, "text", "") or ""
+        cfg: dict[str, Any] = {"max_output_tokens": self.max_tokens}
+        if self.temperature is not None:
+            cfg["temperature"] = self.temperature
+        resp = self._model.generate_content(prompt, generation_config=cfg)
         usage = getattr(resp, "usage_metadata", None)
         return {
-            "text": text,
+            "text": _gemini_text(resp),
             "model_returned": self.model,
             "input_tokens": getattr(usage, "prompt_token_count", None) if usage else None,
             "output_tokens": getattr(usage, "candidates_token_count", None) if usage else None,
@@ -149,12 +175,7 @@ PROVIDER_CLASSES = {
 def build_rewriter(spec: dict[str, Any]) -> Rewriter:
     provider = spec["provider"]
     cls = PROVIDER_CLASSES[provider]
-    return cls(
-        model_id=spec["id"],
-        model=spec["model"],
-        temperature=spec.get("temperature", 0.0),
-        max_tokens=spec.get("max_tokens", spec.get("max_output_tokens", 8192)),
-    )
+    return cls(spec)
 
 
 # --- Orchestration ---------------------------------------------------------
@@ -242,6 +263,7 @@ def generate_one(
             "prompt_version": REWRITE_PROMPT_VERSION,
             "prompt_sha256": prompt_sha,
             "temperature": rewriter.temperature,
+            "reasoning_effort": getattr(rewriter, "reasoning_effort", None),
             "max_tokens": rewriter.max_tokens,
             "generated_at_utc": utc_now_iso(),
             "input_tokens": out["input_tokens"],

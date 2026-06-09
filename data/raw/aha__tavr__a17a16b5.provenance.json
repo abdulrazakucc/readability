@@ -1,0 +1,10 @@
+{
+  "bytes_size": 214061,
+  "captured_at_utc": "2026-06-03T18:42:26Z",
+  "content_sha256": "400c9efc65d9bcee8d02528a7c866a95076c5eecf0aa2e38583b94d2243513aa",
+  "http_status": 200,
+  "page_id": "aha__tavr__a17a16b5",
+  "procedure": "tavr",
+  "url": "https://www.heart.org/en/health-topics/heart-valve-problems-and-disease/understanding-your-heart-valve-treatment-options/what-is-tavr",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

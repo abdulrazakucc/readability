@@ -1,0 +1,10 @@
+{
+  "bytes_size": 317128,
+  "captured_at_utc": "2026-06-03T18:42:46Z",
+  "content_sha256": "cb8143cf3b1eb75ec1eb8c0918d7cdeb716a5ade87bd11811158ea70931aa8fc",
+  "http_status": 200,
+  "page_id": "cleveland__laao__58be2f5f",
+  "procedure": "laao",
+  "url": "https://my.clevelandclinic.org/health/treatments/17167-left-atrial-appendage--closure",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (cardiac-ct-readability-research; contact via repo)"
+}

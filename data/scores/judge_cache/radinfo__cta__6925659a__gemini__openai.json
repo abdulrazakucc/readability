@@ -1,0 +1,14 @@
+{
+  "page_id": "radinfo__cta__6925659a",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:40:18Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 1,
+  "note": "Premedication for contrast allergy reduces risk; it does not guarantee prevention.",
+  "flagged_claims": [
+    "You may need to take medicine starting 13 hours before the test to prevent an allergic reaction."
+  ]
+}

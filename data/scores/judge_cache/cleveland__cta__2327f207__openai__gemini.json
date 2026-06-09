@@ -1,0 +1,15 @@
+{
+  "page_id": "cleveland__cta__2327f207",
+  "model_id": "openai",
+  "judge_id": "gemini",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:43:29Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 2,
+  "note": "Added generic standard-of-care examples like allergies and medications to logically fill in missing bullet points from the original text.",
+  "flagged_claims": [
+    "tell your provider about your health history, allergies, medicines",
+    "Call your provider if they told you to watch for symptoms"
+  ]
+}

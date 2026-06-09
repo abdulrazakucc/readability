@@ -1,0 +1,14 @@
+{
+  "page_id": "cleveland__cta__2327f207",
+  "model_id": "claude",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:36:51Z",
+  "accuracy_1_5": 5,
+  "completeness_1_5": 4,
+  "added_errors_1_5": 2,
+  "note": "Vague preparation and call-provider sections preserve less specific safety guidance.",
+  "flagged_claims": [
+    "Call your provider if you have any concerns."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "page_id": "stanford__cta__80db3ba7",
+  "model_id": "gemini",
+  "judge_id": "openai",
+  "judge_prompt_version": "judge_v1",
+  "scored_at_utc": "2026-06-09T08:41:05Z",
+  "accuracy_1_5": 4,
+  "completeness_1_5": 5,
+  "added_errors_1_5": 3,
+  "note": "Rewrite slightly overstates CT accuracy and says CT does not use tubes, which may be misleading.",
+  "flagged_claims": [
+    "They give exact results",
+    "a CT scan is a good choice because it does not use tubes"
+  ]
+}
