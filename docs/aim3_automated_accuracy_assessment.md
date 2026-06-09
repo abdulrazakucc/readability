@@ -19,7 +19,7 @@ Consensus scores (mean across the 3 judges), per model:
 | Claude Opus 4.8 | −5.52 | 4.91 | 4.91 | 1.18 |
 | Gemini 3.1 Pro | −5.74 (largest) | 4.69 | 4.81 | 1.45 (worst) |
 
-The ordering is the **inverse** of the Aim 2 reading-level ordering: the model that simplified most aggressively (Gemini) scored lowest on accuracy and added the most un-sourced content, while the most conservative simplifier (GPT-5.5) was the most faithful. **Claude Opus 4.8 sits at the favorable corner** — a near-largest reading-level reduction with fidelity essentially tied with the most conservative model. Across-model differences were significant for accuracy (Friedman χ² = 21.1, p = 2.6 × 10⁻⁵; n = 25 pages with all three rewrites) and non-significant for completeness (χ² = 5.57, p = .062) and added errors (χ² = 5.02, p = .081). See `reports/figures/aim3_llm_tradeoff.png` and `aim3_llm_scores_by_model.png`.
+The ordering is the **inverse** of the Aim 2 reading-level ordering: the model that simplified most aggressively (Gemini) scored lowest on accuracy and added the most un-sourced content, while the most conservative simplifier (GPT-5.5) was the most faithful. **Claude Opus 4.8 sits at the favorable corner** — a near-largest reading-level reduction with fidelity essentially tied with the most conservative model. Across-model differences were significant for accuracy (Friedman χ² = 21.1, p = 2.6 × 10⁻⁵; n = 25 pages with all three rewrites) and non-significant for completeness (χ² = 5.57, p = .062) and added errors (χ² = 5.02, p = .081). See `reports/figures/aim3_llm_tradeoff.png` (per-page scatter), `aim3_llm_tradeoff_alt.png` (dual-axis model-level summary: bars = simplification achieved, diamonds = accuracy fidelity), and `aim3_llm_scores_by_model.png`.
 
 ## 3. Most rewrites were faithful (ceiling effect)
 
@@ -74,4 +74,4 @@ Per-model Spearman between the magnitude of reading-level reduction (ΔFKGL) and
 - `data/scores/accuracy_llm_raw.csv` — 231 rows (page × model × judge), scores + notes + flagged claims.
 - `data/scores/accuracy_llm.csv` — 77 consensus rows (mean across judges).
 - `reports/aim3_llm_descriptives.csv`, `aim3_llm_model_comparison.csv`, `aim3_llm_interjudge.csv`, `aim3_llm_self_preference.csv`, `aim3_llm_tradeoff.csv`.
-- `reports/figures/aim3_llm_scores_by_model.png`, `aim3_llm_tradeoff.png`.
+- `reports/figures/aim3_llm_scores_by_model.png`, `aim3_llm_tradeoff.png`, `aim3_llm_tradeoff_alt.png`.
