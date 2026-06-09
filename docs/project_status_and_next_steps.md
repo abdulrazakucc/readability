@@ -6,6 +6,8 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 
 ## Last updated
 
+2026-06-08, recovered and re-cleaned the 5 previously-blocked Hopkins/Mayo pages (manual browser capture); included corpus is now 26 pages. Aim 1 scoring/statistics still reflect the earlier n=21 and must be re-run (see Step 2). Phases 3–6 still blocked on API keys.
+
 2026-06-03, end of Phase 2 (Aim 1 complete on n=21 originals; Phases 3–6 blocked on API keys).
 
 ## At-a-glance status
@@ -13,8 +15,8 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 | Phase | Description | State |
 |-------|-------------|-------|
 | 0 | Bootstrap (venv, deps, model lock, scorer sanity) | partial, `requirements.txt` works, `pytest` not yet run on fresh clone; `config/models.yaml` already locked; `docs/background_summary.md` is still a stub |
-| 1 | Sample selection, capture, clean, manifest | **done**, 26 captured, 21 included, all 3 procedures clear the 5-page floor |
-| 2 | Aim 1 readability of originals | **done**, `reports/aim1_*.csv` + 2 figures generated; 0/21 meet FKGL ≤ 6 |
+| 1 | Sample selection, capture, clean, manifest | **done**, 26 captured, 26 included (5 Hopkins/Mayo recovered by manual capture 2026-06-08), all 3 procedures clear the 5-page floor |
+| 2 | Aim 1 readability of originals | **stale, needs re-run**, `reports/aim1_*.csv` + 2 figures were generated on n=21; 0/21 met FKGL ≤ 6. Re-score with the 5 recovered pages before citing n=26 |
 | 3 | AI rewrite arm (Aim 2) | **blocked**, needs API keys for Anthropic, OpenAI, Google |
 | 4 | Clinical accuracy scoring (Aim 3) | not started, depends on Phase 3 + reviewer Naeem's availability |
 | 5 | Statistics (Aims 2 & 3 portion) | partial, Aim 1 portion done; Aim 2/3 portion blocked on Phases 3–4 |
@@ -25,14 +27,14 @@ See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in
 ## What is in the repo right now
 
 - `data/urls.csv`, 26 URLs across 3 procedures from the locked allowlist in `config/sites.yaml`
-- `data/raw/`, 26 captured HTML files + 26 `.provenance.json` (5 of the HTMLs are 403 error pages)
-- `data/cleaned/`, 26 cleaned `.txt` + 26 `.provenance.json`
-- `data/manifest.csv`, 26 rows; 21 marked `include=Y`, 5 marked `include=N` with reason
-- `data/scores/originals.csv`, 21 scored pages (six formulas)
+- `data/raw/`, 26 captured HTML files + 26 `.provenance.json` (5 of the HTMLs are 403 error pages; the real body text for those 5 lives in `data/cleaned/`, captured manually in a browser)
+- `data/cleaned/`, 26 cleaned `.txt` + 26 `.provenance.json` (the 5 recovered pages carry `capture_method = "manual_browser"`)
+- `data/manifest.csv`, 26 rows; all 26 marked `include=Y` (5 flipped from `N` on 2026-06-08 after manual recovery)
+- `data/scores/originals.csv`, 21 scored pages (six formulas) — **does not yet include the 5 recovered pages; re-run scoring**
 - `reports/aim1_*.csv`, descriptives, inference, benchmark-meeting
 - `reports/figures/aim1_fkgl_by_*.png`, 2 figures
 
-Headline finding (Aim 1): **0/21 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.4 (IQR 9.5–12.3).
+Headline finding (Aim 1, on the n=21 corpus): **0/21 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.4 (IQR 9.5–12.3). These numbers predate the 5 recovered pages and will shift slightly once scoring is re-run on n=26.
 
 ## Open blockers
 
@@ -48,15 +50,13 @@ GOOGLE_API_KEY=...
 
 Cost estimate before running the full arm: roughly **USD $4–6** for the locked 3-model panel on the current 21-page corpus, well under the `cost_warn_usd: 20` guardrail in `config/default.yaml`. Full breakdown (with sensitivity to model choice, corpus growth, and output length) is in [cost_estimates.md](cost_estimates.md). `scripts/04_generate_rewrites.py` will print the actual estimate and require `--confirm-cost` to proceed.
 
-### B2: Five sites blocked by bot detection (low priority)
+### B2: Five sites blocked by bot detection (RESOLVED 2026-06-08)
 
-Johns Hopkins (×3 pages: CCTA, TAVR, LAAO) and Mayo Clinic (×2 pages: CCTA, TAVR) returned HTTP 403 to both the locked research User-Agent and to a clean Chrome User-Agent via headless fetcher. Logged in [stats_deviations.md](stats_deviations.md).
-
-Recovery path per the sample-selection protocol: open each URL in a real browser, paste the visible body text into `data/raw/<page_id>.txt`, then re-run cleaning. The five `page_id`s and URLs are listed under "Resume commands" below. Optional, current n=21 already exceeds the protocol floor.
+Johns Hopkins (×3 pages: CCTA, TAVR, LAAO) and Mayo Clinic (×2 pages: CCTA, TAVR) returned HTTP 403 to both the locked research User-Agent and to a clean Chrome User-Agent via headless fetcher. Recovered on 2026-06-08 by manual browser capture and re-cleaned to pipeline standard (`scripts/_reclean_manual.py`); manifest, cleaned text, and provenance are updated. Logged in [stats_deviations.md](stats_deviations.md). The only remaining action is to re-score (Step 2) so Aim 1 outputs reflect n=26.
 
 ### B3: Clinical reviewer (Naeem) availability for Aim 3
 
-Required after Phase 3 produces rewrites and Phase 4 builds the blinded review packet. Estimated reviewer effort: 21 pages × 3 rewrites = 63 rewrites to score on accuracy, completeness, and added errors (1–5 each). At 3–5 minutes per rewrite, ~3–5 hours total.
+Required after Phase 3 produces rewrites and Phase 4 builds the blinded review packet. Estimated reviewer effort: 26 pages × 3 rewrites = 78 rewrites to score on accuracy, completeness, and added errors (1–5 each). At 3–5 minutes per rewrite, ~4–6 hours total.
 
 ## Next steps (ordered)
 
@@ -68,19 +68,26 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
 - **Output:** `docs/background_summary.md` rewritten as a 250–500-word narrative (currently a stub with bullets).
 - **Done when:** A co-author can read it and understand the gap this study fills without opening the PDFs.
 
-### Step 2: (Optional) Manual capture of 5 blocked pages
-- **Why:** Bring n from 21 to 26 and recover the two largest-traffic US hospital sites.
-- **Input:** browser access to each URL listed below.
-- **Command path:**
-  - For each `page_id` below, open the URL in a browser. Copy the visible patient-content body (not nav, not footer). Save as `data/raw/<page_id>.txt` (note: `.txt`, not `.html`, the cleaner needs a per-page bypass; see Step 2a).
-  - The five pages to recover:
+### Step 2: Re-score Aim 1 on the recovered n=26 corpus
+- **Why:** The 5 Hopkins/Mayo pages were recovered and cleaned on 2026-06-08 (manual capture; option (b) below was taken). Manifest, cleaned text, and provenance are done. Scoring and all Aim 1 outputs still reflect n=21 and must be regenerated.
+- **What was already done (2026-06-08):**
+  - The 5 pages were captured in a browser and saved straight to `data/cleaned/<page_id>.txt` (the cleaner only handles HTML; option (b)). They were then re-cleaned to pipeline standard with `scripts/_reclean_manual.py`, which strips the boilerplate trafilatura would have removed and applies the project's unicode/whitespace normalizers.
+  - `data/manifest.csv`: 5 rows flipped to `include=Y`, `word_count_cleaned` set (825 / 1199 / 1357 / 1227 / 484), manual-capture note added.
+  - Provenance JSON regenerated for all 5 with `capture_method = "manual_browser"`.
+  - The five recovered `page_id`s:
   - `jhmi__cta__f15ba785`, https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/coronary-computed-tomography-angiography-ccta
   - `jhmi__tavr__7bdb4834`, https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/transcatheter-aortic-valve-replacement-tavr
   - `jhmi__laao__b5350128`, https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/left-atrial-appendage-closure-procedures
   - `mayo__cta__7756ee3c`, https://www.mayoclinic.org/tests-procedures/ct-coronary-angiogram/about/pac-20385117
   - `mayo__tavr__739229dd`, https://www.mayoclinic.org/tests-procedures/transcatheter-aortic-valve-replacement/about/pac-20384698
-- **Step 2a (code path that does not currently exist):** `02_clean_pages.py` does not yet handle `.txt` manual captures, it expects HTML. Either (a) extend it to detect a `.txt` sibling and copy it through cleaning verbatim, or (b) hand-paste cleaned text directly to `data/cleaned/<page_id>.txt` and patch the manifest `include=Y` + `word_count_cleaned` by hand. Document either choice in `stats_deviations.md`.
-- **Done when:** `data/cleaned/<page_id>.txt` exists for all 5 recovered IDs, manifest is updated, and `03_score_originals.py --included-only` reruns to include them. Aim 1 outputs (steps further below) regenerate cleanly.
+- **Command (still to run):**
+  ```bash
+  .venv/bin/python scripts/03_score_originals.py --included-only
+  .venv/bin/python scripts/07_run_statistics.py
+  .venv/bin/python scripts/08_generate_figures.py
+  ```
+- **Then refresh manuscript numbers:** every "n = 21", "0 of 21", median FKGL, IQR, and ANOVA / Kruskal-Wallis value in `publication/draft_manuscript.md`, `publication/build_docx.py`, and `docs/data_scientist_tasks.md` must be updated from the regenerated `reports/aim1_*.csv`.
+- **Done when:** `data/scores/originals.csv` has 26 rows and every Aim 1 number in the manuscript traces to a regenerated `reports/` CSV.
 
 ### Step 3: Unblock B1 (API keys), then run the rewrite arm
 - **Input:** populated `.env`.
@@ -91,7 +98,7 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
   ```
 - **Output:** `data/rewrites/<page_id>__<model_id>.txt` for each included page × each of the 3 models in `config/models.yaml`. One `_provenance.json` per rewrite.
 - **Watch for:** any safety/refusal flag in provenance, log to `stats_deviations.md` if a model declines a page rather than rewriting it.
-- **Done when:** 21 pages × 3 models = 63 rewrites exist (or excluded with explicit refusal reason), each with full provenance.
+- **Done when:** 26 pages × 3 models = 78 rewrites exist (or excluded with explicit refusal reason), each with full provenance.
 
 ### Step 4: Score the rewrites
 - **Command:** `.venv/bin/python scripts/05_score_rewrites.py`

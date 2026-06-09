@@ -26,10 +26,10 @@ You are NOT just a script-runner: you are responsible for the *reproducibility* 
 See [sample_selection_protocol.md](sample_selection_protocol.md) for the procedural rules, this section is the data-side task list.
 
 - [x] Finalize the site allowlist in `config/sites.yaml`. Lock this before any capture.
-- [x] Capture pages using `scripts/01_capture_pages.py`. The script must record: URL, capture timestamp (UTC ISO 8601), HTTP status, raw HTML, content hash, user-agent. _26 captured 2026-06-03; 5 blocked by site WAF (Hopkins ×3, Mayo ×2), logged in `stats_deviations.md`._
+- [x] Capture pages using `scripts/01_capture_pages.py`. The script must record: URL, capture timestamp (UTC ISO 8601), HTTP status, raw HTML, content hash, user-agent. _26 captured 2026-06-03; 5 initially blocked by site WAF (Hopkins ×3, Mayo ×2), recovered by manual browser capture 2026-06-08; all 26 now included. Logged in `stats_deviations.md`._
 - [x] Clean each page to body-only text using `scripts/02_clean_pages.py`. Keep both `raw/` and `cleaned/` versions, never overwrite raw.
 - [x] Maintain `data/manifest.csv` with one row per page: `page_id`, `procedure`, `site`, `url`, `captured_at`, `word_count`, `cleaned_word_count`, `include` (Y/N), `exclusion_reason`.
-- [x] For each excluded page, write the exclusion reason, never silently drop. _5 rows marked `include=N` with reason._
+- [x] For each excluded page, write the exclusion reason, never silently drop. _5 rows were marked `include=N` (HTTP 403); all 5 recovered 2026-06-08 and flipped to `include=Y`, so no pages are currently excluded._
 - [x] Hand-spot-check 10% of the cleaned pages against the original HTML. _spot-checked 3 pages 2026-06-03; some residual site-chrome on BHF/Stanford footers but bulk content is clean; not retried per locked cleaner config._
 
 **Done when:** the manifest has 20–40 included pages spread across all three procedures and all locked sites, and a colleague reading the manifest can reproduce the corpus without re-asking you.
