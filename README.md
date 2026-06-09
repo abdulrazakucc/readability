@@ -7,6 +7,9 @@ Project plan: [docs/cardiac_readability_plan.docx](docs/cardiac_readability_plan
 Data-scientist tasks: [docs/data_scientist_tasks.md](docs/data_scientist_tasks.md)
 Implementation guidelines: [docs/implementation_guidelines.md](docs/implementation_guidelines.md)
 Statistical analysis plan: [docs/statistical_analysis_plan.md](docs/statistical_analysis_plan.md)
+Plain-language methods, metrics & statistics companion (start here if new): [docs/methods_and_statistics_companion.md](docs/methods_and_statistics_companion.md)
+Automated LLM-judge accuracy assessment (Aim 3 secondary): [docs/aim3_automated_accuracy_assessment.md](docs/aim3_automated_accuracy_assessment.md)
+Reviewer guide for the clinical subspecialist: [docs/reviewer_guide_naeem.md](docs/reviewer_guide_naeem.md)
 Rough cost estimates for the AI rewrite arm: [docs/cost_estimates.md](docs/cost_estimates.md)
 Literature review: [docs/literature_review.md](docs/literature_review.md)
 Journal-target assessment, improvements, alternative tests: [docs/jama_publishability_and_improvements.md](docs/jama_publishability_and_improvements.md)
@@ -56,6 +59,11 @@ cp .env.example .env
 # columns: page_id, model_id, accuracy_1_5, completeness_1_5, added_errors_1_5
 .venv/bin/python scripts/07_run_statistics.py
 .venv/bin/python scripts/08_generate_figures.py
+
+# 7. Aim 3 secondary: automated LLM-judge panel (does not wait on the human review)
+.venv/bin/python scripts/09_llm_accuracy.py --aggregate
+.venv/bin/python scripts/10_aim3_llm_stats.py
+.venv/bin/python scripts/11_aim3_llm_figures.py
 ```
 
 ## Pipeline dependency graph
@@ -83,11 +91,22 @@ data/urls.csv
   clinical scoring (Naeem) → data/scores/accuracy.csv
   │
   ▼
-  07_run_statistics ──► reports/
+  07_run_statistics ──► reports/aim1_*, aim2_*
   │
   ▼
-  08_generate_figures ──► reports/figures/
+  08_generate_figures ──► reports/figures/aim1_*, aim2_*
+
+  ── Aim 3 secondary (automated LLM-judge panel; runs off the rewrites, not blocked on Naeem) ──
+  04/05 rewrites + data/cleaned ─► 09_llm_accuracy ──► data/scores/accuracy_llm{,_raw}.csv
+                                      │
+                                      ▼
+                                   10_aim3_llm_stats ──► reports/aim3_llm_*
+                                      │
+                                      ▼
+                                   11_aim3_llm_figures ──► reports/figures/aim3_llm_*
 ```
+
+> The automated panel (09 to 11) is a clearly-labeled screening signal, **not** a substitute for the blinded human review that feeds `07`'s Aim 3 analysis. See `docs/aim3_automated_accuracy_assessment.md` and `docs/methods_and_statistics_companion.md`.
 
 ## Reproducibility floor
 

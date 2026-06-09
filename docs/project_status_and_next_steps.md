@@ -36,8 +36,10 @@ See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in
 - `data/rewrites/`, 77 rewrites (26 Claude + 25 GPT-5.5 + 26 Gemini) + provenance; one GPT-5.5 page quarantined as `…__openai.txt.excluded_content_filter`
 - `data/scores/rewrites.csv` + `deltas.csv`, 77 scored rewrites with post−pre deltas
 - `reports/aim1_*.csv` (n=26) + `reports/aim2_paired_tests.csv` + `reports/aim2_across_models.csv` (3-model Friedman)
-- `reports/figures/aim1_fkgl_by_*.png` (2) + `aim2_fkgl_delta_by_model.png`
+- `reports/aim3_llm_*.csv` (Aim 3 SECONDARY automated panel: descriptives, model comparison, inter-judge agreement, self-preference, trade-off) + `data/scores/accuracy_llm{,_raw}.csv` (231 judgments)
+- `reports/figures/aim1_fkgl_by_*.png` (2) + `aim2_fkgl_delta_by_model.png` + `aim3_llm_scores_by_model.png` + `aim3_llm_tradeoff.png` (scatter) + `aim3_llm_tradeoff_alt.png` (dual-axis summary)
 - `data/review/review_packet.csv` (77 blinded entries) + `data/review/blind_key.csv` (unblinding key, do not share)
+- Docs: `docs/methods_and_statistics_companion.md` (plain-language methods/metrics/stats with worked examples), `docs/aim3_automated_accuracy_assessment.md` (panel write-up), `docs/reviewer_guide_naeem.md` (clinical reviewer instructions)
 
 Headline finding (Aim 1, n=26): **0/26 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.3 (IQR 8.7–11.9).
 Headline finding (Aim 2, all 3 models): Gemini 3.1 Pro lowered FKGL by 5.7 grade levels (20/26 rewrites meet ≤6); Claude Opus 4.8 by 5.5 (22/26); GPT-5.5 by 3.9 (9/25); all Holm p < 0.001; models differ (Friedman p = 5.6e-9), Claude≈Gemini > GPT-5.5.

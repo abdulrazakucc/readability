@@ -81,8 +81,9 @@ See [statistical_analysis_plan.md](statistical_analysis_plan.md) for the pre-reg
 
 ### Phase 6: Manuscript support (Weeks 12–14)
 
-- [ ] Generate every table and figure in the manuscript from a script in `scripts/` so that any data update propagates automatically.
-- [ ] Provide a `reports/manuscript_numbers.md` file that lists every number cited in the manuscript with its source script and CSV row. This is your shield against "where did 47% come from?" questions.
+- [x] Generate every table and figure in the manuscript from a script in `scripts/` so that any data update propagates automatically. _Aim 1/2 via `07`/`08`; Aim 3 secondary panel via `09`-`11` (incl. `aim3_llm_tradeoff.png`, `aim3_llm_tradeoff_alt.png`, `aim3_llm_scores_by_model.png`)._
+- [~] Provide a traceability map listing every cited number with its source script and CSV. _Partly done: the reproduction map in [methods_and_statistics_companion.md](methods_and_statistics_companion.md) §7 ties each headline manuscript claim to its CSV and the test that produced it. A standalone `reports/manuscript_numbers.md` per-sentence ledger is still recommended for camera-ready._
+- [x] Author a plain-language methods/metrics/statistics companion so clinical co-authors (Dr. Naeem) and re-implementers can follow every test. _Done: [methods_and_statistics_companion.md](methods_and_statistics_companion.md)._
 
 ## Cross-cutting standards
 
