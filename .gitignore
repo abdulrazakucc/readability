@@ -8,6 +8,8 @@ __pycache__/
 # Do not upload publication to the git
 publication/
 
+CLAUDE.md
+
 # Raw captures and derived artifacts (regenerable + potentially large)
 # data/raw/
 # data/cleaned/
