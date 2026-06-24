@@ -122,7 +122,25 @@ _TEMPLATE = r"""<!DOCTYPE html>
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 55%, var(--teal) 140%);
     color: #fff; padding: 40px 24px 32px;
   }
-  .hero-inner { max-width: 1080px; margin: 0 auto; }
+  .hero-inner { max-width: 1180px; margin: 0 auto; }
+
+  /* ---- Brand bar (Mayo Clinic) ---- */
+  .brandbar {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+    margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.16);
+  }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .mayo-mark { width: 52px; height: auto; display: block; }
+  .wordmark {
+    font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 700;
+    letter-spacing: .09em; color: #fff;
+  }
+  .brand-meta { text-align: right; line-height: 1.3; }
+  .bm-label {
+    display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .12em;
+    color: #9fd8e0; font-weight: 700;
+  }
+  .bm-name { display: block; font-size: 13px; color: #e8f1f8; font-weight: 600; }
   .eyebrow {
     text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700;
     color: #9fd8e0; margin: 0 0 10px;
@@ -131,7 +149,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
   .hero p { margin: 0; max-width: 760px; color: #cfe0ee; font-size: 16px; }
   .hero .lead { color: #fff; font-weight: 600; margin-top: 14px; font-size: 17px; }
 
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
   /* ---- Cards ---- */
   .card {
@@ -297,7 +315,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
     border-top: 1px solid var(--line); box-shadow: 0 -4px 20px rgba(16,42,67,.08);
   }
   .footer-inner {
-    max-width: 1080px; margin: 0 auto; padding: 12px 24px; display: flex;
+    max-width: 1180px; margin: 0 auto; padding: 12px 24px; display: flex;
     align-items: center; gap: 18px;
   }
   .progress { flex: 1; }
@@ -321,6 +339,8 @@ _TEMPLATE = r"""<!DOCTYPE html>
     .id-grid, .rubric, .texts, .score-row { grid-template-columns: 1fr; }
     .col.orig { border-right: none; border-bottom: 1px solid var(--line); }
     .hero h1 { font-size: 24px; }
+    .brandbar { flex-wrap: wrap; gap: 12px; }
+    .brand-meta { text-align: left; }
     .footer-inner { flex-wrap: wrap; }
   }
   @media print {
@@ -333,6 +353,20 @@ _TEMPLATE = r"""<!DOCTYPE html>
 
 <header class="hero">
   <div class="hero-inner">
+    <div class="brandbar">
+      <div class="brand">
+        <svg class="mayo-mark" viewBox="0 0 62 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1 3 H19 V15 C19 22 10 27 10 27 C10 27 1 22 1 15 Z" fill="#ffffff"/>
+          <path d="M22 3 H40 V15 C40 22 31 27 31 27 C31 27 22 22 22 15 Z" fill="#ffffff"/>
+          <path d="M43 3 H61 V15 C61 22 52 27 52 27 C52 27 43 22 43 15 Z" fill="#ffffff"/>
+        </svg>
+        <span class="wordmark">MAYO CLINIC</span>
+      </div>
+      <div class="brand-meta">
+        <span class="bm-label">Subspecialist reviewer</span>
+        <span class="bm-name">Dr. Muhammad Naeem</span>
+      </div>
+    </div>
     <p class="eyebrow">Cardiac CT Patient-Education Readability Study · Aim 3</p>
     <h1>Clinical Accuracy Scoring of AI-Rewritten Patient Pages</h1>
     <p>Three frontier AI models rewrote 26 online patient-education pages (coronary CTA, TAVR, LAAO/Watchman) to a 6th-grade reading level. Your job is the clinical question: <strong>when the AI made the page easier to read, did it keep the medicine correct and complete?</strong></p>
