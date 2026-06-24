@@ -116,6 +116,19 @@
   ul.rules { margin: 6px 0 0; padding-left: 18px; }
   ul.rules li { margin: 5px 0; }
 
+  /* ---- Part banner (only present on split parts) ---- */
+  .part-banner {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin-top: 20px; padding: 13px 18px; border-radius: 12px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+  }
+  .pb-chip {
+    font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--navy); background: #9fd8e0; padding: 6px 13px; border-radius: 999px; white-space: nowrap;
+  }
+  .pb-text { font-size: 14px; color: #e8f1f8; }
+  .pb-text b { color: #fff; }
+
   /* ---- Item cards ---- */
   .item {
     background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
@@ -284,6 +297,7 @@
     <h1>Clinical Accuracy Scoring of AI-Rewritten Patient Pages</h1>
     <p>Three frontier AI models rewrote 26 online patient-education pages (coronary CTA, TAVR, LAAO/Watchman) to a 6th-grade reading level. Your job is the clinical question: <strong>when the AI made the page easier to read, did it keep the medicine correct and complete?</strong></p>
     <p class="lead">Score each rewrite against its own original on three 1&ndash;5 scales. You are blinded to which AI wrote it &mdash; that is by design.</p>
+    
   </div>
 </header>
 
@@ -399,6 +413,7 @@ const DIM_META = [
   { key: "added_errors_1_5", label: "Added errors", sub: "Did it invent claims not in the original?",           dir: "higher = worse",  reverse: true },
 ];
 const STORE_KEY = "aim3_questionnaire_v1";
+const FILE_SUFFIX = "";
 
 function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
@@ -581,7 +596,7 @@ function exportCSV(){
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "reviewer";
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "aim3_scores_" + slug + ".csv";
+  a.download = "aim3_scores" + FILE_SUFFIX + "_" + slug + ".csv";
   document.body.appendChild(a); a.click(); a.remove();
   save(true);
 }

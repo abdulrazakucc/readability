@@ -32,6 +32,8 @@ log = logging.getLogger("questionnaire")
 
 PACKET_NAME = "review_packet_with_text.csv"
 OUTPUT_NAME = "aim3_accuracy_questionnaire.html"
+PARTS_DIRNAME = "questionnaire_parts"
+N_PARTS = 3
 
 
 def load_items(packet_path: Path) -> list[dict]:
@@ -49,11 +51,67 @@ def load_items(packet_path: Path) -> list[dict]:
     return items
 
 
-def build_html(items: list[dict]) -> str:
+def build_html(
+    items: list[dict],
+    *,
+    store_key: str = "aim3_questionnaire_v1",
+    csv_suffix: str = "",
+    part_eyebrow: str = "",
+    part_banner: str = "",
+) -> str:
+    """Render one self-contained questionnaire file.
+
+    `store_key` and `csv_suffix` are made unique per split part so a reviewer who
+    opens more than one part on the same device gets independent drafts and
+    distinctly-named CSV downloads. With the defaults the output is byte-identical
+    to the original single-file questionnaire.
+    """
     # Embedded as JSON so the page is fully self-contained (no server, no fetch).
     items_json = json.dumps(items, ensure_ascii=False)
-    return _TEMPLATE.replace("/*__ITEMS__*/", items_json).replace(
-        "__N_ITEMS__", str(len(items))
+    return (
+        _TEMPLATE.replace("/*__ITEMS__*/", items_json)
+        .replace("__N_ITEMS__", str(len(items)))
+        .replace("__STORE_KEY__", store_key)
+        .replace("__CSV_SUFFIX__", csv_suffix)
+        .replace("__PART_EYEBROW__", part_eyebrow)
+        .replace("__PART_BANNER__", part_banner)
+    )
+
+
+def split_ranges(n: int, parts: int) -> list[tuple[int, int]]:
+    """Contiguous, as-balanced-as-possible (start, end) slices over the fixed order.
+
+    Splitting contiguously preserves the seeded randomized item order, so each part
+    stays model-interleaved and blinding is unaffected.
+    """
+    base, rem = divmod(n, parts)
+    ranges, start = [], 0
+    for i in range(parts):
+        size = base + (1 if i < rem else 0)
+        ranges.append((start, start + size))
+        start += size
+    return ranges
+
+
+def build_part_html(items: list[dict], part_no: int, parts: int, total: int, start: int) -> str:
+    """Render one split part with its own storage key, CSV suffix, and banner."""
+    n = len(items)
+    first, last = start + 1, start + n
+    eyebrow = f" &middot; Part {part_no} of {parts}"
+    banner = (
+        '<div class="part-banner">'
+        f'<span class="pb-chip">Part {part_no} of {parts}</span>'
+        f'<span class="pb-text">This set contains <b>{n}</b> rewrites '
+        f"(items {first}&ndash;{last} of the full {total}). "
+        "Two reviewers independently score this same set; please complete every item.</span>"
+        "</div>"
+    )
+    return build_html(
+        items,
+        store_key=f"aim3_questionnaire_v1_part{part_no}of{parts}",
+        csv_suffix=f"_part{part_no}of{parts}",
+        part_eyebrow=eyebrow,
+        part_banner=banner,
     )
 
 
@@ -61,6 +119,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--packet", default=str(REVIEW_DIR / PACKET_NAME))
     parser.add_argument("--out", default=str(REVIEW_DIR / OUTPUT_NAME))
+    parser.add_argument("--parts-dir", default=str(REVIEW_DIR / PARTS_DIRNAME))
+    parser.add_argument("--parts", type=int, default=N_PARTS, help="number of split parts to emit")
+    parser.add_argument(
+        "--no-parts", action="store_true", help="only emit the full single-file questionnaire"
+    )
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -72,12 +135,32 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     items = load_items(packet_path)
-    html = build_html(items)
 
+    # 1) The complete single-file questionnaire (unchanged deliverable).
     out_path = Path(args.out)
-    out_path.write_text(html, encoding="utf-8")
-    log.info("wrote questionnaire with %d items -> %s", len(items), out_path)
-    log.info("Hand this single HTML file to each reviewer. Each exports their own CSV.")
+    out_path.write_text(build_html(items), encoding="utf-8")
+    log.info("wrote full questionnaire with %d items -> %s", len(items), out_path)
+
+    if args.no_parts:
+        return 0
+
+    # 2) Split parts: each is a standalone HTML file covering a contiguous slice of
+    #    the fixed order, for handing to a separate pair of reviewers.
+    total = len(items)
+    parts_dir = Path(args.parts_dir)
+    parts_dir.mkdir(parents=True, exist_ok=True)
+    ranges = split_ranges(total, args.parts)
+    for i, (start, end) in enumerate(ranges, start=1):
+        subset = items[start:end]
+        html = build_part_html(subset, i, args.parts, total, start)
+        part_path = parts_dir / f"aim3_accuracy_questionnaire_part_{i}_of_{args.parts}.html"
+        part_path.write_text(html, encoding="utf-8")
+        log.info(
+            "wrote part %d/%d: items %d-%d (%d) -> %s",
+            i, args.parts, start + 1, end, len(subset), part_path,
+        )
+
+    log.info("Hand ONE part file to each reviewer pair. Each reviewer exports their own CSV.")
     return 0
 
 
@@ -202,6 +285,19 @@ _TEMPLATE = r"""<!DOCTYPE html>
 
   ul.rules { margin: 6px 0 0; padding-left: 18px; }
   ul.rules li { margin: 5px 0; }
+
+  /* ---- Part banner (only present on split parts) ---- */
+  .part-banner {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin-top: 20px; padding: 13px 18px; border-radius: 12px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+  }
+  .pb-chip {
+    font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--navy); background: #9fd8e0; padding: 6px 13px; border-radius: 999px; white-space: nowrap;
+  }
+  .pb-text { font-size: 14px; color: #e8f1f8; }
+  .pb-text b { color: #fff; }
 
   /* ---- Item cards ---- */
   .item {
@@ -367,10 +463,11 @@ _TEMPLATE = r"""<!DOCTYPE html>
         <span class="bm-name">Dr. Muhammad Naeem</span>
       </div>
     </div>
-    <p class="eyebrow">Cardiac CT Patient-Education Readability Study · Aim 3</p>
+    <p class="eyebrow">Cardiac CT Patient-Education Readability Study · Aim 3__PART_EYEBROW__</p>
     <h1>Clinical Accuracy Scoring of AI-Rewritten Patient Pages</h1>
     <p>Three frontier AI models rewrote 26 online patient-education pages (coronary CTA, TAVR, LAAO/Watchman) to a 6th-grade reading level. Your job is the clinical question: <strong>when the AI made the page easier to read, did it keep the medicine correct and complete?</strong></p>
     <p class="lead">Score each rewrite against its own original on three 1&ndash;5 scales. You are blinded to which AI wrote it &mdash; that is by design.</p>
+    __PART_BANNER__
   </div>
 </header>
 
@@ -485,7 +582,8 @@ const DIM_META = [
   { key: "completeness_1_5", label: "Completeness", sub: "Did it keep the key prep, risk & safety points?",     dir: "higher = better", reverse: false },
   { key: "added_errors_1_5", label: "Added errors", sub: "Did it invent claims not in the original?",           dir: "higher = worse",  reverse: true },
 ];
-const STORE_KEY = "aim3_questionnaire_v1";
+const STORE_KEY = "__STORE_KEY__";
+const FILE_SUFFIX = "__CSV_SUFFIX__";
 
 function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
@@ -668,7 +766,7 @@ function exportCSV(){
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "reviewer";
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "aim3_scores_" + slug + ".csv";
+  a.download = "aim3_scores" + FILE_SUFFIX + "_" + slug + ".csv";
   document.body.appendChild(a); a.click(); a.remove();
   save(true);
 }
