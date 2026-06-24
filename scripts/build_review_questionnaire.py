@@ -11,7 +11,11 @@ Input:
   data/review/review_packet_with_text.csv   (built by scripts/06_build_review_packet.py)
 
 Output:
-  data/review/aim3_accuracy_questionnaire.html
+  data/review/aim3_accuracy_questionnaire.html          (full, all rewrites)
+  data/review/questionnaire_parts/aim3_accuracy_questionnaire_set_{A,B,C}.html
+        procedure-balanced subsets for sharing the workload across reviewer
+        groups, plus a README.md describing distribution and how to combine the
+        returned CSVs. Pass --no-parts to emit only the full file.
 """
 
 from __future__ import annotations
@@ -20,13 +24,14 @@ import argparse
 import csv
 import json
 import logging
+import string
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import REVIEW_DIR, ensure_dirs  # noqa: E402
+from src.config import MANIFEST_PATH, REVIEW_DIR, ensure_dirs  # noqa: E402
 
 log = logging.getLogger("questionnaire")
 
@@ -56,15 +61,15 @@ def build_html(
     *,
     store_key: str = "aim3_questionnaire_v1",
     csv_suffix: str = "",
-    part_eyebrow: str = "",
+    set_id: str = "full",
     part_banner: str = "",
 ) -> str:
     """Render one self-contained questionnaire file.
 
-    `store_key` and `csv_suffix` are made unique per split part so a reviewer who
-    opens more than one part on the same device gets independent drafts and
-    distinctly-named CSV downloads. With the defaults the output is byte-identical
-    to the original single-file questionnaire.
+    `store_key`, `csv_suffix`, and `set_id` are made unique per split set so a
+    reviewer who opens more than one set on the same device gets independent
+    drafts and distinctly-named CSV downloads, and every exported row is stamped
+    with its set so the returned sheets concatenate cleanly for analysis.
     """
     # Embedded as JSON so the page is fully self-contained (no server, no fetch).
     items_json = json.dumps(items, ensure_ascii=False)
@@ -73,48 +78,68 @@ def build_html(
         .replace("__N_ITEMS__", str(len(items)))
         .replace("__STORE_KEY__", store_key)
         .replace("__CSV_SUFFIX__", csv_suffix)
-        .replace("__PART_EYEBROW__", part_eyebrow)
+        .replace("__SET_ID__", set_id)
+        .replace("__PART_EYEBROW__", "")
         .replace("__PART_BANNER__", part_banner)
     )
 
 
-def split_ranges(n: int, parts: int) -> list[tuple[int, int]]:
-    """Contiguous, as-balanced-as-possible (start, end) slices over the fixed order.
+def load_procedures() -> dict[str, str]:
+    """Map each blind_id to its procedure (cta/tavr/laao) via the blind key + manifest.
 
-    Splitting contiguously preserves the seeded randomized item order, so each part
-    stays model-interleaved and blinding is unaffected.
+    Read only on the researcher's machine at build time to balance the split; the
+    procedure label never enters the rendered HTML, so model blinding is untouched.
     """
-    base, rem = divmod(n, parts)
-    ranges, start = [], 0
-    for i in range(parts):
-        size = base + (1 if i < rem else 0)
-        ranges.append((start, start + size))
-        start += size
-    return ranges
+    key_path = REVIEW_DIR / "blind_key.csv"
+    bid_to_page = {r["blind_id"]: r["page_id"] for r in csv.DictReader(key_path.open(encoding="utf-8"))}
+    page_to_proc = {
+        r["page_id"]: r["procedure"] for r in csv.DictReader(MANIFEST_PATH.open(encoding="utf-8"))
+    }
+    return {bid: page_to_proc[page] for bid, page in bid_to_page.items()}
 
 
-def build_part_html(items: list[dict], part_no: int, parts: int) -> str:
-    """Render one split part with its own storage key, CSV suffix, and banner.
+def stratified_sets(items: list[dict], procedures: dict[str, str], parts: int) -> list[list[dict]]:
+    """Split items into `parts` sets, each balanced across all three procedures.
 
-    The part number drives only the (invisible) storage key and download suffix so
-    the files stay distinct on disk; nothing in the rendered page reveals it.
+    Within each procedure (taken in the packet's fixed seeded order) items are dealt
+    round-robin across the sets, so every set holds a proportional share of cta /
+    tavr / laao. Each set is then re-sorted into the original packet order, keeping
+    the seeded model-interleaving intact within the set.
     """
-    # Deliberately free of any part identifier or item range: every part looks
-    # identical so a reviewer cannot infer which slice (or how many) they hold.
+    order = {it["blind_id"]: i for i, it in enumerate(items)}
+    by_proc: dict[str, list[dict]] = {}
+    for it in items:
+        by_proc.setdefault(procedures[it["blind_id"]], []).append(it)
+
+    buckets: list[list[dict]] = [[] for _ in range(parts)]
+    for proc in sorted(by_proc):  # deterministic procedure order
+        for offset, it in enumerate(by_proc[proc]):
+            buckets[offset % parts].append(it)
+    for b in buckets:
+        b.sort(key=lambda it: order[it["blind_id"]])
+    return buckets
+
+
+def build_set_html(items: list[dict], label: str) -> str:
+    """Render one balanced set with its own storage key, CSV suffix, and set stamp.
+
+    The page reveals nothing about which set it is or how many exist; the label
+    lives only in the (invisible) storage key, the download filename, and the
+    `set_id` column of the exported CSV — all read after scoring, never before.
+    """
     n = len(items)
-    eyebrow = ""
     banner = (
         '<div class="part-banner">'
         '<span class="pb-chip">Assigned review set</span>'
-        f'<span class="pb-text">This set contains <b>{n}</b> rewrites. '
-        "Two reviewers independently score this same set; please complete every item.</span>"
+        f"<span class=\"pb-text\">This set contains <b>{n}</b> rewrites. "
+        "Please score every item before downloading your responses.</span>"
         "</div>"
     )
     return build_html(
         items,
-        store_key=f"aim3_questionnaire_v1_part{part_no}of{parts}",
-        csv_suffix=f"_part{part_no}of{parts}",
-        part_eyebrow=eyebrow,
+        store_key=f"aim3_questionnaire_v1_set_{label}",
+        csv_suffix=f"_set_{label}",
+        set_id=label,
         part_banner=banner,
     )
 
@@ -148,24 +173,88 @@ def main(argv: list[str] | None = None) -> int:
     if args.no_parts:
         return 0
 
-    # 2) Split parts: each is a standalone HTML file covering a contiguous slice of
-    #    the fixed order, for handing to a separate pair of reviewers.
-    total = len(items)
+    # 2) Balanced sets: each is a standalone HTML file holding a procedure-balanced
+    #    share of the rewrites, for handing to a different group of reviewers.
+    procedures = load_procedures()
+    sets = stratified_sets(items, procedures, args.parts)
+    labels = list(string.ascii_uppercase)[: args.parts]
+
     parts_dir = Path(args.parts_dir)
     parts_dir.mkdir(parents=True, exist_ok=True)
-    ranges = split_ranges(total, args.parts)
-    for i, (start, end) in enumerate(ranges, start=1):
-        subset = items[start:end]
-        html = build_part_html(subset, i, args.parts)
-        part_path = parts_dir / f"aim3_accuracy_questionnaire_part_{i}_of_{args.parts}.html"
-        part_path.write_text(html, encoding="utf-8")
-        log.info(
-            "wrote part %d/%d: items %d-%d (%d) -> %s",
-            i, args.parts, start + 1, end, len(subset), part_path,
+    for label, subset in zip(labels, sets, strict=True):
+        html = build_set_html(subset, label)
+        set_path = parts_dir / f"aim3_accuracy_questionnaire_set_{label}.html"
+        set_path.write_text(html, encoding="utf-8")
+        mix = ", ".join(
+            f"{p}={sum(1 for it in subset if procedures[it['blind_id']] == p)}"
+            for p in sorted({procedures[it["blind_id"]] for it in subset})
         )
+        log.info("wrote set %s: %d items (%s) -> %s", label, len(subset), mix, set_path)
 
-    log.info("Hand ONE part file to each reviewer pair. Each reviewer exports their own CSV.")
+    _write_parts_readme(parts_dir, labels, sets, procedures)
+    log.info("Hand ONE set file to each reviewer. Each reviewer exports their own CSV.")
     return 0
+
+
+def _write_parts_readme(
+    parts_dir: Path, labels: list[str], sets: list[list[dict]], procedures: dict[str, str]
+) -> None:
+    """Drop a short distribution + analysis guide alongside the set files."""
+    lines = [
+        "# Aim 3 accuracy questionnaire — review sets",
+        "",
+        "Auto-generated by `scripts/build_review_questionnaire.py`. Do not edit by hand;",
+        "re-running the generator overwrites this folder.",
+        "",
+        "## What these files are",
+        "",
+        "The full questionnaire (`../aim3_accuracy_questionnaire.html`, all rewrites) has",
+        f"been divided into {len(labels)} self-contained sets so the workload can be shared",
+        "across reviewer groups. Each set is balanced across all three procedures (coronary",
+        "CTA, TAVR, LAAO/Watchman). The sets are mutually exclusive and together cover every",
+        "rewrite exactly once.",
+        "",
+        "| Set | File | Rewrites | Procedure mix |",
+        "| --- | --- | --- | --- |",
+    ]
+    for label, subset in zip(labels, sets, strict=True):
+        mix = ", ".join(
+            f"{p} {sum(1 for it in subset if procedures[it['blind_id']] == p)}"
+            for p in sorted({procedures[it["blind_id"]] for it in subset})
+        )
+        lines.append(
+            f"| {label} | `aim3_accuracy_questionnaire_set_{label}.html` | {len(subset)} | {mix} |"
+        )
+    lines += [
+        "",
+        "## Distributing",
+        "",
+        "- Send **one** HTML file to each reviewer — nothing else. Instructions and the",
+        "  rubric are built into the page. You may assign the same set to more than one",
+        "  reviewer for inter-rater agreement; they work independently.",
+        "- Do **not** send `blind_key.csv` or any automated LLM scores — they would break",
+        "  the model blinding.",
+        "",
+        "## Collecting & combining for analysis",
+        "",
+        "Each reviewer clicks *Download my responses (CSV)* and returns one file named",
+        "`aim3_scores_set_<LETTER>_<name>.csv`. Every row carries these columns:",
+        "",
+        "    reviewer_name, reviewer_role, review_date, set_id, blind_id,",
+        "    accuracy_1_5, completeness_1_5, added_errors_1_5, notes",
+        "",
+        "To build the combined long-format table for analysis, concatenate all returned",
+        "CSVs (they share one header) and join to the un-blinding key on `blind_id`:",
+        "",
+        "    import pandas as pd, glob",
+        "    scores = pd.concat(pd.read_csv(f) for f in glob.glob('aim3_scores_*.csv'))",
+        "    key = pd.read_csv('blind_key.csv')          # researcher-only",
+        "    df = scores.merge(key, on='blind_id')        # adds page_id, model_id",
+        "",
+        "`set_id` lets you track coverage and compute inter-rater agreement within a set;",
+        "`blind_id` is the join key that recovers the model and procedure for each rewrite.",
+    ]
+    (parts_dir / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 # --------------------------------------------------------------------------------------
@@ -588,6 +677,7 @@ const DIM_META = [
 ];
 const STORE_KEY = "__STORE_KEY__";
 const FILE_SUFFIX = "__CSV_SUFFIX__";
+const SET_ID = "__SET_ID__";
 
 function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
@@ -757,11 +847,11 @@ function exportCSV(){
     if (!ok) return;
   }
 
-  const header = ["reviewer_name","reviewer_role","review_date","blind_id","accuracy_1_5","completeness_1_5","added_errors_1_5","notes"];
+  const header = ["reviewer_name","reviewer_role","review_date","set_id","blind_id","accuracy_1_5","completeness_1_5","added_errors_1_5","notes"];
   const rows = [header.join(",")];
   data.scores.forEach(s => {
     rows.push([
-      csvCell(name), csvCell(data.reviewer.role), csvCell(data.reviewer.date),
+      csvCell(name), csvCell(data.reviewer.role), csvCell(data.reviewer.date), csvCell(SET_ID),
       csvCell(s.blind_id), csvCell(s.accuracy_1_5), csvCell(s.completeness_1_5),
       csvCell(s.added_errors_1_5), csvCell(s.notes),
     ].join(","));

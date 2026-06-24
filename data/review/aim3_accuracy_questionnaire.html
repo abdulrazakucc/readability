@@ -414,6 +414,7 @@ const DIM_META = [
 ];
 const STORE_KEY = "aim3_questionnaire_v1";
 const FILE_SUFFIX = "";
+const SET_ID = "full";
 
 function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
@@ -583,11 +584,11 @@ function exportCSV(){
     if (!ok) return;
   }
 
-  const header = ["reviewer_name","reviewer_role","review_date","blind_id","accuracy_1_5","completeness_1_5","added_errors_1_5","notes"];
+  const header = ["reviewer_name","reviewer_role","review_date","set_id","blind_id","accuracy_1_5","completeness_1_5","added_errors_1_5","notes"];
   const rows = [header.join(",")];
   data.scores.forEach(s => {
     rows.push([
-      csvCell(name), csvCell(data.reviewer.role), csvCell(data.reviewer.date),
+      csvCell(name), csvCell(data.reviewer.role), csvCell(data.reviewer.date), csvCell(SET_ID),
       csvCell(s.blind_id), csvCell(s.accuracy_1_5), csvCell(s.completeness_1_5),
       csvCell(s.added_errors_1_5), csvCell(s.notes),
     ].join(","));
