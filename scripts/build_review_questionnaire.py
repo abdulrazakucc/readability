@@ -93,16 +93,20 @@ def split_ranges(n: int, parts: int) -> list[tuple[int, int]]:
     return ranges
 
 
-def build_part_html(items: list[dict], part_no: int, parts: int, total: int, start: int) -> str:
-    """Render one split part with its own storage key, CSV suffix, and banner."""
+def build_part_html(items: list[dict], part_no: int, parts: int) -> str:
+    """Render one split part with its own storage key, CSV suffix, and banner.
+
+    The part number drives only the (invisible) storage key and download suffix so
+    the files stay distinct on disk; nothing in the rendered page reveals it.
+    """
+    # Deliberately free of any part identifier or item range: every part looks
+    # identical so a reviewer cannot infer which slice (or how many) they hold.
     n = len(items)
-    first, last = start + 1, start + n
-    eyebrow = f" &middot; Part {part_no} of {parts}"
+    eyebrow = ""
     banner = (
         '<div class="part-banner">'
-        f'<span class="pb-chip">Part {part_no} of {parts}</span>'
-        f'<span class="pb-text">This set contains <b>{n}</b> rewrites '
-        f"(items {first}&ndash;{last} of the full {total}). "
+        '<span class="pb-chip">Assigned review set</span>'
+        f'<span class="pb-text">This set contains <b>{n}</b> rewrites. '
         "Two reviewers independently score this same set; please complete every item.</span>"
         "</div>"
     )
@@ -152,7 +156,7 @@ def main(argv: list[str] | None = None) -> int:
     ranges = split_ranges(total, args.parts)
     for i, (start, end) in enumerate(ranges, start=1):
         subset = items[start:end]
-        html = build_part_html(subset, i, args.parts, total, start)
+        html = build_part_html(subset, i, args.parts)
         part_path = parts_dir / f"aim3_accuracy_questionnaire_part_{i}_of_{args.parts}.html"
         part_path.write_text(html, encoding="utf-8")
         log.info(
