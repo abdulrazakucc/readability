@@ -1,0 +1,4 @@
+axis,reviewer_a,reviewer_b,n_items,pct_exact_agreement,pct_within_1
+accuracy_1_5,Kristopher Cummings,MUHAMMAD NAEEM,26,80.76923076923077,100.0
+completeness_1_5,Kristopher Cummings,MUHAMMAD NAEEM,26,92.3076923076923,96.15384615384616
+added_errors_1_5,Kristopher Cummings,MUHAMMAD NAEEM,26,92.3076923076923,100.0

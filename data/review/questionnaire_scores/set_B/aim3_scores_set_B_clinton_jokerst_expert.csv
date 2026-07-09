@@ -1,0 +1,27 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-CBFNO6B9M8,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-GFYGWWQC38,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-OUDOCUZREN,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-JK1EYY37Q9,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-6L6GT6MJXK,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-72HPOEVB9O,5,5,1,"Woof, this one in particular was tedious.  These recaps are all very accurate, just very long........"
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-VGPMM82I1L,5,4,1,"Capillaries and tissues near blood vessels get dropped, but in general I think this one did a better job of actually summarizing the content."
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-YQ3S195JMS,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-6FLEEPZHPC,5,5,2,"Rewrite says CTA does not use a catheter, but an IV is a catheter of sorts, minor.  Also, does the charity and contact info need to be in the rewrite?"
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-3UEA3GE8N6,4,4,2,"Not sure the marketing material needs to be in there, also ""heart artery disease"" isn't really agood terminology (I think they meant coronary artery disease) and the way it said the test ""does not go inside your body"" is a bit awkward, especially if we are using an IV to inject contrast..."
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-F1RCAVIQK2,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-W90JPKL0BL,4,5,1,"Not sure I love the ""Tube"" references towards the end, an IV is a tube of sorts, although not as invasive of a tube as that used for coronary artery catheter angiography..."
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-0PRKGYC4OM,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-CG1WU16HYM,4,4,1,"Strange advertisement sentences included in original, also a couple sentences just end, seems like the stuff they are preparing us to read is not there, like ""Narrowing usually happens because of:"" and ""After TAVR, contact your provider if you have:"" This is sort of a crap in-crap out situation, the original passage is terrible."
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-FS6VFPTOMJ,5,5,1,What is with all the promotional stuff in general?
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-PH3I379U26,5,5,1,Compresses things quite a bit but seems to do a good job of preserving the important points.
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-JOYJNE00V8,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-DN0YBY4AWT,5,5,1,"The AI just added redundancy, but I don't see any added inaccuracies."
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-F1I3LDQYUN,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-KTGBTYZMEP,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-A05G1X3J1L,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-SOZPTX497W,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-8LMN4R7SGM,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-JTFPH90O7Y,5,5,2,"This statement isn't 100% true: When this implant is in place, blood clots cannot form in that pouch."
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-COSS3EOQM1,5,5,1,
+Clinton Jokerst,Cardiothoracic Radiologist,2026-07-05,B,B-1UQBFOBRCL,5,5,1,

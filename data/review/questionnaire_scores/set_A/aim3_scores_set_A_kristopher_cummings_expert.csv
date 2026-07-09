@@ -1,0 +1,27 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-0O2RAK1VRJ,5,5,1,"Strange wording with ""shape of your vessels"" used several times but overall quality summary"
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-SFOGYR3XKX,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-REK8PK3YR9,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-AH8RVHS1K3,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-87AU5BHXTP,5,5,1,"Minor translation ""remain on low dose aspirin indefinitely"" vs ""for the rest of your life"" probably acceptable."
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-OAEDOECVE6,4,4,1,"It did not mention extravasation injury to blood vessels or nerves and did not specify to notify the technologist if pain during injection:  If contrast material leaks out from the vessel being injected and spreads under the skin where the IV is placed, skin damage or damage to blood vessels and nerves, though unlikely, can result. If you feel any pain in your arm at the location of the IV during contrast material injection, you should immediately inform the technologist."
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-5N8I4P40MG,5,5,1,Overall accurately summarized the original though overall the original is scattered/disorganized.
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-K054NZDKYA,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-F07UQNUPQZ,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-QIWEPXSK28,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-RSNVNQ65QD,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-1ICTXCWNPG,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-3WTOOBMZVR,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-QC1A78MX1E,5,5,1,"Appears some content from original source was not grabbed in the original: TAVR complications don't happen often. But when problems do arise, they may include:"
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-N1U322N64K,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-P4E30MY5ZP,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-K42QPR75PR,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-Y088O5OR15,5,5,1,Again it appears not all information (in this case referenced in .pdf) was included in the original
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-3UVYR0QF4B,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-PI4HN3QXKH,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-R2P3YVB5UL,4,5,1,AI reworded some of the exams a bit oddly but still accurate within reason.
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-WQVRR9A7MF,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-SOXLTA8IRC,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-I5GAS442VL,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-PL9EKA024S,5,5,1,
+Kristopher Cummings,Cardiothoracic Radiologist,2026-07-03,A,B-JRJEDKTS2H,4,5,1,"""The maze surgery is hard""...probably not the best translation for complex but still reasonable"
