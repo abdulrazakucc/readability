@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IRB Attachments A–G · Cardiac CT Readability Study</title>
+<style>
+:root{
+  --navy:#1f4e79; --navy-dark:#173a5c; --accent:#2f6fb0;
+  --ink:#232c36; --muted:#5c6672; --faint:#8a939e;
+  --line:#dbe3ec; --tint:#eef3f9; --zebra:#f2f6fb; --paper:#ffffff; --bg:#e9edf2;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.doc{max-width:900px;margin:32px auto;background:var(--paper);
+  box-shadow:0 6px 30px rgba(23,58,92,.10);border-radius:6px;overflow:hidden;}
+.serif{font-family:Georgia,"Times New Roman",serif;}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---------- cover ---------- */
+.cover{background:linear-gradient(160deg,#1f4e79 0%,#173a5c 100%);color:#fff;
+  padding:64px 60px 52px;position:relative;}
+.cover .eyebrow{font-size:12.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:#bcd3ec;font-weight:600;margin:0 0 26px;}
+.cover .rule{width:64px;height:3px;background:#c7a86a;margin:0 0 26px;border-radius:2px;}
+.cover h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:30px;
+  line-height:1.28;margin:0 0 18px;color:#fff;letter-spacing:.2px;}
+.cover .setline{font-size:16px;color:#dbe7f4;margin:0 0 34px;font-weight:500;}
+.cover .meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;
+  border-top:1px solid rgba(255,255,255,.22);padding-top:24px;max-width:640px;}
+.cover .meta .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9fbcda;margin:0 0 3px;}
+.cover .meta .v{font-size:15px;color:#f2f7fc;margin:0;font-weight:500;}
+.cover-top{display:flex;justify-content:flex-end;margin-bottom:22px;}
+.cover .confidential{font-size:10.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:#a9c4de;border:1px solid rgba(255,255,255,.28);
+  padding:5px 12px;border-radius:20px;}
+
+/* ---------- table of contents ---------- */
+.toc{padding:44px 60px 8px;}
+.toc h2{font-family:Georgia,serif;font-size:15px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--navy);margin:0 0 20px;font-weight:600;}
+.toc ol{list-style:none;margin:0;padding:0;}
+.toc li{border-top:1px solid var(--line);}
+.toc li:last-child{border-bottom:1px solid var(--line);}
+.toc a{display:flex;align-items:center;gap:18px;padding:13px 4px;color:var(--ink);}
+.toc a:hover{background:var(--tint);text-decoration:none;}
+.toc .toc-letter{flex:0 0 34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;
+  font-family:Georgia,serif;font-weight:600;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.toc .toc-name{font-size:16px;font-weight:500;flex:1;}
+.toc .toc-tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);}
+
+/* ---------- attachments ---------- */
+.body{padding:8px 60px 56px;}
+.attachment{padding-top:40px;}
+.attachment + .attachment{margin-top:8px;}
+.att-head{display:flex;align-items:center;gap:20px;padding-bottom:16px;margin-bottom:24px;
+  border-bottom:2px solid var(--navy);}
+.att-badge{flex:0 0 52px;height:52px;background:var(--navy);color:#fff;border-radius:8px;
+  font-family:Georgia,serif;font-weight:600;font-size:26px;display:flex;align-items:center;justify-content:center;}
+.att-kicker{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:2px;}
+.att-title{font-family:Georgia,"Times New Roman",serif;font-size:23px;font-weight:600;color:var(--navy-dark);margin:0;line-height:1.2;}
+
+h2.section{font-size:17px;color:var(--navy);font-weight:700;margin:26px 0 10px;
+  padding-left:13px;border-left:4px solid var(--navy);line-height:1.3;}
+h3.sub{font-size:15px;color:var(--ink);font-weight:700;margin:18px 0 8px;}
+p{margin:0 0 12px;}
+.headline{font-family:Georgia,serif;font-size:20px;font-weight:600;color:var(--navy-dark);
+  text-align:center;margin:18px 0;line-height:1.3;}
+.fineprint{font-size:13.5px;color:var(--muted);}
+ul{margin:0 0 14px;padding-left:0;list-style:none;}
+ul li{position:relative;padding-left:22px;margin-bottom:7px;}
+ul li::before{content:"";position:absolute;left:4px;top:.62em;width:6px;height:6px;
+  background:var(--accent);border-radius:50%;}
+
+/* callouts */
+.callout{background:var(--tint);border-left:4px solid var(--navy);border-radius:0 6px 6px 0;
+  padding:14px 18px;margin:14px 0 18px;color:var(--ink);}
+.callout.quote{font-style:italic;color:#2c3a48;}
+.callout.prompt{font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:14px;line-height:1.55;
+  background:#f4f7fa;border-left-color:var(--accent);}
+
+/* tables */
+table.grid{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px;
+  border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+table.grid thead th{background:var(--navy);color:#fff;text-align:left;font-weight:600;
+  padding:10px 13px;font-size:13px;letter-spacing:.01em;vertical-align:middle;}
+table.grid tbody td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top;line-height:1.45;}
+table.grid tbody tr:nth-child(even){background:var(--zebra);}
+td.firstcol{color:var(--navy);font-weight:600;}
+td.mono{font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:12.5px;color:var(--navy);white-space:normal;}
+table.rubric{font-size:13px;}
+table.rubric thead th:first-child,table.rubric tbody td:first-child{width:19%;}
+table.rubric thead th:nth-child(2),table.rubric tbody td:nth-child(2){width:20%;}
+table.dict thead th:first-child,table.dict tbody td:first-child{width:38%;}
+
+/* fill-in placeholder */
+.fillin{background:#fdf6e3;border-bottom:1px dashed #c7a86a;color:#8a6d3b;
+  padding:0 3px;border-radius:2px;font-style:italic;}
+
+/* footer */
+.footer{border-top:1px solid var(--line);padding:22px 60px 40px;color:var(--faint);font-size:12px;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+
+@media (max-width:680px){
+  .cover{padding:44px 26px;} .toc,.body,.footer{padding-left:26px;padding-right:26px;}
+  .cover .meta{grid-template-columns:1fr;} .cover h1{font-size:24px;}
+  table.grid{font-size:13px;}
+}
+
+/* print / PDF */
+@page{size:Letter;margin:14mm 15mm;}
+@media print{
+  body{background:#fff;font-size:11.4px;}
+  .doc{max-width:none;margin:0;box-shadow:none;border-radius:0;}
+  a{color:var(--ink);}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:40px 34px;}
+  .toc,.body,.footer{padding-left:34px;padding-right:34px;}
+  .attachment{break-before:page;page-break-before:always;padding-top:6px;}
+  .toc{break-after:page;page-break-after:always;}
+  .att-head,h2.section,h3.sub{break-after:avoid;page-break-after:avoid;}
+  .callout,ul li,tr{break-inside:avoid;page-break-inside:avoid;}
+  thead{display:table-header-group;}
+  tbody tr:first-child{break-before:avoid;}
+  .att-badge,.toc .toc-letter,table.grid thead th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+</style>
+</head>
+<body>
+<main class="doc">
+
+  <header class="cover">
+    <div class="cover-top"><span class="confidential">Confidential · IRB Review</span></div>
+    <p class="eyebrow">Mayo Clinic · Institutional Review Board</p>
+    <div class="rule"></div>
+    <h1>Readability of Online Patient Education Materials for Pre-Procedure Cardiac CT, With an Artificial Intelligence Rewrite Arm and Lay Reader Assessment</h1>
+    <p class="setline">Supporting Attachments A–G</p>
+    <div class="meta">
+      <div><p class="k">Principal Investigator</p><p class="v">Muhammad Naeem, MBBS, MD</p></div>
+      <div><p class="k">IRB Study Number</p><p class="v">26-008664</p></div>
+      <div><p class="k">Study Type</p><p class="v">Prospective, cross-sectional, non-clinical</p></div>
+      <div><p class="k">Document</p><p class="v">Attachments to be submitted (A–G)</p></div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#att-a"><span class="toc-letter">A</span><span class="toc-name">Participant Information Sheet</span><span class="toc-tag">Attachment A</span></a></li>
+      <li><a href="#att-b"><span class="toc-letter">B</span><span class="toc-name">Recruitment Flyer</span><span class="toc-tag">Attachment B</span></a></li>
+      <li><a href="#att-c"><span class="toc-letter">C</span><span class="toc-name">Lay Reader Survey Instrument</span><span class="toc-tag">Attachment C</span></a></li>
+      <li><a href="#att-d"><span class="toc-letter">D</span><span class="toc-name">Expert Accuracy and Completeness Rubric</span><span class="toc-tag">Attachment D</span></a></li>
+      <li><a href="#att-e"><span class="toc-letter">E</span><span class="toc-name">Chatbot Prompt and Platform Log</span><span class="toc-tag">Attachment E</span></a></li>
+      <li><a href="#att-f"><span class="toc-letter">F</span><span class="toc-name">Website Search and Page Capture Protocol</span><span class="toc-tag">Attachment F</span></a></li>
+      <li><a href="#att-g"><span class="toc-letter">G</span><span class="toc-name">Data Collection Variables</span><span class="toc-tag">Attachment G</span></a></li>
+    </ol>
+  </nav>
+
+  <div class="body">
+<section class="attachment" id="att-a">
+  <header class="att-head">
+    <span class="att-badge">A</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment A</div>
+      <h1 class="att-title">Participant Information Sheet</h1>
+    </div>
+  </header>
+  <div class="callout">This is the text that will appear on the first screen of the online survey, or on paper for a participant who prefers paper. The participant continues only after reading it.</div><h2 class="section">About this study</h2><p>You are being asked to take part in a research study. Please read this page before you decide. Taking part is your choice.</p><p>Many people read information on the internet before they have a heart scan. We want to know whether that information is written simply enough for people to understand. We also want to know whether computer programs can rewrite it in plainer words without losing anything important.</p><p>To find out, we need people who do not work in health care to read some short passages and tell us how clear they are.</p><h2 class="section">What you will be asked to do</h2><ul>
+    <li>Read a set of short passages about heart scans. Each passage is about one or two paragraphs long.</li>
+    <li>Rate each passage on how easy it was to understand, how clear the wording was, and how confident you would feel using the information.</li>
+    <li>Answer two or three short questions about what each passage said.</li>
+    <li>If you wish, write a short comment about anything that was confusing.</li>
+</ul><p>This takes about 45 to 60 minutes. You can do it in one sitting or in several. You can skip any question. You can stop at any time for any reason, and you do not have to tell us why.</p><h2 class="section">Who can take part</h2><ul>
+    <li>You are 18 years of age or older.</li>
+    <li>You can read English.</li>
+    <li>You do not work in health care and have not trained as a doctor, nurse, or other health professional.</li>
+</ul><h2 class="section">Risks</h2><p>There are no physical risks. You may find some reading tiring or dull. That is the main discomfort we expect.</p><p>Important: the passages are study material only. They are not medical advice for you. Do not use them to make decisions about your own health or the health of anyone else. If you have questions about your own care, speak with your own doctor.</p><h2 class="section">Benefits</h2><p>There is no direct benefit to you. What we learn may help make future patient information easier to read.</p><h2 class="section">Your privacy</h2><ul>
+    <li>We do not ask for your name, address, phone number, email address, or date of birth.</li>
+    <li>Your answers are anonymous. We cannot link your answers back to you.</li>
+    <li>We ask only two background questions: your age range, and the highest level of school you finished. This helps us describe our readers as a group.</li>
+    <li>Answers are stored on secure, password-protected institutional systems.</li>
+    <li>If we publish the results, we report them as a group. No individual can be identified.</li>
+</ul><h2 class="section">Payment</h2><p>There is no payment for taking part in this study.</p><h2 class="section">Questions</h2><p>If you have questions about the study, contact the principal investigator at naeem.muhammad@mayo.edu</p><p>If you have questions about your rights as a research participant, or wish to speak with someone who is not part of the study team, contact the Mayo Clinic Institutional Review Board (IRB study number 26-008664) at <span class="fillin">[Mayo Clinic IRB telephone number and email to be inserted before submission]</span>.</p><h2 class="section">Agreeing to take part</h2><p>If you have read this page, you are 18 or older, and you agree to take part, select Continue below. If you do not wish to take part, simply close this page. Nothing happens if you decline, and no one will contact you about it.</p>
+</section>
+<section class="attachment" id="att-b">
+  <header class="att-head">
+    <span class="att-badge">B</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment B</div>
+      <h1 class="att-title">Recruitment Flyer</h1>
+    </div>
+  </header>
+  <div class="callout">Text for a posted flyer, volunteer list entry, or online notice. No individual will be approached directly by a study team member who holds authority over them.</div><p class="headline">Can you help us make heart scan information easier to read?</p><p>We are looking for three adult volunteers to read short passages about heart scans and tell us how clear they are.</p><h3 class="sub">You may be able to help if you:</h3><ul>
+    <li>Are 18 or older</li>
+    <li>Can read English</li>
+    <li>Do not work in health care and have no medical or nursing training</li>
+</ul><h3 class="sub">What is involved:</h3><ul>
+    <li>An anonymous online survey, done at home, at your own pace</li>
+    <li>About 45 to 60 minutes total</li>
+    <li>No name or contact details are collected</li>
+    <li>No medical exam, no scan, no procedure, no personal health questions</li>
+</ul><p>You do not need to know anything about medicine. That is the point. We want to know whether ordinary readers can understand these materials.</p><p>To take part, contact naeem.muhammad@mayo.edu</p><p class="fineprint">Principal Investigator: Dr. Naeem. This study has been reviewed by the Institutional Review Board, IRB 26-008664.</p>
+</section>
+<section class="attachment" id="att-c">
+  <header class="att-head">
+    <span class="att-badge">C</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment C</div>
+      <h1 class="att-title">Lay Reader Survey Instrument</h1>
+    </div>
+  </header>
+  <div class="callout">Passages are presented one at a time, in random order. The source website and the identity of any chatbot are removed. Participants are not told which passages are original and which are rewritten. The survey is delivered as an anonymous online link, or on paper for a participant who prefers paper.</div><h2 class="section">Section 1.  Screening and background questions</h2><p>These questions appear once, at the start, immediately after the participant agrees to the information sheet. They confirm eligibility and let us describe the reader group. No name, contact information, or other identifying information is requested.</p><ul>
+    <li>Are you 18 years of age or older? (Yes / No). If No, the survey ends with a thank-you message.</li>
+    <li>Can you read English? (Yes / No). If No, the survey ends with a thank-you message.</li>
+    <li>Do you work in health care, or have you trained as a doctor, nurse, or other health professional? (Yes / No). If Yes, the survey ends with a thank-you message, because this study needs readers who do not work in health care.</li>
+    <li>What is your age range? (18–29 / 30–44 / 45–59 / 60–74 / 75 or older / Prefer not to say)</li>
+    <li>What is the highest level of education you have completed? (Did not finish high school / High school diploma or equivalent / Some college or vocational training / Bachelor’s degree / Graduate or professional degree / Prefer not to say)</li>
+</ul><h2 class="section">Section 2.  How to complete the survey</h2><p>The following instructions are shown to the participant before the first passage.</p><ul>
+    <li>You will see a series of short passages about heart scans, one at a time, in a random order.</li>
+    <li>You will not be told where a passage came from or whether a computer program helped write it. Please judge each passage only on what you read.</li>
+    <li>After each passage you will answer a few short questions about how clear it was and about what it said.</li>
+    <li>There are no right or wrong answers for the clarity ratings. We want your honest impression.</li>
+    <li>You may skip any question, and you may stop at any time without giving a reason.</li>
+    <li>The passages are study material only. They are not medical advice for you.</li>
+</ul><h2 class="section">Section 3.  Rating questions asked after every passage</h2><p>The same three rating questions are asked after each passage. Each is answered on a 1 to 5 scale. The exact wording of each question and of the scale points is shown below.</p><table class="grid">
+  <thead><tr><th>Rating item (data field)</th><th>Question shown to the reader</th><th>Response scale (1 to 5)</th></tr></thead>
+  <tbody>
+      <tr><td class="firstcol">Understandability (lay_r1)</td><td>How easy was this passage to understand?</td><td>1 = Very hard to understand;  2 = Hard;  3 = Neither easy nor hard;  4 = Easy;  5 = Very easy to understand</td></tr>
+      <tr><td class="firstcol">Clarity of wording (lay_r2)</td><td>How clear was the wording?</td><td>1 = Very unclear;  2 = Unclear;  3 = Neither clear nor unclear;  4 = Clear;  5 = Very clear</td></tr>
+      <tr><td class="firstcol">Confidence to act (lay_r3)</td><td>If this passage were about your own care, how confident would you feel using it to know what to expect or what to do?</td><td>1 = Not at all confident;  2 = Slightly confident;  3 = Somewhat confident;  4 = Quite confident;  5 = Very confident</td></tr>
+  </tbody>
+</table><p>Data mapping. In the master data file (Attachment G) these three ratings are recorded for each reader as lay_r1 (understandability), lay_r2 (clarity of wording), and lay_r3 (confidence to act). Fields lay_r4 and lay_r5 are reserved and remain blank; they are used only if additional rating items are added by an approved amendment.</p><h2 class="section">Section 4.  Comprehension questions asked after every passage</h2><p>After the ratings, each passage is followed by two or three short multiple-choice questions that check what the passage actually said. These are not a test of the reader; they check whether the passage communicated its key points. Each question has one answer that is supported by the passage and always includes a “The passage does not say” option, so a reader is never forced to guess. The number of questions answered correctly is recorded for each reader as lay_comprehension_correct.</p><p>Authoring rule, fixed before data collection. For each source passage, two to three questions are written, each drawn from a key fact a patient would need: what the test is, a key preparation or safety instruction, or a stated risk. The questions are written once from the original source passage, and the identical questions are reused for that passage’s rewrites, so that comprehension is compared on exactly the same facts across the original and each rewrite.</p><h3 class="sub">Example (illustrative; a coronary CT angiography passage)</h3><div class="callout quote">Passage shown to the reader: “A coronary CT angiogram uses a special X-ray scanner to take detailed pictures of the arteries that supply the heart. You may be given an iodine-based dye through a small tube in a vein in your arm so the arteries show up clearly. You may also be given a medicine to slow your heart rate so the pictures are clear.”</div><ul>
+    <li>Q1. How are the pictures of the heart arteries made?  (a) With an X-ray scanner [correct]   (b) With sound waves   (c) With a magnet   (d) The passage does not say</li>
+    <li>Q2. How is the dye given?  (a) As a tablet you swallow   (b) Through a small tube in a vein [correct]   (c) By breathing it in   (d) The passage does not say</li>
+    <li>Q3. Why might you be given a medicine before the scan?  (a) To help you sleep   (b) To slow your heart rate [correct]   (c) To thin your blood   (d) The passage does not say</li>
+</ul><p>The correct answer, marked here in brackets for the reviewer, is not shown to the reader. Answer order is fixed for a given passage and identical across its original and rewritten versions.</p><h2 class="section">Section 5.  Optional comment after every passage</h2><p>Was anything confusing or unclear in this passage? You may write a short comment. This question is optional and may be left blank. Free-text comments are stored with the ratings and are used only to describe common points of confusion; they contain no identifying information.</p><h2 class="section">Section 6.  Closing screen</h2><p>Thank you for helping with this study. The passages you read were study material only and are not medical advice. If you have questions about your own care, please speak with your own doctor. If you have questions about this study, contact the principal investigator at naeem.muhammad@mayo.edu. If you have questions about your rights as a research participant, contact the Mayo Clinic Institutional Review Board (IRB study number 26-008664) at <span class="fillin">[Mayo Clinic IRB telephone number and email to be inserted before submission]</span>.</p>
+</section>
+<section class="attachment" id="att-d">
+  <header class="att-head">
+    <span class="att-badge">D</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment D</div>
+      <h1 class="att-title">Expert Accuracy and Completeness Rubric</h1>
+    </div>
+  </header>
+  <div class="callout">Completed by a subspecialty cardiothoracic radiologist. The reviewer sees the original passage and one rewritten passage side by side.</div><h2 class="section">Scoring instructions</h2><p>The reviewer is blinded to which chatbot produced each rewrite; rewrites are stripped of any model identifier and presented in shuffled order. For each rewrite the reviewer scores the five items below. Every item uses a 1 to 5 scale on which 5 is best. Scores are recorded in the master data file (Attachment G) as expert_accuracy, expert_completeness, expert_added, expert_safety, and expert_overall.</p><table class="grid rubric">
+  <thead><tr><th>Item (data field)</th><th>What it measures</th><th>Score 1 — worst</th><th>Score 3 — middle</th><th>Score 5 — best</th></tr></thead>
+  <tbody>
+      <tr><td class="firstcol">Accuracy (expert_accuracy)</td><td>Factual correctness of the rewrite compared with the original passage.</td><td>Contains one or more serious factual errors.</td><td>A minor inaccuracy that would be unlikely to harm a patient.</td><td>Fully accurate; no factual errors.</td></tr>
+      <tr><td class="firstcol">Completeness (expert_completeness)</td><td>Whether important information from the original is retained.</td><td>Important information is missing.</td><td>Some non-essential detail is lost, but the key points are retained.</td><td>All important information is retained.</td></tr>
+      <tr><td class="firstcol">Added or unsupported content (expert_added)</td><td>Whether the rewrite introduces claims not supported by the original.</td><td>Adds one or more unsupported or invented medical claims.</td><td>Adds minor wording not in the original, but nothing misleading.</td><td>Adds nothing that is not supported by the original.</td></tr>
+      <tr><td class="firstcol">Safety and preparation information (expert_safety)</td><td>Whether safety, risk, and preparation instructions are preserved and correct.</td><td>A safety or preparation instruction is lost, made wrong, or made unsafe.</td><td>Safety information is present but less clear than in the original.</td><td>All safety and preparation information is preserved and correct.</td></tr>
+      <tr><td class="firstcol">Overall suitability (expert_overall)</td><td>Whether the rewrite could be given to a patient as written.</td><td>Not suitable; could mislead a patient.</td><td>Usable only after minor edits.</td><td>Suitable to give to a patient as written.</td></tr>
+  </tbody>
+</table><p>Direction of scoring. For every item a higher score is better, including expert_added, where a score of 5 means no unsupported content was added. If a downstream analysis instead reports added content as a count on which a higher number is worse, expert_added is reverse-scored for that analysis and the direction is stated explicitly in the analysis code.</p><h2 class="section">Free-text field</h2><p>List any specific factual error, omission, or added claim, quoting the sentence at issue. This list becomes a results table in the manuscript.</p><h2 class="section">Second reader</h2><p>If a second subspecialty reader is available, a subset of at least 20 percent of rewrites will be double-scored and agreement reported.</p>
+</section>
+<section class="attachment" id="att-e">
+  <header class="att-head">
+    <span class="att-badge">E</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment E</div>
+      <h1 class="att-title">Chatbot Prompt and Platform Log</h1>
+    </div>
+  </header>
+  <p>Fixed prompt, applied identically to every passage and every platform:</p><div class="callout prompt">Rewrite the following patient education text at a sixth-grade reading level. Keep all medical facts accurate. Do not add new medical claims. Do not remove important safety or preparation information. Use plain words and short sentences.</div><h3 class="sub">Rules for running the prompt:</h3><ul>
+    <li>Start a new, empty conversation for every passage so that earlier passages cannot influence later output.</li>
+    <li>Do not follow up, do not re-prompt, and do not ask for a second attempt. The first output is the output that is scored.</li>
+    <li>Do not edit the output in any way before scoring.</li>
+    <li>Enter only publicly available web text. Never enter patient data or any identifiable information.</li>
+</ul><h3 class="sub">Platform log, completed for every run:</h3><table class="grid">
+  <thead><tr><th>Field</th><th>Example entry</th></tr></thead>
+  <tbody>
+      <tr><td class="firstcol">Passage ID</td><td>CCTA-07</td></tr>
+      <tr><td class="firstcol">Platform</td><td>Platform 1 / 2 / 3</td></tr>
+      <tr><td class="firstcol">Model name and version</td><td>As displayed by the platform</td></tr>
+      <tr><td class="firstcol">Date and time of generation</td><td>Recorded for every run</td></tr>
+      <tr><td class="firstcol">Account type</td><td>Free or paid tier</td></tr>
+      <tr><td class="firstcol">Output word count</td><td>Recorded automatically</td></tr>
+  </tbody>
+</table>
+</section>
+<section class="attachment" id="att-f">
+  <header class="att-head">
+    <span class="att-badge">F</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment F</div>
+      <h1 class="att-title">Website Search and Page Capture Protocol</h1>
+    </div>
+  </header>
+  <div class="callout">This protocol is fixed before any data collection begins, so that the sample cannot be selected after seeing the results.</div><h2 class="section">Search conditions</h2><ul>
+    <li>One computer, one browser, private or incognito mode, signed out of all accounts.</li>
+    <li>Browser language set to English. Location setting held constant and recorded.</li>
+    <li>All searches completed within a single defined window, for example one calendar week, with the dates recorded.</li>
+</ul><h2 class="section">Search terms</h2><ul>
+    <li>Pre-TAVR CT: “CT scan before TAVR”, “TAVR CT scan patient information”, “heart valve replacement CT scan”</li>
+    <li>Coronary CTA: “coronary CT angiogram”, “heart artery CT scan patient information”, “CCTA what to expect”</li>
+    <li>LAAO CT: “Watchman CT scan”, “left atrial appendage closure CT patient information”</li>
+</ul><h2 class="section">Site list, fixed in advance</h2><p>RadiologyInfo.org, American Heart Association, American College of Cardiology CardioSmart, British Heart Foundation, Mayo Clinic, Cleveland Clinic, and any additional hospital or society patient page appearing within the first two pages of results. The final list is locked before capture and is not changed afterward.</p><h2 class="section">Inclusion criteria</h2><ul>
+    <li>English language.</li>
+    <li>Written for patients or the general public.</li>
+    <li>Substantially about one of the three named procedures.</li>
+</ul><h2 class="section">Exclusion criteria</h2><ul>
+    <li>Written for clinicians, or clearly technical or professional in intent.</li>
+    <li>Video-only or image-only pages with little body text.</li>
+    <li>Pages requiring a login or payment.</li>
+    <li>Duplicate content already captured from the same site.</li>
+    <li>Pages shorter than 100 words, which are too short for stable readability scoring.</li>
+</ul><h2 class="section">Text cleaning rules, applied identically to every page</h2><ul>
+    <li>Capture the page as plain text on the day it is found, and record the date.</li>
+    <li>Remove navigation menus, site headers and footers, advertisements, and cookie notices.</li>
+    <li>Remove image captions, figure labels, and alt text.</li>
+    <li>Remove reference lists, author bylines, and review dates.</li>
+    <li>Remove contact details, appointment booking text, and donation appeals.</li>
+    <li>Keep headings and body text that a patient would read as content.</li>
+    <li>Save the cleaned text as a plain text file named by passage ID.</li>
+</ul>
+</section>
+<section class="attachment" id="att-g">
+  <header class="att-head">
+    <span class="att-badge">G</span>
+    <div class="att-titles">
+      <div class="att-kicker">Attachment G</div>
+      <h1 class="att-title">Data Collection Variables</h1>
+    </div>
+  </header>
+  <div class="callout">One row per passage in the master spreadsheet.</div><table class="grid dict">
+  <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+  <tbody>
+      <tr><td class="mono">passage_id</td><td>Unique identifier, for example TAVR-03</td></tr>
+      <tr><td class="mono">procedure</td><td>Pre-TAVR CT, coronary CTA, or LAAO CT</td></tr>
+      <tr><td class="mono">source_site</td><td>Name of the website</td></tr>
+      <tr><td class="mono">url</td><td>Full web address</td></tr>
+      <tr><td class="mono">date_captured</td><td>Date the text was saved</td></tr>
+      <tr><td class="mono">version</td><td>Original, or Platform 1, 2, or 3 rewrite</td></tr>
+      <tr><td class="mono">word_count</td><td>Words in the cleaned text</td></tr>
+      <tr><td class="mono">sentence_count</td><td>Sentences in the cleaned text</td></tr>
+      <tr><td class="mono">avg_words_per_sentence</td><td>Computed automatically</td></tr>
+      <tr><td class="mono">avg_syllables_per_word</td><td>Computed automatically</td></tr>
+      <tr><td class="mono">fkre, fkgl, gfi, smog, cli, ari</td><td>The six readability scores</td></tr>
+      <tr><td class="mono">expert_accuracy, expert_completeness, expert_added, expert_safety, expert_overall</td><td>Rubric scores, rewrites only</td></tr>
+      <tr><td class="mono">lay_r1 through lay_r5, per reader</td><td>Lay reader ratings</td></tr>
+      <tr><td class="mono">lay_comprehension_correct, per reader</td><td>Number of comprehension questions answered correctly</td></tr>
+  </tbody>
+</table>
+</section>
+  </div>
+
+  <footer class="footer">
+    <span>Confidential — prepared for Institutional Review Board review.</span>
+    <span>IRB 26-008664 · Attachments A–G</span>
+  </footer>
+
+</main>
+</body>
+</html>
