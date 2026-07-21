@@ -1,0 +1,35 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+Carlos Rojas,,7/2/26,B,B-CBFNO6B9M8,4,4,1,"missing on re-write: Johns Hopkins cardiologist and director of the Cardiac Computed Tomography Program, Dr. Armin Zadeh, explains why a CCTA may be needed and what to expect.
+re-write miss-interprets: Medicines given before the scan may slow your heart rate or widen your arteries."
+Carlos Rojas,,7/2/26,B,B-GFYGWWQC38,5,5,1,Healthcare vs Doctor professional
+Carlos Rojas,,7/2/26,B,B-OUDOCUZREN,5,5,1,
+Carlos Rojas,,7/2/26,B,B-JK1EYY37Q9,5,5,1,
+Carlos Rojas,,7/2/26,B,B-6L6GT6MJXK,5,5,1,
+Carlos Rojas,,7/2/26,B,B-72HPOEVB9O,4,5,1,"added this:  The dye is given through an IV. An IV is a small tube placed in a vein.
+created ambiguity: You may also be told to avoid caffeine, Viagra, or similar medicines.
+created ambiguity: Women may need to remove bras with metal underwire."
+Carlos Rojas,,7/2/26,B,B-VGPMM82I1L,5,4,1,"deleted advertisement: Advertisement
+Cleveland Clinic is a non-profit academic medical center. Advertising on our site helps support our mission. We do not endorse non-Cleveland Clinic products or services. Policy"
+Carlos Rojas,,7/2/26,B,B-YQ3S195JMS,5,5,1,
+Carlos Rojas,,7/2/26,B,B-6FLEEPZHPC,5,5,1,
+Carlos Rojas,,7/2/26,B,B-3UEA3GE8N6,4,5,1,
+Carlos Rojas,,7/2/26,B,B-F1RCAVIQK2,4,3,1,"Missing information. For example, this section does not include several other names from the original: Alternative Names
+Computed tomography angiography - thorax; CTA - lungs; Pulmonary embolism - CTA chest; Thoracic aortic aneurysm - CTA chest; Venous thromboembolism - CTA lung; Blood clot - CTA lung; Embolus - CTA lung; CT pulmonary angiogram
+Deletes the references at the end."
+Carlos Rojas,,7/2/26,B,B-W90JPKL0BL,4,4,1,
+Carlos Rojas,,7/2/26,B,B-0PRKGYC4OM,5,5,1,
+Carlos Rojas,,7/2/26,B,B-CG1WU16HYM,5,4,1,deletes advertisement
+Carlos Rojas,,7/2/26,B,B-FS6VFPTOMJ,5,4,1,
+Carlos Rojas,,7/2/26,B,B-PH3I379U26,5,4,1,
+Carlos Rojas,,7/2/26,B,B-JOYJNE00V8,5,4,2,"states ""English and Spanish"" for the additional resource PDFs"
+Carlos Rojas,,7/2/26,B,B-DN0YBY4AWT,5,5,1,
+Carlos Rojas,,7/2/26,B,B-F1I3LDQYUN,5,5,1,
+Carlos Rojas,,7/2/26,B,B-KTGBTYZMEP,5,4,1,
+Carlos Rojas,,7/2/26,B,B-A05G1X3J1L,5,5,1,
+Carlos Rojas,,7/2/26,B,B-SOZPTX497W,5,4,1,Missing Headers and statement at the bottom
+Carlos Rojas,,7/2/26,B,B-8LMN4R7SGM,5,5,1,
+Carlos Rojas,,7/2/26,B,B-JTFPH90O7Y,5,5,1,
+Carlos Rojas,,7/2/26,B,B-COSS3EOQM1,4,3,2,"deletes advertisements
+deletes this sentence: If you have a left atrial appendage closure procedure, keep taking your medicines until your provider tells you to stop
+hallucination: even print a 3D model"
+Carlos Rojas,,7/2/26,B,B-1UQBFOBRCL,5,5,1,

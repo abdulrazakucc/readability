@@ -1,0 +1,29 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-CBFNO6B9M8,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-GFYGWWQC38,5,5,1,"Strange phrasing: With a standard one, a doctor makes a small cut in your groin or wrist."
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-OUDOCUZREN,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-JK1EYY37Q9,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-6L6GT6MJXK,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-72HPOEVB9O,5,5,1,"Nice example of the language change- 
+original: suspected abnormal anatomy of the coronary arteries.
+new: possible unusual shape or position of the coronary arteries"
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-VGPMM82I1L,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-YQ3S195JMS,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-6FLEEPZHPC,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-3UEA3GE8N6,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-F1RCAVIQK2,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-W90JPKL0BL,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-0PRKGYC4OM,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-CG1WU16HYM,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-FS6VFPTOMJ,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-PH3I379U26,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-JOYJNE00V8,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-DN0YBY4AWT,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-F1I3LDQYUN,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-KTGBTYZMEP,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-A05G1X3J1L,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-SOZPTX497W,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-8LMN4R7SGM,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-JTFPH90O7Y,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-COSS3EOQM1,5,5,1,
+Matthew Stib,cardiothoracic radiologist,2026-07-03,B,B-1UQBFOBRCL,5,5,1,
