@@ -34,7 +34,12 @@ a:hover{text-decoration:underline}
   border-top:1px solid rgba(255,255,255,.22);padding-top:24px;max-width:640px;}
 .cover .meta .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9fbcda;margin:0 0 3px;}
 .cover .meta .v{font-size:15px;color:#f2f7fc;margin:0;font-weight:500;}
-.cover-top{display:flex;justify-content:flex-end;margin-bottom:22px;}
+.brandbar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  padding-bottom:18px;margin-bottom:26px;border-bottom:1px solid rgba(255,255,255,.18);}
+.brand{display:flex;align-items:center;gap:13px;}
+.mayo-mark{width:56px;height:auto;display:block;flex:0 0 auto;}
+.wordmark{font-family:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  font-size:21px;font-weight:600;letter-spacing:.012em;color:#fff;line-height:1;white-space:nowrap;}
 .cover .confidential{font-size:10.5px;letter-spacing:.18em;
   text-transform:uppercase;color:#a9c4de;border:1px solid rgba(255,255,255,.28);
   padding:5px 12px;border-radius:20px;}
@@ -64,8 +69,9 @@ a:hover{text-decoration:underline}
 .att-kicker{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:2px;}
 .att-title{font-family:Georgia,"Times New Roman",serif;font-size:23px;font-weight:600;color:var(--navy-dark);margin:0;line-height:1.2;}
 
-h2.section{font-size:17px;color:var(--navy);font-weight:700;margin:26px 0 10px;
-  padding-left:13px;border-left:4px solid var(--navy);line-height:1.3;}
+h2.section{font-family:Georgia,"Times New Roman",serif;font-size:18px;color:var(--navy);
+  font-weight:600;margin:30px 0 13px;padding-bottom:7px;line-height:1.3;letter-spacing:.01em;
+  border-bottom:1px solid var(--line);}
 h3.sub{font-size:15px;color:var(--ink);font-weight:700;margin:18px 0 8px;}
 p{margin:0 0 12px;}
 .headline{font-family:Georgia,serif;font-size:20px;font-weight:600;color:var(--navy-dark);
@@ -77,7 +83,7 @@ ul li::before{content:"";position:absolute;left:4px;top:.62em;width:6px;height:6
   background:var(--accent);border-radius:50%;}
 
 /* callouts */
-.callout{background:var(--tint);border-left:4px solid var(--navy);border-radius:0 6px 6px 0;
+.callout{background:var(--tint);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;
   padding:14px 18px;margin:14px 0 18px;color:var(--ink);}
 .callout.quote{font-style:italic;color:#2c3a48;}
 .callout.prompt{font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:14px;line-height:1.55;
@@ -133,8 +139,18 @@ table.dict thead th:first-child,table.dict tbody td:first-child{width:38%;}
 <main class="doc">
 
   <header class="cover">
-    <div class="cover-top"><span class="confidential">Confidential · IRB Review</span></div>
-    <p class="eyebrow">Mayo Clinic · Institutional Review Board</p>
+    <div class="brandbar">
+      <div class="brand">
+        <svg class="mayo-mark" viewBox="0 0 62 29" xmlns="http://www.w3.org/2000/svg" aria-label="Mayo Clinic">
+          <path d="M0 6 C0 3.7 1.6 2.5 4 2.5 H14 C16.4 2.5 18 3.7 18 6 V14 C18 19.6 12.2 23.8 9 26 C5.8 23.8 0 19.6 0 14 Z" fill="#ffffff"/>
+          <path d="M22 6 C22 3.7 23.6 2.5 26 2.5 H36 C38.4 2.5 40 3.7 40 6 V14 C40 19.6 34.2 23.8 31 26 C27.8 23.8 22 19.6 22 14 Z" fill="#ffffff"/>
+          <path d="M44 6 C44 3.7 45.6 2.5 48 2.5 H58 C60.4 2.5 62 3.7 62 6 V14 C62 19.6 56.2 23.8 53 26 C49.8 23.8 44 19.6 44 14 Z" fill="#ffffff"/>
+        </svg>
+        <span class="wordmark">MAYO CLINIC</span>
+      </div>
+      <span class="confidential">Confidential · IRB Review</span>
+    </div>
+    <p class="eyebrow">Institutional Review Board</p>
     <div class="rule"></div>
     <h1>Readability of Online Patient Education Materials for Pre-Procedure Cardiac CT, With an Artificial Intelligence Rewrite Arm and Lay Reader Assessment</h1>
     <p class="setline">Supporting Attachments A–G</p>
@@ -183,7 +199,7 @@ table.dict thead th:first-child,table.dict tbody td:first-child{width:38%;}
     <li>We ask only two background questions: your age range, and the highest level of school you finished. This helps us describe our readers as a group.</li>
     <li>Answers are stored on secure, password-protected institutional systems.</li>
     <li>If we publish the results, we report them as a group. No individual can be identified.</li>
-</ul><h2 class="section">Payment</h2><p>There is no payment for taking part in this study.</p><h2 class="section">Questions</h2><p>If you have questions about the study, contact the principal investigator at naeem.muhammad@mayo.edu</p><p>If you have questions about your rights as a research participant, or wish to speak with someone who is not part of the study team, contact the Mayo Clinic Institutional Review Board (IRB study number 26-008664) at <span class="fillin">[Mayo Clinic IRB telephone number and email to be inserted before submission]</span>.</p><h2 class="section">Agreeing to take part</h2><p>If you have read this page, you are 18 or older, and you agree to take part, select Continue below. If you do not wish to take part, simply close this page. Nothing happens if you decline, and no one will contact you about it.</p>
+</ul><h2 class="section">Payment</h2><p>There is no payment for taking part in this study.</p><h2 class="section">Questions</h2><p>If you have any questions about this study, or about taking part, contact the principal investigator, Dr. Muhammad Naeem, at naeem.muhammad@mayo.edu.</p><h2 class="section">Agreeing to take part</h2><p>If you have read this page, you are 18 or older, and you agree to take part, select Continue below. If you do not wish to take part, simply close this page. Nothing happens if you decline, and no one will contact you about it.</p>
 </section>
 <section class="attachment" id="att-b">
   <header class="att-head">
@@ -236,7 +252,7 @@ table.dict thead th:first-child,table.dict tbody td:first-child{width:38%;}
     <li>Q1. How are the pictures of the heart arteries made?  (a) With an X-ray scanner [correct]   (b) With sound waves   (c) With a magnet   (d) The passage does not say</li>
     <li>Q2. How is the dye given?  (a) As a tablet you swallow   (b) Through a small tube in a vein [correct]   (c) By breathing it in   (d) The passage does not say</li>
     <li>Q3. Why might you be given a medicine before the scan?  (a) To help you sleep   (b) To slow your heart rate [correct]   (c) To thin your blood   (d) The passage does not say</li>
-</ul><p>The correct answer, marked here in brackets for the reviewer, is not shown to the reader. Answer order is fixed for a given passage and identical across its original and rewritten versions.</p><h2 class="section">Section 5.  Optional comment after every passage</h2><p>Was anything confusing or unclear in this passage? You may write a short comment. This question is optional and may be left blank. Free-text comments are stored with the ratings and are used only to describe common points of confusion; they contain no identifying information.</p><h2 class="section">Section 6.  Closing screen</h2><p>Thank you for helping with this study. The passages you read were study material only and are not medical advice. If you have questions about your own care, please speak with your own doctor. If you have questions about this study, contact the principal investigator at naeem.muhammad@mayo.edu. If you have questions about your rights as a research participant, contact the Mayo Clinic Institutional Review Board (IRB study number 26-008664) at <span class="fillin">[Mayo Clinic IRB telephone number and email to be inserted before submission]</span>.</p>
+</ul><p>The correct answer, marked here in brackets for the reviewer, is not shown to the reader. Answer order is fixed for a given passage and identical across its original and rewritten versions.</p><h2 class="section">Section 5.  Optional comment after every passage</h2><p>Was anything confusing or unclear in this passage? You may write a short comment. This question is optional and may be left blank. Free-text comments are stored with the ratings and are used only to describe common points of confusion; they contain no identifying information.</p><h2 class="section">Section 6.  Closing screen</h2><p>Thank you for helping with this study. The passages you read were study material only and are not medical advice. If you have questions about your own care, please speak with your own doctor. If you have any questions about this study, contact the principal investigator, Dr. Muhammad Naeem, at naeem.muhammad@mayo.edu.</p>
 </section>
 <section class="attachment" id="att-d">
   <header class="att-head">
