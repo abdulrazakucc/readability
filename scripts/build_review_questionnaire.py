@@ -38,6 +38,7 @@ log = logging.getLogger("questionnaire")
 PACKET_NAME = "review_packet_with_text.csv"
 OUTPUT_NAME = "aim3_accuracy_questionnaire.html"
 PARTS_DIRNAME = "questionnaire_parts"
+NEUTRAL_DIRNAME = "questionnaire_neutral"
 N_PARTS = 3
 
 
@@ -56,6 +57,97 @@ def load_items(packet_path: Path) -> list[dict]:
     return items
 
 
+# ---------------------------------------------------------------------------
+# Neutral presentation variant.
+#
+# Presentation ONLY. The items, their order, the blind IDs, the three 1-5 scales
+# and the exported CSV schema are byte-for-byte identical to the standard build,
+# so sheets returned from either variant concatenate and join to blind_key.csv
+# the same way and previously collected feedback stays usable.
+#
+# What changes is wording: the page no longer frames the task as "original vs
+# AI". The left panel becomes the reference passage, the right the passage being
+# scored. Swaps are applied to the TEMPLATE only, never to passage text, so no
+# captured page content can be altered.
+# ---------------------------------------------------------------------------
+NEUTRAL_SWAPS: list[tuple[str, str]] = [
+    # --- hero ---
+    ("<h1>Clinical Accuracy Scoring of AI-Rewritten Patient Pages</h1>",
+     "<h1>Clinical Accuracy Scoring of Patient Education Passages</h1>"),
+    ("<p>Three frontier AI models rewrote 26 online patient-education pages (coronary CTA, TAVR, "
+     "LAAO/Watchman) to a 6th-grade reading level. Your job is the clinical question: <strong>when "
+     "the AI made the page easier to read, did it keep the medicine correct and complete?</strong></p>",
+     "<p>Each item shows two versions of the same patient-education passage (coronary CTA, TAVR, "
+     "LAAO/Watchman). Your job is the clinical question: <strong>when the passage was made easier "
+     "to read, did it keep the medicine correct and complete?</strong></p>"),
+    ("<p class=\"lead\">Score each rewrite against its own original on three 1&ndash;5 scales. You "
+     "are blinded to which AI wrote it &mdash; that is by design.</p>",
+     "<p class=\"lead\">Score each passage against its own reference on three 1&ndash;5 scales. You "
+     "are blinded to the source of each passage &mdash; that is by design.</p>"),
+    # --- how to score ---
+    ("<li>Read the <strong>original</strong> (left) and the <strong>AI rewrite</strong> (right) for each item.</li>",
+     "<li>Read the <strong>reference passage</strong> (left) and the <strong>passage to score</strong> (right) for each item.</li>"),
+    ("<li>Score the rewrite on all three dimensions below using whole numbers 1&ndash;5.</li>",
+     "<li>Score the passage on all three dimensions below using whole numbers 1&ndash;5.</li>"),
+    ("<li>Score each rewrite against its <strong>own original only</strong>; do not compare rewrites to one another.</li>",
+     "<li>Score each passage against its <strong>own reference only</strong>; do not compare passages to one another.</li>"),
+    ("<li>The items are in a fixed randomized order so the models are interleaved &mdash; do not try "
+     "to guess which AI wrote a passage.</li>",
+     "<li>The items are in a fixed randomized order &mdash; do not try to guess where a passage came from.</li>"),
+    # --- rubric prose ---
+    ("<div class=\"q\">Are all medical statements in the rewrite correct?</div>",
+     "<div class=\"q\">Are all medical statements in the scored passage correct?</div>"),
+    ("<div class=\"q\">Did the rewrite keep the key prep, risk, and safety points?</div>",
+     "<div class=\"q\">Does the scored passage keep the key prep, risk, and safety points?</div>"),
+    ("<div class=\"q\">Did the rewrite invent claims not in the original?</div>",
+     "<div class=\"q\">Does the scored passage add claims not in the reference?</div>"),
+    ("<li><span class=\"s\">1</span> Nothing invented; only original content.</li>",
+     "<li><span class=\"s\">1</span> Nothing added; only content from the reference.</li>"),
+    ("does not encode the model.", "does not encode the source."),
+    ("Score the rewrites (<span id=\"total-count\">__N_ITEMS__</span> items)",
+     "Score the passages (<span id=\"total-count\">__N_ITEMS__</span> items)"),
+    # --- scoring UI strings ---
+    ("sub: \"Are all medical statements in the rewrite correct?\"",
+     "sub: \"Are all medical statements in the scored passage correct?\""),
+    ("sub: \"Did it invent claims not in the original?\"",
+     "sub: \"Does it add claims not in the reference?\"    "),
+    ("<h4><span class=\"dot\"></span> Original page</h4>",
+     "<h4><span class=\"dot\"></span> Reference passage</h4>"),
+    ("<h4><span class=\"dot\"></span> AI rewrite — score this</h4>",
+     "<h4><span class=\"dot\"></span> Passage to score</h4>"),
+    ("<p class=\"score-title\">Your scores for this rewrite</p>",
+     "<p class=\"score-title\">Your scores for this passage</p>"),
+    # --- class names + data keys, so the page source reveals nothing either ---
+    (".col.orig {", ".col.ref {"),
+    (".col.rewrite h4 .dot", ".col.scored h4 .dot"),
+    (".col.rewrite .fade", ".col.scored .fade"),
+    ("<div class=\"col orig\">", "<div class=\"col ref\">"),
+    ("<div class=\"col rewrite\">", "<div class=\"col scored\">"),
+    ("esc(it.original_text)", "esc(it.ref_text)"),
+    ("esc(it.rewrite_text)", "esc(it.scored_text)"),
+]
+
+
+def _neutralize(tpl: str) -> str:
+    """Apply the presentation-only neutral wording to the template."""
+    for old, new in NEUTRAL_SWAPS:
+        if old not in tpl:
+            raise SystemExit(f"neutral swap target not found in template: {old[:70]!r}")
+        tpl = tpl.replace(old, new)
+    return tpl
+
+
+def _neutral_items(items: list[dict]) -> list[dict]:
+    """Rename the two text keys so the embedded JSON is neutral too."""
+    out = []
+    for it in items:
+        d = {k: v for k, v in it.items() if k not in ("original_text", "rewrite_text")}
+        d["ref_text"] = it["original_text"]
+        d["scored_text"] = it["rewrite_text"]
+        out.append(d)
+    return out
+
+
 def build_html(
     items: list[dict],
     *,
@@ -63,6 +155,7 @@ def build_html(
     csv_suffix: str = "",
     set_id: str = "full",
     part_banner: str = "",
+    neutral: bool = False,
 ) -> str:
     """Render one self-contained questionnaire file.
 
@@ -72,9 +165,12 @@ def build_html(
     with its set so the returned sheets concatenate cleanly for analysis.
     """
     # Embedded as JSON so the page is fully self-contained (no server, no fetch).
+    tpl = _neutralize(_TEMPLATE) if neutral else _TEMPLATE
+    if neutral:
+        items = _neutral_items(items)
     items_json = json.dumps(items, ensure_ascii=False)
     return (
-        _TEMPLATE.replace("/*__ITEMS__*/", items_json)
+        tpl.replace("/*__ITEMS__*/", items_json)
         .replace("__N_ITEMS__", str(len(items)))
         .replace("__STORE_KEY__", store_key)
         .replace("__CSV_SUFFIX__", csv_suffix)
@@ -120,7 +216,7 @@ def stratified_sets(items: list[dict], procedures: dict[str, str], parts: int) -
     return buckets
 
 
-def build_set_html(items: list[dict], label: str) -> str:
+def build_set_html(items: list[dict], label: str, *, neutral: bool = False) -> str:
     """Render one balanced set with its own storage key, CSV suffix, and set stamp.
 
     The page reveals nothing about which set it is or how many exist; the label
@@ -128,32 +224,57 @@ def build_set_html(items: list[dict], label: str) -> str:
     `set_id` column of the exported CSV — all read after scoring, never before.
     """
     n = len(items)
+    noun = "passages" if neutral else "rewrites"
     banner = (
         '<div class="part-banner">'
         '<span class="pb-chip">Assigned review set</span>'
-        f"<span class=\"pb-text\">This set contains <b>{n}</b> rewrites. "
+        f"<span class=\"pb-text\">This set contains <b>{n}</b> {noun}. "
         "Please score every item before downloading your responses.</span>"
         "</div>"
     )
+    # Distinct storage key so a reviewer opening both variants on one device keeps
+    # independent drafts. The CSV suffix is deliberately unchanged so returned
+    # sheets keep the same filename pattern and concatenate with existing data.
+    prefix = "aim3_questionnaire_neutral_v1" if neutral else "aim3_questionnaire_v1"
     return build_html(
         items,
-        store_key=f"aim3_questionnaire_v1_set_{label}",
+        store_key=f"{prefix}_set_{label}",
         csv_suffix=f"_set_{label}",
         set_id=label,
         part_banner=banner,
+        neutral=neutral,
     )
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--packet", default=str(REVIEW_DIR / PACKET_NAME))
-    parser.add_argument("--out", default=str(REVIEW_DIR / OUTPUT_NAME))
-    parser.add_argument("--parts-dir", default=str(REVIEW_DIR / PARTS_DIRNAME))
+    parser.add_argument("--out", default=None)
+    parser.add_argument("--parts-dir", default=None)
     parser.add_argument("--parts", type=int, default=N_PARTS, help="number of split parts to emit")
     parser.add_argument(
         "--no-parts", action="store_true", help="only emit the full single-file questionnaire"
     )
+    parser.add_argument(
+        "--neutral",
+        action="store_true",
+        help=(
+            "emit the neutral-presentation variant (identical items, order and CSV schema; "
+            f"wording does not frame the task as original vs AI) into {NEUTRAL_DIRNAME}/"
+        ),
+    )
     args = parser.parse_args(argv)
+
+    # Neutral build defaults to its own sub-directory so the standard deliverables
+    # are never overwritten.
+    if args.out is None:
+        args.out = str(
+            (REVIEW_DIR / NEUTRAL_DIRNAME / OUTPUT_NAME) if args.neutral else (REVIEW_DIR / OUTPUT_NAME)
+        )
+    if args.parts_dir is None:
+        args.parts_dir = str(
+            (REVIEW_DIR / NEUTRAL_DIRNAME) if args.neutral else (REVIEW_DIR / PARTS_DIRNAME)
+        )
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     ensure_dirs()
@@ -167,7 +288,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # 1) The complete single-file questionnaire (unchanged deliverable).
     out_path = Path(args.out)
-    out_path.write_text(build_html(items), encoding="utf-8")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
+        build_html(
+            items,
+            store_key=("aim3_questionnaire_neutral_v1" if args.neutral else "aim3_questionnaire_v1"),
+            neutral=args.neutral,
+        ),
+        encoding="utf-8",
+    )
     log.info("wrote full questionnaire with %d items -> %s", len(items), out_path)
 
     if args.no_parts:
@@ -182,7 +311,7 @@ def main(argv: list[str] | None = None) -> int:
     parts_dir = Path(args.parts_dir)
     parts_dir.mkdir(parents=True, exist_ok=True)
     for label, subset in zip(labels, sets, strict=True):
-        html = build_set_html(subset, label)
+        html = build_set_html(subset, label, neutral=args.neutral)
         set_path = parts_dir / f"aim3_accuracy_questionnaire_set_{label}.html"
         set_path.write_text(html, encoding="utf-8")
         mix = ", ".join(
@@ -191,24 +320,46 @@ def main(argv: list[str] | None = None) -> int:
         )
         log.info("wrote set %s: %d items (%s) -> %s", label, len(subset), mix, set_path)
 
-    _write_parts_readme(parts_dir, labels, sets, procedures)
+    _write_parts_readme(parts_dir, labels, sets, procedures, neutral=args.neutral)
     log.info("Hand ONE set file to each reviewer. Each reviewer exports their own CSV.")
     return 0
 
 
 def _write_parts_readme(
-    parts_dir: Path, labels: list[str], sets: list[list[dict]], procedures: dict[str, str]
+    parts_dir: Path,
+    labels: list[str],
+    sets: list[list[dict]],
+    procedures: dict[str, str],
+    *,
+    neutral: bool = False,
 ) -> None:
     """Drop a short distribution + analysis guide alongside the set files."""
+    title_suffix = " (neutral presentation)" if neutral else ""
+    full_ref = (
+        "`aim3_accuracy_questionnaire.html`" if neutral else "`../aim3_accuracy_questionnaire.html`"
+    )
     lines = [
-        "# Aim 3 accuracy questionnaire — review sets",
+        f"# Aim 3 accuracy questionnaire — review sets{title_suffix}",
         "",
         "Auto-generated by `scripts/build_review_questionnaire.py`. Do not edit by hand;",
         "re-running the generator overwrites this folder.",
+        *(
+            [
+                "",
+                "> **Neutral-presentation variant.** Same items, same order, same blind IDs,",
+                "> same 1-5 scales and the same exported CSV schema as the standard build in",
+                "> `../questionnaire_parts/`. Only the wording differs: the page does not frame",
+                "> the task as original vs AI (left panel is the *reference passage*, right is",
+                "> the *passage to score*). Returned sheets therefore concatenate with feedback",
+                "> already collected from the standard build.",
+            ]
+            if neutral
+            else []
+        ),
         "",
         "## What these files are",
         "",
-        "The full questionnaire (`../aim3_accuracy_questionnaire.html`, all rewrites) has",
+        f"The full questionnaire ({full_ref}, all items) has",
         f"been divided into {len(labels)} self-contained sets so the workload can be shared",
         "across reviewer groups. Each set is balanced across all three procedures (coronary",
         "CTA, TAVR, LAAO/Watchman). The sets are mutually exclusive and together cover every",
