@@ -12,7 +12,7 @@ re-running the generator overwrites this folder.
 
 ## What these files are
 
-The full questionnaire (`aim3_accuracy_questionnaire.html`, all items) has
+The full questionnaire (`aim3_accuracy_questionnaire_neutral.html`, all items) has
 been divided into 3 self-contained sets so the workload can be shared
 across reviewer groups. Each set is balanced across all three procedures (coronary
 CTA, TAVR, LAAO/Watchman). The sets are mutually exclusive and together cover every
@@ -20,9 +20,9 @@ rewrite exactly once.
 
 | Set | File | Rewrites | Procedure mix |
 | --- | --- | --- | --- |
-| A | `aim3_accuracy_questionnaire_set_A.html` | 26 | cta 10, laao 6, tavr 10 |
-| B | `aim3_accuracy_questionnaire_set_B.html` | 26 | cta 10, laao 6, tavr 10 |
-| C | `aim3_accuracy_questionnaire_set_C.html` | 25 | cta 9, laao 6, tavr 10 |
+| A | `aim3_accuracy_questionnaire_neutral_set_A.html` | 26 | cta 10, laao 6, tavr 10 |
+| B | `aim3_accuracy_questionnaire_neutral_set_B.html` | 26 | cta 10, laao 6, tavr 10 |
+| C | `aim3_accuracy_questionnaire_neutral_set_C.html` | 25 | cta 9, laao 6, tavr 10 |
 
 ## Distributing
 

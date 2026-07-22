@@ -39,6 +39,10 @@ PACKET_NAME = "review_packet_with_text.csv"
 OUTPUT_NAME = "aim3_accuracy_questionnaire.html"
 PARTS_DIRNAME = "questionnaire_parts"
 NEUTRAL_DIRNAME = "questionnaire_neutral"
+NEUTRAL_OUTPUT_NAME = "aim3_accuracy_questionnaire_neutral.html"
+# Marker woven into the neutral variant's file names and exported CSV names so the
+# two builds stay distinguishable once files leave this folder.
+NEUTRAL_TAG = "neutral"
 N_PARTS = 3
 
 
@@ -239,7 +243,7 @@ def build_set_html(items: list[dict], label: str, *, neutral: bool = False) -> s
     return build_html(
         items,
         store_key=f"{prefix}_set_{label}",
-        csv_suffix=f"_set_{label}",
+        csv_suffix=(f"_{NEUTRAL_TAG}_set_{label}" if neutral else f"_set_{label}"),
         set_id=label,
         part_banner=banner,
         neutral=neutral,
@@ -269,7 +273,9 @@ def main(argv: list[str] | None = None) -> int:
     # are never overwritten.
     if args.out is None:
         args.out = str(
-            (REVIEW_DIR / NEUTRAL_DIRNAME / OUTPUT_NAME) if args.neutral else (REVIEW_DIR / OUTPUT_NAME)
+            (REVIEW_DIR / NEUTRAL_DIRNAME / NEUTRAL_OUTPUT_NAME)
+            if args.neutral
+            else (REVIEW_DIR / OUTPUT_NAME)
         )
     if args.parts_dir is None:
         args.parts_dir = str(
@@ -293,6 +299,7 @@ def main(argv: list[str] | None = None) -> int:
         build_html(
             items,
             store_key=("aim3_questionnaire_neutral_v1" if args.neutral else "aim3_questionnaire_v1"),
+            csv_suffix=(f"_{NEUTRAL_TAG}" if args.neutral else ""),
             neutral=args.neutral,
         ),
         encoding="utf-8",
@@ -312,7 +319,8 @@ def main(argv: list[str] | None = None) -> int:
     parts_dir.mkdir(parents=True, exist_ok=True)
     for label, subset in zip(labels, sets, strict=True):
         html = build_set_html(subset, label, neutral=args.neutral)
-        set_path = parts_dir / f"aim3_accuracy_questionnaire_set_{label}.html"
+        stem = f"aim3_accuracy_questionnaire_{NEUTRAL_TAG}" if args.neutral else "aim3_accuracy_questionnaire"
+        set_path = parts_dir / f"{stem}_set_{label}.html"
         set_path.write_text(html, encoding="utf-8")
         mix = ", ".join(
             f"{p}={sum(1 for it in subset if procedures[it['blind_id']] == p)}"
@@ -335,8 +343,9 @@ def _write_parts_readme(
 ) -> None:
     """Drop a short distribution + analysis guide alongside the set files."""
     title_suffix = " (neutral presentation)" if neutral else ""
+    set_stem = f"aim3_accuracy_questionnaire_{NEUTRAL_TAG}" if neutral else "aim3_accuracy_questionnaire"
     full_ref = (
-        "`aim3_accuracy_questionnaire.html`" if neutral else "`../aim3_accuracy_questionnaire.html`"
+        f"`{NEUTRAL_OUTPUT_NAME}`" if neutral else "`../aim3_accuracy_questionnaire.html`"
     )
     lines = [
         f"# Aim 3 accuracy questionnaire — review sets{title_suffix}",
@@ -374,7 +383,7 @@ def _write_parts_readme(
             for p in sorted({procedures[it["blind_id"]] for it in subset})
         )
         lines.append(
-            f"| {label} | `aim3_accuracy_questionnaire_set_{label}.html` | {len(subset)} | {mix} |"
+            f"| {label} | `{set_stem}_set_{label}.html` | {len(subset)} | {mix} |"
         )
     lines += [
         "",
