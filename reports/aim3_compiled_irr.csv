@@ -1,0 +1,4 @@
+axis,rater_pairs,pct_exact,pct_within_1
+accuracy_1_5,104,81.73076923076923,100.0
+completeness_1_5,104,75.0,95.1923076923077
+added_errors_1_5,104,88.46153846153845,100.0

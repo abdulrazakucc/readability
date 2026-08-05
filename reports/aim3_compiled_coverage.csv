@@ -1,0 +1,4 @@
+condition,reviewers,ratings,rewrites_covered,sets
+expert_labeled,6,155,77,"A, B, C"
+expert_neutral,2,154,77,"A, B, C"
+layperson,2,154,77,"A, B, C"

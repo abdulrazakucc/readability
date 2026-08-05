@@ -1,0 +1,4 @@
+model_id,model,n_pages,spearman_rho_reduction_vs_accuracy,p_value
+claude,Claude Opus 4.8,26,0.24987541113658499,0.21828507426658939
+openai,GPT-5.5,25,0.026155297175379393,0.901234455979354
+gemini,Gemini 3.1 Pro,26,-0.3714317865175867,0.06172535149695139
