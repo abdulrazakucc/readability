@@ -64,7 +64,20 @@ cp .env.example .env
 .venv/bin/python scripts/09_llm_accuracy.py --aggregate
 .venv/bin/python scripts/10_aim3_llm_stats.py
 .venv/bin/python scripts/11_aim3_llm_figures.py
+
+# 8. Aim 3 primary (blinded human review): render the questionnaire, hand ONE
+#    balanced set (A/B/C) to each reviewer, collect their returned CSVs under
+#    data/review/questionnaire_scores/, then compile the interim tables + figures.
+.venv/bin/python scripts/build_review_questionnaire.py            # labeled instrument
+.venv/bin/python scripts/build_review_questionnaire.py --neutral  # neutral-presentation variant
+.venv/bin/python scripts/12_aim3_human_results.py                 # -> reports/aim3_compiled_*.csv
+.venv/bin/python scripts/13_aim3_human_figures.py                 # -> reports/figures/aim3_human_*.png
 ```
+
+`07` is the **locked final** Aim 3 analysis (one row per page/model at
+`data/scores/accuracy.csv`); `12`/`13` are the **re-runnable interim** compilation
+that separates the three cohorts actually collected (labeled experts, neutral-
+presentation experts, laypersons) and never pools them. See CLAUDE.md.
 
 ## Pipeline dependency graph
 

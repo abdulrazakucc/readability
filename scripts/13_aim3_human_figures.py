@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
-"""Figure for the Aim 3 PRIMARY endpoint — interim blinded human review.
+"""Publication-quality figures for the compiled Aim 3 human-review results (interim).
 
-Reads the returned reviewer score sheets under
-data/review/questionnaire_scores/, joins them to the blind key, and draws a
-two-panel figure matching the house style of the automated-panel figures:
+Writes to reports/figures/:
+  aim3_human_compiled.png     PRIMARY: per-model clinical ratings by blinded
+                              subspecialists (labeled instrument) + the
+                              readability-accuracy trade-off.
+  aim3_presentation_bias.png  labeled vs neutral-presentation expert accuracy
+                              (the presentation-bias check), with significance marks.
+  aim3_three_conditions.png   accuracy and completeness across all three cohorts
+                              (labeled experts, neutral experts, laypersons).
 
-  Panel A: per-model mean +/- SD on the three clinical dimensions.
-  Panel B: readability reduction vs blinded expert accuracy (per-page scatter,
-           large X = model mean), the primary-endpoint version of the trade-off.
-
-Writes reports/figures/aim3_human_interim.png. Re-runnable as more sheets arrive.
-This is the INTERIM primary-endpoint figure; it summarizes the reviews returned
-so far (experts to date; layperson review pending).
+Bar values are read from the compiled tables (reports/aim3_compiled_*.csv) so the
+figures and tables never disagree; the trade-off scatter is recomputed from the
+raw per-page means. Re-runnable; run scripts/12 first.
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -24,101 +26,227 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+from scipy import stats  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
-from src.config import FIGURES_DIR, REVIEW_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
+from src.config import FIGURES_DIR, REPORTS_DIR, REVIEW_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
 
 MODELS = ["claude", "openai", "gemini"]
 LABELS = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
-COLORS = {"claude": "#4C72B0", "openai": "#55A868", "gemini": "#C44E52"}
+COLORS = {"claude": "#3B6EA8", "openai": "#4C9A6B", "gemini": "#C0504D"}
+INK = "#22303c"
+MUTED = "#5b6b78"
 AXES = ["accuracy_1_5", "completeness_1_5", "added_errors_1_5"]
+_SLUG_RE = re.compile(r"^aim3_scores_(?:neutral_)?set_[a-c]_(.+?)_(?:expert|layman|layperson)$")
 
 
-def load() -> pd.DataFrame:
-    root = REVIEW_DIR / "questionnaire_scores"
-    df = pd.concat(
-        [pd.read_csv(f) for f in sorted(root.rglob("aim3_scores_*.csv"))],
-        ignore_index=True,
-    )
-    key = pd.read_csv(REVIEW_DIR / "blind_key.csv")
-    df = df.merge(key, on="blind_id", how="left")
+def setup_style() -> None:
+    plt.rcParams.update({
+        "figure.dpi": 150,
+        "font.family": "DejaVu Sans",
+        "font.size": 11,
+        "text.color": INK, "axes.labelcolor": INK, "axes.edgecolor": "#c7d0d8",
+        "xtick.color": MUTED, "ytick.color": MUTED,
+        "axes.spines.top": False, "axes.spines.right": False,
+        "axes.grid": True, "axes.axisbelow": True,
+        "grid.color": "#e6ebf0", "grid.linewidth": 0.9,
+        "axes.titlepad": 12, "figure.facecolor": "white", "savefig.facecolor": "white",
+    })
+
+
+def load_raw() -> pd.DataFrame:
+    frames = []
+    for f in sorted((REVIEW_DIR / "questionnaire_scores").rglob("aim3_scores_*.csv")):
+        d = pd.read_csv(f)
+        s = f.stem.lower()
+        m = _SLUG_RE.match(s)
+        d["reviewer_id"] = m.group(1) if m else s
+        d["reviewer_type"] = "layperson" if ("layman" in s or "layperson" in s) else "expert"
+        d["presentation"] = "neutral" if "neutral" in s else "standard"
+        frames.append(d)
+    df = pd.concat(frames, ignore_index=True).merge(
+        pd.read_csv(REVIEW_DIR / "blind_key.csv"), on="blind_id", how="left")
     for c in AXES:
         df[c] = pd.to_numeric(df[c], errors="coerce")
+    df["condition"] = np.where(
+        df.reviewer_type == "layperson", "layperson",
+        np.where(df.presentation == "neutral", "expert_neutral", "expert_labeled"))
     return df
+
+
+def _bar_labels(ax, bars, fmt="{:.2f}", dy=0.06, size=8.5):
+    for b in bars:
+        h = b.get_height()
+        if np.isfinite(h):
+            ax.text(b.get_x() + b.get_width() / 2, h + dy, fmt.format(h),
+                    ha="center", va="bottom", fontsize=size, color=INK, fontweight="normal")
+
+
+def fig_primary(bym: pd.DataFrame, raw: pd.DataFrame, cov: pd.DataFrame) -> None:
+    lab = bym[bym.condition == "expert_labeled"].set_index("model_id")
+    n_rev = int(cov.loc[cov.condition == "expert_labeled", "reviewers"].iloc[0])
+    n_rat = int(cov.loc[cov.condition == "expert_labeled", "ratings"].iloc[0])
+
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(13.2, 5.7),
+                                   gridspec_kw={"width_ratios": [1.05, 1]})
+
+    # ---- Panel A: grouped bars, 3 dimensions x 3 models ----
+    dims = [("accuracy_1_5", "Accuracy"), ("completeness_1_5", "Completeness"),
+            ("added_errors_1_5", "Added errors\n(1 = best)")]
+    x = np.arange(len(dims))
+    w = 0.26
+    for i, m in enumerate(MODELS):
+        means = [lab.loc[m, f"{a}_mean"] for a, _ in dims]
+        sds = [lab.loc[m, f"{a}_sd"] for a, _ in dims]
+        bars = axA.bar(x + (i - 1) * w, means, w, yerr=sds, capsize=3,
+                       label=LABELS[m], color=COLORS[m], edgecolor="white", linewidth=0.6,
+                       error_kw={"elinewidth": 1, "ecolor": "#95a3ae"})
+        _bar_labels(axA, bars)
+    axA.axhline(5, color="#b9c4cd", lw=1, ls=(0, (2, 2)), zorder=0)
+    axA.set_xticks(x)
+    axA.set_xticklabels([n for _, n in dims])
+    axA.set_ylabel("Blinded expert score (1–5), mean ± SD")
+    axA.set_ylim(0, 5.75)
+    axA.set_title("A   Clinical ratings by model", loc="left", fontweight="bold", pad=10)
+    # annotate the completeness dip
+    gem_comp = lab.loc["gemini", "completeness_1_5_mean"]
+    axA.annotate("aggressive simplification\nlowers completeness",
+                 xy=(1 + w, gem_comp), xytext=(1.45, 3.05),
+                 fontsize=8, color=MUTED, ha="left",
+                 arrowprops=dict(arrowstyle="->", color=MUTED, lw=1))
+
+    # ---- Panel B: readability reduction vs accuracy (per page) ----
+    deltas = pd.read_csv(SCORES_DIR / "deltas.csv")[["page_id", "model_id", "fkgl_delta"]]
+    pm = (raw[raw.condition == "expert_labeled"]
+          .groupby(["page_id", "model_id"])[AXES].mean().reset_index()
+          .merge(deltas, on=["page_id", "model_id"]))
+    pm["reduction"] = -pm["fkgl_delta"]
+    rng = np.random.default_rng(42)
+    for m in MODELS:
+        s = pm[pm.model_id == m]
+        jit = rng.normal(0, 0.02, len(s))
+        axB.scatter(s["reduction"], s["accuracy_1_5"] + jit, s=42, alpha=0.65,
+                    color=COLORS[m], label=LABELS[m], edgecolor="white", linewidth=0.6)
+    # Gemini trend (the one significant association) + rho labels
+    for m in MODELS:
+        s = pm[pm.model_id == m]
+        rho, p = stats.spearmanr(s["reduction"], s["accuracy_1_5"])
+        axB.scatter(s["reduction"].mean(), s["accuracy_1_5"].mean(), s=300, color=COLORS[m],
+                    marker="X", edgecolor=INK, linewidth=1.3, zorder=6)
+        if m == "gemini":
+            b1, b0 = np.polyfit(s["reduction"], s["accuracy_1_5"], 1)
+            xs = np.array([s["reduction"].min(), s["reduction"].max()])
+            axB.plot(xs, b0 + b1 * xs, color=COLORS[m], lw=2, ls="--", zorder=4)
+            axB.text(0.97, 0.06, f"Gemini ρ = {rho:.2f} (P = {p:.02f})", transform=axB.transAxes,
+                     ha="right", fontsize=8.5, color=COLORS[m], fontweight="bold")
+    axB.set_xlabel("Reading-level reduction (FKGL grade levels removed)")
+    axB.set_ylabel("Blinded expert accuracy (1–5)")
+    axB.set_title("B   Readability reduction vs accuracy", loc="left", fontweight="bold", pad=10)
+    axB.set_ylim(3.7, 5.15)
+
+    handles = [plt.Line2D([0], [0], marker="s", ls="", markersize=9, markerfacecolor=COLORS[m],
+                          markeredgecolor="white", label=LABELS[m]) for m in MODELS]
+    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=3,
+               frameon=False, fontsize=10, handletextpad=0.4, columnspacing=1.8)
+    fig.suptitle("Aim 3 primary endpoint (interim): blinded subspecialist review of LLM rewrites",
+                 fontsize=13.5, fontweight="bold", x=0.5, y=1.05)
+    fig.text(0.5, -0.035,
+             f"{n_rev} subspecialist reviewers · {n_rat} ratings · all 77 rewrites · labeled instrument. "
+             "Large X = model mean; points jittered vertically to separate ties.",
+             ha="center", fontsize=8, color=MUTED, style="italic")
+    fig.tight_layout(w_pad=2.5)
+    fig.savefig(FIGURES_DIR / "aim3_human_compiled.png", bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_bias(bym: pd.DataFrame, pe: pd.DataFrame) -> None:
+    fig, ax = plt.subplots(figsize=(8.8, 5.4))
+    conds = [("expert_labeled", "Standard instrument (labeled “AI rewrite”)", "#2f4f6f"),
+             ("expert_neutral", "Neutral presentation", "#8fb2d4")]
+    x = np.arange(len(MODELS))
+    w = 0.36
+    for j, (c, name, col) in enumerate(conds):
+        sub = bym[bym.condition == c].set_index("model_id")
+        means = [sub.loc[m, "accuracy_1_5_mean"] for m in MODELS]
+        # 95% CI of the mean (appropriate uncertainty for comparing means on ceiling data)
+        ci = [1.96 * sub.loc[m, "accuracy_1_5_sd"] / np.sqrt(sub.loc[m, "n"]) for m in MODELS]
+        bars = ax.bar(x + (j - 0.5) * w, means, w, yerr=ci, capsize=4, label=name,
+                      color=col, edgecolor="white", linewidth=0.6,
+                      error_kw={"elinewidth": 1.1, "ecolor": "#7a8894"})
+        _bar_labels(ax, bars, dy=0.015)
+    # significance brackets at a fixed height inside the axis
+    pe_acc = pe[pe.axis == "accuracy_1_5"].set_index("scope")
+    ybar = 5.13
+    for i, m in enumerate(MODELS):
+        p = pe_acc.loc[m, "mannwhitney_p"]
+        mark = "***" if p < .001 else "**" if p < .01 else "*" if p < .05 else "ns"
+        pstr = "P < .001" if p < .001 else f"P = {p:.2f}"
+        ax.plot([x[i] - w / 2, x[i] - w / 2, x[i] + w / 2, x[i] + w / 2],
+                [ybar - 0.03, ybar, ybar, ybar - 0.03], color=MUTED, lw=1)
+        txt = f"{mark}  ({pstr})" if mark != "ns" else f"ns  ({pstr})"
+        ax.text(x[i], ybar + 0.015, txt, ha="center", va="bottom", fontsize=8.5,
+                color=(INK if mark != "ns" else MUTED), fontweight=("bold" if mark != "ns" else "normal"))
+    ax.set_xticks(x)
+    ax.set_xticklabels([LABELS[m] for m in MODELS])
+    ax.set_ylabel("Blinded expert accuracy (1–5), mean ± 95% CI")
+    ax.set_ylim(4.5, 5.28)
+    ax.set_title("Does labeling a passage “AI” change expert accuracy scoring?",
+                 fontweight="bold", pad=42)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), ncol=2, frameon=False, fontsize=9.5)
+    fig.text(0.5, -0.02,
+             "Between-reviewer comparison (different subspecialists per instrument), so the label effect is "
+             "confounded with rater identity. Neutral scores are no lower, arguing against an anti-AI penalty.",
+             ha="center", fontsize=7.8, color=MUTED, style="italic")
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "aim3_presentation_bias.png", bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_conditions(bym: pd.DataFrame) -> None:
+    conds = [("expert_labeled", "Experts\n(labeled)"),
+             ("expert_neutral", "Experts\n(neutral)"),
+             ("layperson", "Laypersons")]
+    fig, axes = plt.subplots(1, 2, figsize=(12.6, 5.3))
+    panels = [("accuracy_1_5", "Accuracy"), ("completeness_1_5", "Completeness")]
+    for ax, (metric, title) in zip(axes, panels, strict=True):
+        x = np.arange(len(conds))
+        w = 0.26
+        for i, m in enumerate(MODELS):
+            means = [bym[(bym.condition == c) & (bym.model_id == m)][f"{metric}_mean"].iloc[0]
+                     for c, _ in conds]
+            bars = ax.bar(x + (i - 1) * w, means, w, label=LABELS[m], color=COLORS[m],
+                          edgecolor="white", linewidth=0.6)
+            _bar_labels(ax, bars, dy=0.015, size=8)
+        ax.axhline(5, color="#b9c4cd", lw=1, ls=(0, (2, 2)), zorder=0)
+        ax.set_xticks(x)
+        ax.set_xticklabels([n for _, n in conds])
+        ax.set_ylim(4.0, 5.25)
+        ax.set_title(title, fontweight="bold", loc="left")
+        ax.set_ylabel("Mean rating (1–5)")
+    axes[0].legend(loc="lower center", bbox_to_anchor=(1.05, 1.06), ncol=3, frameon=False, fontsize=9.5)
+    fig.suptitle("Medical-accuracy and completeness by reviewer cohort", fontsize=13, fontweight="bold",
+                 y=1.02)
+    fig.text(0.5, -0.03,
+             "Laypersons rate near the ceiling on both scales (they cannot detect the subtle clinical gaps "
+             "experts flag); the expert cohorts localize the residual risk to the most aggressive simplifier.",
+             ha="center", fontsize=8, color=MUTED, style="italic")
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "aim3_three_conditions.png", bbox_inches="tight")
+    plt.close(fig)
 
 
 def main() -> int:
     ensure_dirs()
-    df = load()
-    n_rev = df["reviewer_name"].nunique()
-    n_judg = len(df)
-
-    fig, (axA, axB) = plt.subplots(1, 2, figsize=(13, 5.5))
-
-    # --- Panel A: grouped bars, mean +/- SD, 3 dimensions ---
-    dims = [
-        ("accuracy_1_5", "Accuracy"),
-        ("completeness_1_5", "Completeness"),
-        ("added_errors_1_5", "Added errors\n(lower better)"),
-    ]
-    x = np.arange(len(dims))
-    w = 0.25
-    for i, m in enumerate(MODELS):
-        sub = df[df.model_id == m]
-        means = [sub[d].mean() for d, _ in dims]
-        sds = [sub[d].std(ddof=1) for d, _ in dims]
-        axA.bar(
-            x + (i - 1) * w, means, w, yerr=sds, capsize=3,
-            label=LABELS[m], color=COLORS[m], alpha=0.9,
-        )
-    axA.set_xticks(x)
-    axA.set_xticklabels([lab for _, lab in dims])
-    axA.set_ylabel("Blinded expert score (1–5), mean ± SD")
-    axA.set_ylim(0, 5.6)
-    axA.axhline(5, color="grey", lw=0.8, ls=":", alpha=0.7)
-    axA.set_title("A  Clinical ratings by model", loc="left", fontweight="bold", pad=30)
-    axA.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3, frameon=False, fontsize=9)
-
-    # --- Panel B: trade-off, reading-level reduction vs expert accuracy ---
-    deltas = pd.read_csv(SCORES_DIR / "deltas.csv")[["page_id", "model_id", "fkgl_delta"]]
-    page = df.groupby(["page_id", "model_id"])[AXES].mean().reset_index()
-    d = page.merge(deltas, on=["page_id", "model_id"], how="inner")
-    d["fkgl_reduction"] = -d["fkgl_delta"]
-    rng = np.random.default_rng(42)
-    for m in MODELS:
-        sub = d[d.model_id == m]
-        jitter = rng.normal(0, 0.03, len(sub))  # separate overlapping ceiling points
-        axB.scatter(
-            sub["fkgl_reduction"], sub["accuracy_1_5"] + jitter, s=45, alpha=0.7,
-            color=COLORS[m], label=LABELS[m], edgecolor="white", linewidth=0.5,
-        )
-    for m in MODELS:
-        sub = d[d.model_id == m]
-        axB.scatter(
-            sub["fkgl_reduction"].mean(), sub["accuracy_1_5"].mean(),
-            s=320, color=COLORS[m], marker="X", edgecolor="black", linewidth=1.2, zorder=5,
-        )
-    axB.set_xlabel("Reading-level reduction (FKGL grade levels removed)")
-    axB.set_ylabel("Blinded expert accuracy (1–5)")
-    axB.set_title("B  Readability reduction vs accuracy", loc="left", fontweight="bold", pad=30)
-    axB.legend(loc="lower left", frameon=False, fontsize=8)
-    axB.grid(True, alpha=0.25)
-
-    fig.suptitle(
-        "Aim 3 primary endpoint (INTERIM): blinded expert review of LLM rewrites",
-        fontsize=13, fontweight="bold", y=1.02,
-    )
-    fig.text(
-        0.5, -0.03,
-        f"Interim: {n_rev} blinded expert reviewers, {n_judg} ratings to date; "
-        "layperson review and remaining expert reads pending. Points jittered vertically to separate ties.",
-        ha="center", fontsize=7.5, style="italic",
-    )
-    fig.tight_layout()
-    fig.savefig(FIGURES_DIR / "aim3_human_interim.png", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    print("Wrote", FIGURES_DIR / "aim3_human_interim.png")
+    setup_style()
+    bym = pd.read_csv(REPORTS_DIR / "aim3_compiled_by_model.csv")
+    cov = pd.read_csv(REPORTS_DIR / "aim3_compiled_coverage.csv")
+    pe = pd.read_csv(REPORTS_DIR / "aim3_compiled_presentation_effect.csv")
+    raw = load_raw()
+    fig_primary(bym, raw, cov)
+    fig_bias(bym, pe)
+    fig_conditions(bym)
+    print("wrote 3 figures to", FIGURES_DIR)
     return 0
 
 

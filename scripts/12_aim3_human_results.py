@@ -13,16 +13,17 @@ all three signals):
   * layperson       — non-clinician reviewers, standard instrument.
 
 It is deliberately variant-aware so the neutral sheets are NOT pooled with the
-labeled ones (see CLAUDE.md: `12`'s glob would silently merge them). Re-runnable
+labeled ones (a naive glob would silently merge them). Re-runnable
 and idempotent; reads only committed inputs. This is an INTERIM compilation
 (one labeled expert for set C is still pending) and does not replace the locked
 final analysis in 07_run_statistics.py.
 
-Writes reports/aim3_compiled_*.csv.
+Writes reports/aim3_compiled_*.csv (run scripts/13 for the figures).
 """
 
 from __future__ import annotations
 
+import re
 import sys
 from itertools import combinations
 from pathlib import Path
@@ -41,6 +42,25 @@ MODEL_ORDER = ["claude", "openai", "gemini"]
 MODEL_LABEL = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
 
 
+CONDITIONS = ["expert_labeled", "expert_neutral", "layperson"]
+CONDITION_LABEL = {
+    "expert_labeled": "Subspecialist, standard instrument (primary)",
+    "expert_neutral": "Subspecialist, neutral presentation",
+    "layperson": "Layperson, standard instrument",
+}
+
+# Reviewer identity is taken from the file NAME slug, not the free-text
+# `reviewer_name` field, which is inconsistent across returns (eg, "Hafsa" vs
+# "Hafsa Awan", "MUHAMMAD NAEEM" vs "Muhammad Naeem"). The slug is stable, so it
+# is the canonical id used for counting reviewers and pairing raters.
+_SLUG_RE = re.compile(r"^aim3_scores_(?:neutral_)?set_[a-c]_(.+?)_(?:expert|layman|layperson)$")
+
+
+def _reviewer_id(stem: str) -> str:
+    m = _SLUG_RE.match(stem.lower())
+    return m.group(1) if m else stem.lower()
+
+
 def load() -> pd.DataFrame:
     frames = []
     for f in sorted(SCORES_ROOT.rglob("aim3_scores_*.csv")):
@@ -48,6 +68,7 @@ def load() -> pd.DataFrame:
         s = f.stem.lower()
         d["reviewer_type"] = "layperson" if ("layman" in s or "layperson" in s) else "expert"
         d["presentation"] = "neutral" if "neutral" in s else "standard"
+        d["reviewer_id"] = _reviewer_id(f.stem)
         d["source_file"] = f.name
         frames.append(d)
     if not frames:
@@ -61,21 +82,34 @@ def load() -> pd.DataFrame:
         df.reviewer_type == "layperson", "layperson",
         np.where(df.presentation == "neutral", "expert_neutral", "expert_labeled"),
     )
+    df["reviewer_display"] = df["reviewer_id"].str.replace("_", " ").str.title()
     return df
 
 
 def coverage(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for c in ["expert_labeled", "expert_neutral", "layperson"]:
+    for c in CONDITIONS:
         g = df[df.condition == c]
         rows.append({
             "condition": c,
-            "reviewers": g.reviewer_name.nunique(),
+            "condition_label": CONDITION_LABEL[c],
+            "reviewers": g.reviewer_id.nunique(),
             "ratings": len(g),
             "rewrites_covered": g.blind_id.nunique(),
+            "rewrites_total": 77,
+            "mean_raters_per_rewrite": round(len(g) / max(g.blind_id.nunique(), 1), 2),
             "sets": ", ".join(sorted(g.set_id.astype(str).unique())),
         })
     return pd.DataFrame(rows)
+
+
+def reviewers(df: pd.DataFrame) -> pd.DataFrame:
+    g = (df.groupby(["condition", "reviewer_id", "reviewer_display"])
+           .agg(ratings=("blind_id", "size"),
+                sets=("set_id", lambda s: ", ".join(sorted(s.astype(str).unique()))))
+           .reset_index()
+           .sort_values(["condition", "reviewer_id"]))
+    return g
 
 
 def by_model(df: pd.DataFrame) -> pd.DataFrame:
@@ -110,20 +144,21 @@ def pooled(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def irr(df: pd.DataFrame) -> pd.DataFrame:
-    """Pairwise agreement among labeled experts on multiply-scored rewrites."""
-    lab = df[df.condition == "expert_labeled"]
+    """Pairwise agreement on multiply-scored rewrites, per condition and axis."""
     rows = []
-    for ax in AXES:
-        piv = lab.pivot_table(index="blind_id", columns="reviewer_name", values=ax, aggfunc="first")
-        ex, w1 = [], []
-        for _, r in piv.iterrows():
-            vals = r.dropna().values
-            for a, b in combinations(vals, 2):
-                ex.append(a == b)
-                w1.append(abs(a - b) <= 1)
-        rows.append({"axis": ax, "rater_pairs": len(ex),
-                     "pct_exact": 100 * np.mean(ex) if ex else np.nan,
-                     "pct_within_1": 100 * np.mean(w1) if w1 else np.nan})
+    for c in CONDITIONS:
+        g = df[df.condition == c]
+        for ax in AXES:
+            piv = g.pivot_table(index="blind_id", columns="reviewer_id", values=ax, aggfunc="first")
+            ex, w1 = [], []
+            for _, r in piv.iterrows():
+                vals = r.dropna().values
+                for a, b in combinations(vals, 2):
+                    ex.append(a == b)
+                    w1.append(abs(a - b) <= 1)
+            rows.append({"condition": c, "axis": ax, "rater_pairs": len(ex),
+                         "pct_exact": 100 * np.mean(ex) if ex else np.nan,
+                         "pct_within_1": 100 * np.mean(w1) if w1 else np.nan})
     return pd.DataFrame(rows)
 
 
@@ -189,6 +224,7 @@ def main() -> None:
     df = load()
     out = {
         "aim3_compiled_coverage.csv": coverage(df),
+        "aim3_compiled_reviewers.csv": reviewers(df),
         "aim3_compiled_pooled.csv": pooled(df),
         "aim3_compiled_by_model.csv": by_model(df),
         "aim3_compiled_irr.csv": irr(df),

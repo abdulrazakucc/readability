@@ -6,6 +6,8 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 
 ## Last updated
 
+2026-08-06, **Aim 3 primary human review reached full coverage in all three collected cohorts** (77/77 rewrites each). The blinded review instrument was rendered in two presentation variants (labeled and neutral) and handed out as procedure-balanced sets A/B/C; 11 reviewers returned sheets. The two interim-analysis scripts were consolidated into `scripts/12_aim3_human_results.py` (tables) + `scripts/13_aim3_human_figures.py` (figures), replacing the older `12`/`14`/`15` trio. `12` is now **variant-aware**: it derives the condition from the filename slug so neutral sheets are never pooled with labeled ones, and it takes reviewer identity from the slug rather than the inconsistent free-text `reviewer_name` column. Outputs are `reports/aim3_compiled_*.csv` (9 tables) and three publication-quality figures. Headline: rewrites are clinically sound under blinded subspecialist review (accuracy 4.84/5, 85.8% maximal, 1/155 ratings ≤3); the three models do **not** differ on human accuracy (Friedman p = .52), which is a different picture from the automated judge panel; and neutral-presentation scores are no *lower* than labeled ones, arguing against an anti-AI rating penalty. Still interim, not the locked `07` analysis.
+
 2026-06-09, ran the full pipeline end-to-end on n=26 with all three model arms. Aim 1 re-scored (0/26 meet FKGL ≤ 6; median 10.3). AI rewrite arm complete for all 3 models — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26). Aim 2 paired tests + 3-model Friedman + figures generated; blinded review packet built; manuscript markdown + `.docx` rebuilt. A secondary, exploratory automated 3-LLM-judge accuracy panel (231 judgments) was also run and documented (`docs/aim3_automated_accuracy_assessment.md`); the PRIMARY Aim 3 (blinded human subspecialist scoring) is the only remaining step and needs Dr. Naeem (packet + guide ready). Total API cost ~\$3–6 including the judge panel. Model panel + sampling-param deviations and the Gemini/GPT-5.5 incidents are logged in stats_deviations.md.
 
 2026-06-08, recovered and re-cleaned the 5 previously-blocked Hopkins/Mayo pages (manual browser capture); included corpus is now 26 pages.
@@ -20,7 +22,7 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 | 1 | Sample selection, capture, clean, manifest | **done**, 26 captured, 26 included (5 Hopkins/Mayo recovered by manual capture 2026-06-08), all 3 procedures clear the 5-page floor |
 | 2 | Aim 1 readability of originals | **done (n=26)**, `reports/aim1_*.csv` + 2 figures regenerated 2026-06-09; 0/26 met FKGL ≤ 6, median 10.3 |
 | 3 | AI rewrite arm (Aim 2) | **done (all 3 models)** — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26); 77 rewrites total |
-| 4 | Clinical accuracy scoring (Aim 3) | **primary (human) pending** — packet + reviewer guide ready (`data/review/review_packet_with_text.csv`, `docs/reviewer_guide_naeem.md`), needs Dr. Naeem. **Secondary automated 3-LLM-judge panel done** (231 judgments; `docs/aim3_automated_accuracy_assessment.md`) |
+| 4 | Clinical accuracy scoring (Aim 3) | **primary (human) collected, interim-compiled** — 3 cohorts, all at 77/77 coverage: 6 subspecialists on the labeled instrument (155 ratings, the primary endpoint), 3 subspecialists on the neutral-presentation instrument (231), 2 laypersons (154). Compiled by `scripts/12`–`13` into `reports/aim3_compiled_*.csv` + 3 figures. **Not yet folded into the locked `07` analysis** (needs the multi-rater sheets collapsed to one row per page×model at `data/scores/accuracy.csv`). **Secondary automated 3-LLM-judge panel done** (231 judgments; `docs/aim3_automated_accuracy_assessment.md`) |
 | 5 | Statistics (Aims 2 & 3 portion) | Aim 1 + Aim 2 done (paired tests all 3 models + Friedman across-models); Aim 3 portion pending clinical scores |
 | 6 | Manuscript support | Aim 1 + full 3-model Aim 2 written into `publication/draft_manuscript.md` and `publication/manuscript_jama.docx` (rebuilt 2026-06-09); Aim 3 sections are placeholders |
 
@@ -39,11 +41,16 @@ See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in
 - `reports/aim3_llm_*.csv` (Aim 3 SECONDARY automated panel: descriptives, model comparison, inter-judge agreement, self-preference, trade-off) + `data/scores/accuracy_llm{,_raw}.csv` (231 judgments)
 - `reports/figures/aim1_fkgl_by_*.png` (2) + `aim2_fkgl_delta_by_model.png` + `aim3_llm_scores_by_model.png` + `aim3_llm_tradeoff.png` (scatter) + `aim3_llm_tradeoff_alt.png` (dual-axis summary)
 - `data/review/review_packet.csv` (77 blinded entries) + `data/review/blind_key.csv` (unblinding key, do not share)
+- `data/review/questionnaire_parts/` + `data/review/questionnaire_neutral/`, the reviewer-facing HTML instrument split into procedure-balanced sets A/B/C, in the labeled and neutral-presentation variants
+- `data/review/questionnaire_scores/set_{A,B,C}/`, **21 returned reviewer sheets** from 11 reviewers across the 3 cohorts (540 ratings total)
+- `reports/aim3_compiled_*.csv` (Aim 3 PRIMARY human review, interim): `coverage`, `reviewers`, `pooled`, `by_model`, `irr`, `presentation_effect`, `expert_vs_lay`, `tradeoff`, `across_model`
+- `reports/figures/aim3_human_compiled.png` (primary endpoint + trade-off), `aim3_presentation_bias.png` (labeled vs neutral), `aim3_three_conditions.png` (all 3 cohorts)
 - Docs: `docs/methods_and_statistics_companion.md` (plain-language methods/metrics/stats with worked examples), `docs/aim3_automated_accuracy_assessment.md` (panel write-up), `docs/reviewer_guide_naeem.md` (clinical reviewer instructions)
 
 Headline finding (Aim 1, n=26): **0/26 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.3 (IQR 8.7–11.9).
 Headline finding (Aim 2, all 3 models): Gemini 3.1 Pro lowered FKGL by 5.7 grade levels (20/26 rewrites meet ≤6); Claude Opus 4.8 by 5.5 (22/26); GPT-5.5 by 3.9 (9/25); all Holm p < 0.001; models differ (Friedman p = 5.6e-9), Claude≈Gemini > GPT-5.5.
 Headline finding (Aim 3 SECONDARY, automated LLM-judge panel — NOT human): readability–fidelity trade-off — consensus accuracy GPT-5.5 5.00 > Claude 4.91 > Gemini 4.69 (Friedman p = 2.6e-5); rewrites mostly faithful (89% accuracy ratings maximal); GPT-5.5 judge showed self-preference (p = .001). Claude Opus 4.8 = best balance of reading-level reduction and fidelity. Primary human review still pending.
+Headline finding (Aim 3 PRIMARY, blinded human subspecialists — interim, n=155 ratings on 77/77 rewrites by 6 reviewers): rewrites are clinically sound. Accuracy 4.84/5 (85.8% maximal, only 1 rating ≤ 3), completeness 4.80, added errors 1.09/5 (98.7% ≤ 2). Unlike the automated panel, **the three models do not differ** on human accuracy (Friedman p = .52); the one signal is completeness, where Gemini 3.1 Pro trails (4.64 vs Claude 4.94; p = .064) — the aggressive-simplification cost. Agreement is high (accuracy exact 82%, within-1 100%). Presentation check: neutral-presentation experts scored *no lower* than labeled (overall accuracy 4.90 vs 4.84, p = .09), arguing against an anti-AI penalty; laypersons rate at ceiling (4.99) and cannot detect the gaps experts flag (p < .001 on all three axes).
 
 ## Open blockers
 
@@ -65,9 +72,13 @@ Cost estimate before running the full arm: roughly **USD $4–6** for the locked
 
 Johns Hopkins (×3 pages: CCTA, TAVR, LAAO) and Mayo Clinic (×2 pages: CCTA, TAVR) returned HTTP 403 to both the locked research User-Agent and to a clean Chrome User-Agent via headless fetcher. Recovered on 2026-06-08 by manual browser capture and re-cleaned to pipeline standard (`scripts/_reclean_manual.py`); manifest, cleaned text, and provenance are updated. Logged in [stats_deviations.md](stats_deviations.md). The only remaining action is to re-score (Step 2) so Aim 1 outputs reflect n=26.
 
-### B3: Clinical reviewer (Naeem) availability for Aim 3
+### B3: Clinical reviewer availability for Aim 3 (RESOLVED 2026-08-06)
 
-Required after Phase 3 produces rewrites and Phase 4 builds the blinded review packet. Estimated reviewer effort: 26 pages × 3 rewrites = 78 rewrites to score on accuracy, completeness, and added errors (1–5 each). At 3–5 minutes per rewrite, ~4–6 hours total.
+Originally scoped as one reviewer (Dr. Naeem) scoring all 77 rewrites (~4–6 hours). Solved instead by **splitting the instrument into three procedure-balanced, mutually exclusive sets (A/B/C)** rendered as an HTML questionnaire, so each reviewer scores ~26 rewrites (~1.5 hours) and the sets still cover every rewrite exactly once. 11 reviewers returned sheets across 3 cohorts; all three cohorts are at 77/77 coverage. See `reports/aim3_compiled_reviewers.csv` for the roster.
+
+### B4: Collapsing multi-rater sheets into the locked `07` analysis (OPEN)
+
+`07_run_statistics.py` requires exactly one row per (`page_id`, `model_id`) at `data/scores/accuracy.csv`, but the primary cohort has ~2 raters per rewrite (155 ratings over 77 rewrites, unevenly: set B has 3 labeled reviewers, set C has 1). The aggregation rule — mean vs median across raters, and whether the neutral cohort is reported as a sensitivity analysis or excluded — is a **protocol decision that must be written into `docs/statistical_analysis_plan.md` and logged in `docs/stats_deviations.md` before `07` is run**, not chosen after seeing the result.
 
 ## Next steps (ordered)
 
@@ -122,16 +133,27 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
 - **Hand-off:** send `review_packet.csv` to Naeem along with `docs/accuracy_scoring_rubric.md`. Do NOT send `blind_key.csv`.
 - **Done when:** the packet is sent and the blind key is committed locally but not surfaced to the reviewer.
 
-### Step 6: Receive Naeem's scored sheets, unblind, and run full statistics
-- **Input (from Naeem):** a CSV with columns `blind_id, accuracy_1_5, completeness_1_5, added_errors_1_5, notes`.
-- **Local processing:** join Naeem's CSV to `blind_key.csv` on `blind_id`, write `data/scores/accuracy.csv` keyed `page_id × model_id`.
+### Step 6: Receive scored sheets, unblind, and compile (DONE 2026-08-06 — interim)
+- **Input (per reviewer):** one CSV per set into `data/review/questionnaire_scores/set_<X>/`, named `aim3_scores_[neutral_]set_<x>_<name>_<expert|layman>.csv`, with columns `blind_id, accuracy_1_5, completeness_1_5, added_errors_1_5, notes`. The filename convention is load-bearing — `12` parses cohort and reviewer identity from it.
 - **Commands:**
+  ```bash
+  .venv/bin/python scripts/12_aim3_human_results.py   # -> reports/aim3_compiled_*.csv (9 tables)
+  .venv/bin/python scripts/13_aim3_human_figures.py   # -> 3 figures
+  ```
+- **Done:** all three cohorts at 77/77 coverage; tables and figures regenerate idempotently.
+
+### Step 6b: Fold the primary cohort into the locked `07` analysis (NEXT — blocked on B4)
+- **First:** decide and document the rater-aggregation rule (see B4) in the analysis plan + deviation log.
+- **Then:** collapse `expert_labeled` ratings to one row per (`page_id`, `model_id`) at `data/scores/accuracy.csv`, and run:
   ```bash
   .venv/bin/python scripts/07_run_statistics.py
   .venv/bin/python scripts/08_generate_figures.py
   ```
-- **Outputs:** Aim 2 and Aim 3 reports under `reports/` and figures under `reports/figures/`.
-- **Done when:** every result number cited in the manuscript draft has a deterministic source CSV.
+- **Watch for:** `join_accuracy_scores` validates one-to-one and will fail loudly on raw multi-rater sheets — that is the intended guardrail, not a bug to work around.
+- **Done when:** every Aim 3 result number cited in the manuscript draft has a deterministic source CSV.
+
+### Step 6c: Write the Aim 3 sections of the manuscript
+- The Aim 3 sections in `publication/draft_manuscript.md` are still placeholders. They need: the primary human result, the model-comparison null, the Gemini completeness signal, the presentation-bias check, the expert-vs-layperson contrast, and an explicit statement that the LLM-judge panel is a secondary screening signal — including the fact that it and the human panel **disagree on model ranking**, which is itself a reportable finding.
 
 ### Step 7: Manuscript support (Phase 6)
 - Generate every table/figure from a script (no hand-edited Illustrator).
