@@ -10,6 +10,20 @@ publication/
 
 CLAUDE.md
 
+# Kept on the `draft` branch only — never re-add these to `main`.
+# `main` is the reproduction branch: code, locked config, data, reports and the
+# protocol docs that govern the analysis. Background reading, internal planning
+# and budgeting notes, the IRB package, and exploratory notebooks stay on `draft`.
+notebooks/
+literature/
+IRB/
+docs/cardiac_readability_plan.docx
+docs/data_scientist_tasks.md
+docs/jama_publishability_and_improvements.md
+docs/cost_estimates.md
+docs/background_summary.md
+docs/literature_review.md
+
 # Raw captures and derived artifacts (regenerable + potentially large)
 # data/raw/
 # data/cleaned/

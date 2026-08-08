@@ -2,31 +2,34 @@
 
 Reading-level analysis of online patient education materials for three pre-procedure cardiac CT use cases (TAVR planning, coronary CTA, LAAO/Watchman), with an AI rewrite arm comparing three chatbots on readability *and* clinical accuracy.
 
-Project plan: [docs/cardiac_readability_plan.docx](docs/cardiac_readability_plan.docx)
 **Current state & next steps: [docs/project_status_and_next_steps.md](docs/project_status_and_next_steps.md)**
-Data-scientist tasks: [docs/data_scientist_tasks.md](docs/data_scientist_tasks.md)
+Plain-language methods, metrics & statistics companion (start here if new): [docs/methods_and_statistics_companion.md](docs/methods_and_statistics_companion.md)
 Implementation guidelines: [docs/implementation_guidelines.md](docs/implementation_guidelines.md)
 Statistical analysis plan: [docs/statistical_analysis_plan.md](docs/statistical_analysis_plan.md)
-Plain-language methods, metrics & statistics companion (start here if new): [docs/methods_and_statistics_companion.md](docs/methods_and_statistics_companion.md)
+Deviation log: [docs/stats_deviations.md](docs/stats_deviations.md)
+Sample selection protocol: [docs/sample_selection_protocol.md](docs/sample_selection_protocol.md)
+AI rewrite protocol: [docs/ai_rewrite_protocol.md](docs/ai_rewrite_protocol.md)
+Accuracy scoring rubric: [docs/accuracy_scoring_rubric.md](docs/accuracy_scoring_rubric.md)
 Automated LLM-judge accuracy assessment (Aim 3 secondary): [docs/aim3_automated_accuracy_assessment.md](docs/aim3_automated_accuracy_assessment.md)
 Reviewer guide for the clinical subspecialist: [docs/reviewer_guide_naeem.md](docs/reviewer_guide_naeem.md)
-Rough cost estimates for the AI rewrite arm: [docs/cost_estimates.md](docs/cost_estimates.md)
-Literature review: [docs/literature_review.md](docs/literature_review.md)
-Journal-target assessment, improvements, alternative tests: [docs/jama_publishability_and_improvements.md](docs/jama_publishability_and_improvements.md)
+
+> **Scope of this branch.** `main` carries only what is needed to reproduce and
+> evaluate the results: code, locked config, data, reports, and the protocol
+> documents that govern the analysis. Background reading, internal planning and
+> budgeting notes, the IRB submission package, and exploratory notebooks live on
+> the `draft` branch and are deliberately kept off `main`.
 
 ## Layout
 
 | Directory | Purpose |
 |-----------------|----------------------------------------------------------------------|
-| `docs/` | Project plan, protocols, stats plan, deviation log |
-| `literature/` | Background papers (PDF + abstracts + BibTeX) |
+| `docs/` | Protocols, stats plan, rubric, deviation log |
 | `config/` | Locked YAML configs (sites, models, queries, defaults) |
 | `prompts/` | Locked LLM rewrite prompt(s) |
 | `src/` | Library code (scrape, clean, readability, ai_rewrite, scoring, stats)|
 | `scripts/` | Numbered, idempotent pipeline steps |
 | `data/` | Raw HTML, cleaned text, rewrites, scores, manifest |
 | `reports/` | Auto-generated tables and figures |
-| `notebooks/` | Exploratory analysis only |
 | `tests/` | Unit tests |
 
 ## Quick start

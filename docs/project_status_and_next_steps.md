@@ -2,7 +2,8 @@
 
 A living document that captures **where the pipeline is right now** and **exactly what to do next** to take the project from current state to a finished manuscript. Update this file at the end of every work session.
 
-Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file is the *state snapshot* on top of that plan.
+Master task plan: `data_scientist_tasks.md`, kept on the `draft` branch along with the
+other planning and background documents. This file is the *state snapshot* on top of that plan.
 
 ## Last updated
 
@@ -18,7 +19,7 @@ Master task plan: [data_scientist_tasks.md](data_scientist_tasks.md). This file 
 
 | Phase | Description | State |
 |-------|-------------|-------|
-| 0 | Bootstrap (venv, deps, model lock, scorer sanity) | partial, `requirements.txt` works, `pytest` not yet run on fresh clone; `config/models.yaml` already locked; `docs/background_summary.md` is still a stub |
+| 0 | Bootstrap (venv, deps, model lock, scorer sanity) | partial, `requirements.txt` works, `pytest` not yet run on fresh clone; `config/models.yaml` already locked; `background_summary.md` (on `draft`) is still a stub |
 | 1 | Sample selection, capture, clean, manifest | **done**, 26 captured, 26 included (5 Hopkins/Mayo recovered by manual capture 2026-06-08), all 3 procedures clear the 5-page floor |
 | 2 | Aim 1 readability of originals | **done (n=26)**, `reports/aim1_*.csv` + 2 figures regenerated 2026-06-09; 0/26 met FKGL ≤ 6, median 10.3 |
 | 3 | AI rewrite arm (Aim 2) | **done (all 3 models)** — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26); 77 rewrites total |
@@ -66,7 +67,7 @@ OPENAI_API_KEY=...
 GOOGLE_API_KEY=...
 ```
 
-Cost estimate before running the full arm: roughly **USD $4–6** for the locked 3-model panel on the current 21-page corpus, well under the `cost_warn_usd: 20` guardrail in `config/default.yaml`. Full breakdown (with sensitivity to model choice, corpus growth, and output length) is in [cost_estimates.md](cost_estimates.md). `scripts/04_generate_rewrites.py` will print the actual estimate and require `--confirm-cost` to proceed.
+Cost estimate before running the full arm: roughly **USD $4–6** for the locked 3-model panel on the current 21-page corpus, well under the `cost_warn_usd: 20` guardrail in `config/default.yaml`. Full breakdown (with sensitivity to model choice, corpus growth, and output length) is in `cost_estimates.md` on the `draft` branch. `scripts/04_generate_rewrites.py` will print the actual estimate and require `--confirm-cost` to proceed.
 
 ### B2: Five sites blocked by bot detection (RESOLVED 2026-06-08)
 
@@ -86,8 +87,8 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
 
 ### Step 1: Fill in the background summary (independent of blockers)
 - **Why:** Phase 0 deliverable; becomes the manuscript intro.
-- **Input:** 4 sources in `literature/`.
-- **Output:** `docs/background_summary.md` rewritten as a 250–500-word narrative (currently a stub with bullets).
+- **Input:** 4 sources in `literature/` (on the `draft` branch).
+- **Output:** `background_summary.md` (on `draft`) rewritten as a 250–500-word narrative (currently a stub with bullets).
 - **Done when:** A co-author can read it and understand the gap this study fills without opening the PDFs.
 
 ### Step 2: Re-score Aim 1 on the recovered n=26 corpus
@@ -108,7 +109,7 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
   .venv/bin/python scripts/07_run_statistics.py
   .venv/bin/python scripts/08_generate_figures.py
   ```
-- **Then refresh manuscript numbers:** every "n = 21", "0 of 21", median FKGL, IQR, and ANOVA / Kruskal-Wallis value in `publication/draft_manuscript.md`, `publication/build_docx.py`, and `docs/data_scientist_tasks.md` must be updated from the regenerated `reports/aim1_*.csv`.
+- **Then refresh manuscript numbers:** every "n = 21", "0 of 21", median FKGL, IQR, and ANOVA / Kruskal-Wallis value in `publication/draft_manuscript.md`, `publication/build_docx.py`, and `data_scientist_tasks.md` (on `draft`) must be updated from the regenerated `reports/aim1_*.csv`.
 - **Done when:** `data/scores/originals.csv` has 26 rows and every Aim 1 number in the manuscript traces to a regenerated `reports/` CSV.
 
 ### Step 3: Unblock B1 (API keys), then run the rewrite arm

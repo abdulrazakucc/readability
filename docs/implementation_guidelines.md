@@ -6,8 +6,7 @@ Engineering rules for the cardiac CT readability project. These keep the analysi
 
 ```
 readability/
-├── docs/                  Plan, protocols, stats plan, this guide
-├── literature/            Background papers (PDFs and citations)
+├── docs/                  Protocols, stats plan, rubric, this guide
 ├── config/                YAML config: sites, models, prompts
 ├── prompts/               The exact rewrite prompt(s), versioned
 ├── src/                   Library code (importable modules)
@@ -18,7 +17,6 @@ readability/
 │   ├── rewrites/          Per-model rewrites
 │   └── scores/            CSV outputs
 ├── reports/               Auto-generated tables and figures
-├── notebooks/             Exploratory analysis ONLY
 ├── tests/                 Unit tests
 ├── requirements.txt
 ├── pyproject.toml
