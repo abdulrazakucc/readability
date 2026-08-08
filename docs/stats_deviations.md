@@ -16,6 +16,13 @@ Reviewers will ask. Volunteer.
 
 ## Entries
 
+### 2026-08-08: Cosmetic import change in the locked `src/stats.py` (no statistical effect)
+- What changed: `Iterable` is now imported from `collections.abc` instead of `typing` (`src/stats.py` line 11). Nothing else in the file was touched — no test, threshold, correction method, or column list changed.
+- Why: `typing.Iterable` has been deprecated since Python 3.9 and was the single remaining `ruff` finding (UP035) in the repository. `main` is the branch colleagues clone to reproduce results and reviewers read to evaluate them, so the lint run is left clean rather than carrying one unexplained warning.
+- Why it cannot affect results: `Iterable` appears only in type annotations (4 function signatures, all defaulting to `SCORE_COLS`), and the module begins with `from __future__ import annotations`, so annotations are never evaluated at runtime. The two names are the same abstract base class in any case. Logged here only because `src/stats.py` is a locked artifact and the locking convention requires every change to it to be recorded, however cosmetic.
+- Affected outputs: none. `pytest` passes unchanged (9 tests) and every `reports/` CSV regenerates byte-identical.
+- Decided by: Project lead (this run).
+
 ### 2026-06-09: Added a secondary, exploratory automated LLM-judge accuracy panel (Aim 3)
 - What changed: Beyond the pre-registered blinded subspecialist review (which remains the PRIMARY Aim 3 endpoint and is still pending), an automated screening analysis was added: a panel of 3 LLM judges (Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro) scored all 77 rewrites against their originals on the 3 locked rubric dimensions, blinded to the producing model (231 judgments). Outputs use clearly-labeled `*_llm_*` filenames and are never represented as human/subspecialist scores. Pipeline: `src/llm_judge.py`, `scripts/09_llm_accuracy.py`, `scripts/10_aim3_llm_stats.py`, `scripts/11_aim3_llm_figures.py`. Full write-up: `docs/aim3_automated_accuracy_assessment.md`.
 - Why: To triage pages for human review, to give an early reproducible signal on the readability–accuracy trade-off, and to later validate the human scores (human-vs-automated agreement). A multi-judge panel was chosen specifically so inter-judge agreement and self-preference bias could be measured.
