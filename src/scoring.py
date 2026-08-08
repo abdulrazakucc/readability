@@ -18,6 +18,21 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.config import REPO_ROOT
+
+
+def _repo_relative(path: Path) -> str:
+    """Render a path relative to the repo root so the packet is machine-portable.
+
+    The packet is a committed artifact; writing absolute paths would bake the
+    generating machine's home directory into it and make `06` produce a spurious
+    diff on every other checkout. Paths outside the repo are left absolute.
+    """
+    try:
+        return str(Path(path).resolve().relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
 
 def _make_blind_id(rng: random.Random, length: int = 10) -> str:
     alphabet = string.ascii_uppercase + string.digits
@@ -88,8 +103,8 @@ def build_packet(
             w.writerow(
                 [
                     e.blind_id,
-                    str(e.original_path),
-                    str(e.rewrite_path),
+                    _repo_relative(e.original_path),
+                    _repo_relative(e.rewrite_path),
                     "",
                     "",
                     "",
