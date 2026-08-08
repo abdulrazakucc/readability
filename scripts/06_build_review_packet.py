@@ -19,7 +19,15 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import CLEANED_DIR, CONFIG_DIR, MANIFEST_PATH, REVIEW_DIR, REWRITES_DIR, ensure_dirs, load_config  # noqa: E402
+from src.config import (  # noqa: E402
+    CLEANED_DIR,
+    CONFIG_DIR,
+    MANIFEST_PATH,
+    REVIEW_DIR,
+    REWRITES_DIR,
+    ensure_dirs,
+    load_config,
+)
 from src.scoring import build_packet  # noqa: E402
 
 log = logging.getLogger("review-packet")
@@ -40,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest = list(csv.DictReader(f))
     page_ids = [r["page_id"] for r in manifest if r.get("include", "").upper() == "Y"]
 
-    with open(args.models, "r", encoding="utf-8") as f:
+    with open(args.models, encoding="utf-8") as f:
         model_ids = [m["id"] for m in yaml.safe_load(f)["models"]]
 
     packet, key, entries = build_packet(

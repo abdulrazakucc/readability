@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -104,7 +105,7 @@ def main() -> int:
     ax1.set_ylim(0, 8)
     ax1.set_xticks(xs)
     ax1.set_xticklabels([LABELS[m] for m in order])
-    for b, v in zip(bars, summ["red_mean"]):
+    for b, v in zip(bars, summ["red_mean"], strict=True):
         ax1.text(b.get_x() + b.get_width() / 2, 0.25, f"{v:.1f} grades",
                  ha="center", va="bottom", fontsize=9, fontweight="bold",
                  color="#222222")
@@ -115,7 +116,7 @@ def main() -> int:
                  markeredgewidth=1.6, linewidth=1.8, capsize=4, zorder=5)
     ax2.set_ylabel("Consensus accuracy (1–5), mean ± SD", fontsize=10)
     ax2.set_ylim(4.0, 5.15)
-    for xi, v in zip(xs, summ["acc_mean"]):
+    for xi, v in zip(xs, summ["acc_mean"], strict=True):
         ax2.annotate(f"{v:.2f}", (xi, v), textcoords="offset points",
                      xytext=(10, 6), fontsize=9, fontweight="bold")
 

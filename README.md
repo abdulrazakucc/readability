@@ -77,7 +77,14 @@ cp .env.example .env
 `07` is the **locked final** Aim 3 analysis (one row per page/model at
 `data/scores/accuracy.csv`); `12`/`13` are the **re-runnable interim** compilation
 that separates the three cohorts actually collected (labeled experts, neutral-
-presentation experts, laypersons) and never pools them. See CLAUDE.md.
+presentation experts, laypersons) and never pools them. See
+[docs/project_status_and_next_steps.md](docs/project_status_and_next_steps.md).
+
+Note for reviewers: `data/scores/accuracy.csv` is **not** checked in, because the
+blinded human review that produces it is still being collected. Steps `01`–`06`
+and `09`–`13` reproduce end-to-end from what is in this repo; step `07`'s Aim 3
+primary analysis will run once that file exists. The interim human-review results
+are in `reports/aim3_compiled_*.csv` via step `12`.
 
 ## Pipeline dependency graph
 

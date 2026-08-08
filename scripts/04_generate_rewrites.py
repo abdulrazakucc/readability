@@ -26,7 +26,6 @@ from src.config import (  # noqa: E402
     CLEANED_DIR,
     CONFIG_DIR,
     MANIFEST_PATH,
-    PROMPTS_DIR,
     REWRITES_DIR,
     ensure_dirs,
     load_config,
@@ -87,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     prompt_path = REPO_ROOT / cfg.get("prompt_path", default="prompts/rewrite_v1.txt")
     prompt_template = prompt_path.read_text(encoding="utf-8")
 
-    with open(args.models, "r", encoding="utf-8") as f:
+    with open(args.models, encoding="utf-8") as f:
         model_specs = yaml.safe_load(f)["models"]
     if args.only_model:
         model_specs = [m for m in model_specs if m["id"] == args.only_model]

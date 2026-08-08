@@ -25,8 +25,15 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import CLEANED_DIR, CONFIG_DIR, MANIFEST_PATH, REWRITES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
-from src.llm_judge import build_judges, score_one, _DIMS  # noqa: E402
+from src.config import (  # noqa: E402
+    CLEANED_DIR,
+    CONFIG_DIR,
+    MANIFEST_PATH,
+    REWRITES_DIR,
+    SCORES_DIR,
+    ensure_dirs,
+)
+from src.llm_judge import _DIMS, build_judges, score_one  # noqa: E402
 
 log = logging.getLogger("llm-accuracy")
 

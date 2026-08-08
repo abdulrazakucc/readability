@@ -9,8 +9,6 @@ from __future__ import annotations
 
 import math
 
-import pytest
-
 from src.readability import meets_sixth_grade, score
 
 

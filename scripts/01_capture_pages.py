@@ -21,9 +21,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import RAW_DIR, MANIFEST_PATH, ensure_dirs, load_config  # noqa: E402
+from src.config import MANIFEST_PATH, RAW_DIR, ensure_dirs, load_config  # noqa: E402
+from src.provenance import git_sha  # noqa: E402
 from src.scrape import capture, page_id, site_short_name  # noqa: E402
-from src.provenance import git_sha, utc_now_iso  # noqa: E402
 
 log = logging.getLogger("capture")
 

@@ -17,8 +17,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import CLEANED_DIR, MANIFEST_PATH, RAW_DIR, ensure_dirs  # noqa: E402
 from src.clean import clean  # noqa: E402
+from src.config import CLEANED_DIR, MANIFEST_PATH, RAW_DIR, ensure_dirs  # noqa: E402
 
 log = logging.getLogger("clean")
 

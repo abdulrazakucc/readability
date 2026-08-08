@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import logging
 import sys
 from pathlib import Path
@@ -14,7 +13,7 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import MANIFEST_PATH, REWRITES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
+from src.config import REWRITES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
 from src.readability import score  # noqa: E402
 
 log = logging.getLogger("score-rewrites")
@@ -29,7 +28,7 @@ META_COLS = ["word_count", "sentence_count", "avg_words_per_sentence", "avg_syll
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    args = parser.parse_args(argv)
+    parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     ensure_dirs()
 
@@ -42,8 +41,7 @@ def main(argv: list[str] | None = None) -> int:
         stem = rewrite_file.stem  # "<page_id>__<model_id>"
         if "__" not in stem:
             continue
-        page_id, _, model_id = stem.partition("__")
-        # page_id itself contains "__" — re-parse: split rsplit on last "__"
+        # page_id itself contains "__", so split on the *last* separator.
         page_id, _, model_id = stem.rpartition("__")
         text = rewrite_file.read_text(encoding="utf-8")
         s = score(text)

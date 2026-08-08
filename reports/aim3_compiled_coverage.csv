@@ -1,4 +1,4 @@
 condition,condition_label,reviewers,ratings,rewrites_covered,rewrites_total,mean_raters_per_rewrite,sets
 expert_labeled,"Subspecialist, standard instrument (primary)",6,155,77,77,2.01,"A, B, C"
-expert_neutral,"Subspecialist, neutral presentation",3,231,77,77,3.0,"A, B, C"
+expert_neutral,"Subspecialist, neutral presentation",4,256,77,77,3.32,"A, B, C"
 layperson,"Layperson, standard instrument",2,154,77,77,2.0,"A, B, C"

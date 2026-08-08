@@ -43,7 +43,7 @@ SITE_SHORT_NAMES = {
 
 
 def site_short_name(url: str) -> str:
-    host = urlparse(url).netloc.lower().lstrip("www.")
+    host = urlparse(url).netloc.lower()
     # Strip leading www.
     if host.startswith("www."):
         host = host[4:]

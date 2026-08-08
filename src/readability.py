@@ -10,7 +10,6 @@ the test will catch it.
 
 from __future__ import annotations
 
-import re
 from dataclasses import asdict, dataclass
 from typing import Any
 

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.scoring import build_packet, join_accuracy_scores
 import pandas as pd
+
+from src.scoring import build_packet, join_accuracy_scores
 
 
 def _make_files(root: Path) -> tuple[Path, Path]:
