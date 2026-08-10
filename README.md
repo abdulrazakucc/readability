@@ -184,12 +184,14 @@ well-known high-agreement/low-κ paradox. Three quantities are therefore reporte
 | `gwet_ac1` | Gwet's AC1, computed over the protocol's full 1–5 category set |
 | `quad_weighted_kappa` | Quadratic-weighted Cohen's κ — expected near zero here |
 
-**One AC1, one convention.** The chance-agreement term depends on how many rating categories you
-assume, so q is taken from the protocol — `docs/accuracy_scoring_rubric.md` defines all three
-dimensions on a 1–5 scale — and never from whichever categories happen to appear in the sample.
-Deriving q from the data would be a post-hoc choice that moves subspecialist accuracy from 0.805 to
-0.771 and makes cohorts incomparable when they use different parts of the scale. The pipeline
-therefore emits a single value with no alternative to choose between.
+**One AC1, one convention.** The chance-agreement term depends on q, the number of rating
+categories. The pipeline uses the estimator as defined by Gwet's reference implementation: q is taken
+from the categories actually observed among items that carry agreement information. `irrCAC`
+documents `categ.labels = NULL` as its default for exactly this, and our implementation reproduces
+that package to within 4×10⁻⁶ across all nine cohort × axis combinations — an external check, pinned
+in `tests/test_agreement.py`, not a match to any target. Fixing q at the full 1–5 scale instead is a
+different estimator and reads materially higher under a ceiling (0.805 vs 0.771 for subspecialist
+accuracy); it is available for comparison but is not what the pipeline reports.
 
 ---
 

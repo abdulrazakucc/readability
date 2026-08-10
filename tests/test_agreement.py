@@ -39,15 +39,17 @@ def test_ac1_handles_the_ceiling_case():
     assert np.isnan(quadratic_weighted_kappa(df.r1.to_numpy(), df.r2.to_numpy()))
 
 
-def test_ac1_uses_the_protocol_scale_not_the_observed_categories():
-    """q is a design fact, so categories nobody used still count.
+def test_ac1_defaults_to_observed_categories():
+    """The default is the reference estimator: q from the observed categories.
 
-    Pinning this stops the default drifting to a data-derived q, which would
-    change every published agreement figure.
+    Fixing q at the protocol scale is a different estimator and gives a materially
+    higher number under a ceiling. Pinning both keeps the contrast explicit and
+    stops the default drifting.
     """
     df = pd.DataFrame({"r1": [5, 5, 5, 4, 5, 4], "r2": [5, 5, 4, 4, 5, 5]})
-    protocol = gwet_ac1(df)           # default: q = 5
-    observed = gwet_ac1(df, (4, 5))   # what a data-derived q would give
+    observed = gwet_ac1(df)                    # default: q = 2 here
+    protocol = gwet_ac1(df, RATING_CATEGORIES)  # q = 5
+    assert observed == pytest.approx(gwet_ac1(df, (4, 5)))
     assert protocol > observed
     assert protocol - observed > 0.1
 
@@ -156,16 +158,20 @@ def _matrix():
     })
 
 
-def test_protocol_scale_ac1_exceeds_the_reference_package_under_a_ceiling():
-    """Documents a real, expected divergence from the irrCAC package.
+def test_ac1_reproduces_the_reference_implementation():
+    """Our default IS the reference estimator, to within display precision.
 
-    irrCAC builds its agreement matrix from the categories present in the data, so
-    under a ceiling it uses a smaller q and returns a lower coefficient than the
-    protocol-scale definition. Neither is a bug -- they answer different questions.
-    This test exists so the gap stays visible and nobody later "fixes" our value to
-    match the package.
+    This is the external validation the default rests on: not "it matches the
+    published numbers" but "it matches Gwet's own implementation". irrCAC rounds
+    its reported coefficient to 5 decimals, hence the tolerance.
     """
     m = _matrix()
     ours = gwet_ac1(m)
     ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
-    assert ours > ref
+    assert ours == pytest.approx(ref, abs=1e-5)
+
+
+def test_protocol_scale_is_a_different_estimator():
+    """Fixing q at 1-5 departs from the reference by a wide margin under a ceiling."""
+    m = _matrix()
+    assert gwet_ac1(m, RATING_CATEGORIES) - gwet_ac1(m) > 0.02
