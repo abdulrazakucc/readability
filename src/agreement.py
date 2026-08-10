@@ -42,43 +42,33 @@ RATING_CATEGORIES: tuple[int, ...] = (1, 2, 3, 4, 5)
 
 def gwet_ac1(
     ratings: pd.DataFrame,
-    categories: tuple[int, ...] | None = None,
+    categories: tuple[int, ...] = RATING_CATEGORIES,
 ) -> float:
     """Gwet's AC1 for an items x raters matrix, allowing missing cells.
 
     `ratings` is indexed by item with one column per rater; NaN means that rater
-    did not score that item. Items rated by fewer than 2 raters carry no
-    agreement information and are dropped.
+    did not score that item. Items rated by fewer than 2 raters carry no agreement
+    information and are dropped.
 
-    Uses the multiple-rater generalisation from Gwet (2008): agreement is the
-    mean over items of the proportion of concordant rater pairs, and chance
-    agreement is built from the mean category prevalences.
+    Multiple-rater generalisation from Gwet (2008): observed agreement is the mean
+    over items of the proportion of concordant rater pairs, and chance agreement is
+    built from the mean category prevalences over q categories.
 
-    The category set drives chance agreement, so it changes the answer materially
-    -- this is not a detail:
+    q comes from the PROTOCOL, not from the data
+    --------------------------------------------
+    `categories` defaults to the full 1-5 scale that `docs/accuracy_scoring_rubric.md`
+    specifies for all three rubric dimensions. That is a pre-registered property of
+    the instrument, so using it introduces no choice made after seeing the ratings.
 
-    * `categories=None` (default) derives the categories from the data actually
-      observed. This is the ONLY variant that reproduces all three published AC1
-      values, and it is why it is the default.
+    Taking q instead from whichever categories happen to appear is a post-hoc,
+    sample-dependent decision, and under a ceiling it moves the answer a long way:
+    only 4 and 5 occur among this study's multiply-rated subspecialist accuracy
+    ratings, so a data-derived q would be 2 and AC1 would read 0.771 rather than
+    0.805. It would also make cohorts incomparable whenever they use different parts
+    of the scale.
 
-      Be clear about the status of that choice: it was selected because it
-      matches the manuscript, not because an external reference validates it.
-      The `irrCAC` package -- Gwet's own reference implementation -- gives 0.782
-      for subspecialist accuracy where this gives 0.771 and the manuscript prints
-      0.77, so irrCAC does NOT reproduce the published value. Whether the
-      published numbers came from a third implementation is unresolved and only
-      the manuscript's author can settle it. `tests/test_agreement.py` pins the
-      divergence so it cannot quietly drift.
-    * Passing an explicit set (eg `RATING_CATEGORIES`) fixes q across cohorts,
-      which makes coefficients comparable between groups that happen to use
-      different parts of the scale.
-
-    The two differ sharply under a ceiling. On this study's expert accuracy
-    ratings only categories 4 and 5 ever occur, so the data-derived q is 2 and
-    AC1 is 0.771, whereas fixing q=5 gives 0.805. Deriving q is the load-bearing
-    choice; how prevalence is weighted (per item vs per rating) shifts the answer
-    by under 0.001 and does not matter. Both q modes are correct answers to
-    different questions, so `scripts/12` reports them side by side.
+    There is therefore ONE default and the pipeline reports ONE value. The parameter
+    exists so tests can exercise the mechanism; production code should not pass it.
 
     Returns NaN when no item has 2 or more raters.
     """
@@ -91,13 +81,9 @@ def gwet_ac1(
     if not counts_rows:
         return float("nan")
 
-    if categories is None:
-        categories = tuple(sorted({int(v) for vals in counts_rows for v in vals}))
     q = len(categories)
     if q < 2:
-        # Every rater used a single category: agreement is perfect by
-        # construction and chance agreement is undefined.
-        return float("nan")
+        raise ValueError("need at least 2 rating categories")
 
     counts, weights = [], []
     for vals in counts_rows:

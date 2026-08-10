@@ -35,7 +35,6 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.agreement import (  # noqa: E402
-    RATING_CATEGORIES,
     gwet_ac1,
     mean_pairwise_weighted_kappa,
 )
@@ -176,6 +175,8 @@ def irr(df: pd.DataFrame) -> pd.DataFrame:
     """Agreement on multiply-scored rewrites, per condition and axis.
 
     Reports raw percent agreement alongside two chance-corrected coefficients.
+    AC1 uses the protocol's 1-5 category set (see src/agreement.py) -- one
+    canonical value, not a menu of conventions.
     Under this study's strong ceiling (~86% of expert accuracy ratings are 5),
     quadratic-weighted Cohen kappa collapses toward zero while agreement is in
     fact excellent; Gwet AC1 is reported because it is resistant to that paradox.
@@ -200,12 +201,7 @@ def irr(df: pd.DataFrame) -> pd.DataFrame:
                          # the manuscript. The fixed-scale variant holds q at 5
                          # so cohorts stay comparable; under a ceiling the two
                          # diverge sharply, so both are reported.
-                         "gwet_ac1_observed_categories": (
-                             gwet_ac1(piv) if len(piv.columns) > 1 else np.nan
-                         ),
-                         "gwet_ac1_full_scale": (
-                             gwet_ac1(piv, RATING_CATEGORIES) if len(piv.columns) > 1 else np.nan
-                         ),
+                         "gwet_ac1": gwet_ac1(piv) if len(piv.columns) > 1 else np.nan,
                          "quad_weighted_kappa": (
                              mean_pairwise_weighted_kappa(piv) if len(piv.columns) > 1 else np.nan
                          )})

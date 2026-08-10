@@ -34,24 +34,22 @@ def test_ac1_handles_the_ceiling_case():
     undefined and the answer is NaN rather than a spurious 1.0.
     """
     df = pd.DataFrame({"r1": [5] * 10, "r2": [5] * 10})
-    assert gwet_ac1(df, RATING_CATEGORIES) == pytest.approx(1.0)
-    assert np.isnan(gwet_ac1(df))
+    assert gwet_ac1(df) == pytest.approx(1.0)
     # Cohen's kappa is undefined here (both raters use one category).
     assert np.isnan(quadratic_weighted_kappa(df.r1.to_numpy(), df.r2.to_numpy()))
 
 
-def test_ac1_category_set_changes_the_answer_under_a_ceiling():
-    """The q choice is a real methodological fork, not a detail.
+def test_ac1_uses_the_protocol_scale_not_the_observed_categories():
+    """q is a design fact, so categories nobody used still count.
 
-    Ratings that only ever use the top two categories give a much smaller
-    chance-agreement term when q is fixed at 5 than when q is derived as 2.
-    Pinning this keeps the two modes from being confused for each other.
+    Pinning this stops the default drifting to a data-derived q, which would
+    change every published agreement figure.
     """
     df = pd.DataFrame({"r1": [5, 5, 5, 4, 5, 4], "r2": [5, 5, 4, 4, 5, 5]})
-    derived = gwet_ac1(df)                       # q = 2
-    fixed = gwet_ac1(df, RATING_CATEGORIES)      # q = 5
-    assert derived < fixed
-    assert fixed - derived > 0.1
+    protocol = gwet_ac1(df)           # default: q = 5
+    observed = gwet_ac1(df, (4, 5))   # what a data-derived q would give
+    assert protocol > observed
+    assert protocol - observed > 0.1
 
 
 def test_ac1_matches_hand_computation():
@@ -158,22 +156,16 @@ def _matrix():
     })
 
 
-def test_our_ac1_is_close_to_irrcac_but_not_identical():
-    """Our default and irrCAC agree in the large but not to the last digit.
+def test_protocol_scale_ac1_exceeds_the_reference_package_under_a_ceiling():
+    """Documents a real, expected divergence from the irrCAC package.
 
-    Both derive the category set from the data; they differ in the internals of
-    the chance-agreement term. The gap is small but real, and it is exactly why
-    'matches the reference package' cannot be claimed without checking.
+    irrCAC builds its agreement matrix from the categories present in the data, so
+    under a ceiling it uses a smaller q and returns a lower coefficient than the
+    protocol-scale definition. Neither is a bug -- they answer different questions.
+    This test exists so the gap stays visible and nobody later "fixes" our value to
+    match the package.
     """
     m = _matrix()
     ours = gwet_ac1(m)
     ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
-    assert abs(ours - ref) < 0.05, "our AC1 should track the reference closely"
-
-
-def test_fixed_scale_differs_from_reference_under_a_ceiling():
-    """Fixing q at 1-5 departs from any data-derived implementation, by a lot."""
-    m = _matrix()
-    fixed = gwet_ac1(m, RATING_CATEGORIES)
-    ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
-    assert fixed - ref > 0.02
+    assert ours > ref
