@@ -97,6 +97,31 @@ def compute() -> dict[str, float]:
         c[f"p.proc.{p}.mean"] = float(g.fkgl.mean())
         c[f"p.proc.{p}.sd"] = float(g.fkgl.std(ddof=1))
         c[f"p.proc.{p}.n"] = float(len(g))
+    # Abstract / Key Points restate the same quantities to 1dp; checked so a
+    # discrepancy between abstract and body cannot slip through.
+    q1, q3 = originals.fkgl.quantile([0.25, 0.75])
+    for k in ("p.abs.fkgl_median", "p.abs.fkgl_median2"):
+        c[k] = float(originals.fkgl.median())
+    for k in ("p.abs.iqr_low", "p.abs.iqr_low2"):
+        c[k] = float(q1)
+    for k in ("p.abs.iqr_high", "p.abs.iqr_high2"):
+        c[k] = float(q3)
+    c["p.fkre.mean_prose"] = float(desc.loc["fkre", "mean"])
+    c["p.fkre.sd_prose"] = float(desc.loc["fkre", "sd"])
+    c["p.gfi.mean_prose"] = float(desc.loc["gfi", "mean"])
+    c["p.smog.mean_prose"] = float(desc.loc["smog", "mean"])
+
+    # Site-level detail quoted in the Results text.
+    by_site = originals.groupby("site").fkgl.agg(["mean", "size"])
+    for site_key, slug in [("mayo", "mayo"), ("bwh", "bwh"),
+                           ("bhf", "bhf"), ("radinfo", "radinfo")]:
+        if slug in by_site.index:
+            c[f"p.site.{site_key}_mean"] = float(by_site.loc[slug, "mean"])
+            c[f"p.site.{site_key}_n"] = float(by_site.loc[slug, "size"])
+
+    for proc_key in ("cta", "tavr", "laao"):
+        c[f"p.sample.{proc_key}_n"] = float((orig.procedure == proc_key).sum())
+
     c["p.proc.anova_p"] = float(proc.loc["fkgl", "p"])
     c["p.site.kruskal_p"] = float(site.loc["fkgl", "p"])
 
@@ -170,6 +195,28 @@ def compute() -> dict[str, float]:
                 c[f"t4.{m}.n"] = float(llm.loc[(m, col), "n"])
                 c[f"t4.{m}.{axis}.mean"] = float(llm.loc[(m, col), "mean"])
                 c[f"t4.{m}.{axis}.sd"] = float(llm.loc[(m, col), "sd"])
+
+    # ---- Aim 3 secondary: automated LLM-judge panel prose ----
+    raw_llm = pd.read_csv(SCORES_DIR / "accuracy_llm_raw.csv")
+    cons = pd.read_csv(SCORES_DIR / "accuracy_llm.csv")
+    c["p.llm.n_judgments"] = float(len(raw_llm))
+    c["p.llm.pct_max"] = 100.0 * float((raw_llm.accuracy_1_5 == 5).mean())
+    for m, axis, key in [("gemini", "accuracy_1_5", "p.llm.gemini_accuracy"),
+                         ("gemini", "added_errors_1_5", "p.llm.gemini_added"),
+                         ("openai", "accuracy_1_5", "p.llm.openai_accuracy"),
+                         ("openai", "added_errors_1_5", "p.llm.openai_added"),
+                         ("claude", "accuracy_1_5", "p.llm.claude_accuracy")]:
+        c[key] = float(cons[cons.model_id == m][axis].mean())
+    llm_cmp = pd.read_csv(REPORTS_DIR / "aim3_llm_model_comparison.csv").set_index("axis")
+    c["p.llm.friedman_chi2"] = float(llm_cmp.loc["accuracy_1_5", "statistic"])
+
+    # Self-preference: the manuscript reports the GPT-5.5 judge on accuracy.
+    sp = pd.read_csv(REPORTS_DIR / "aim3_llm_self_preference.csv")
+    row = sp[(sp.judge_id == "openai") & (sp.dimension == "accuracy_1_5")]
+    if len(row):
+        c["p.llm.self_pref_own"] = float(row.iloc[0]["own_model_mean"])
+        c["p.llm.self_pref_other"] = float(row.iloc[0]["other_models_mean"])
+        c["p.llm.self_pref_p"] = float(row.iloc[0]["mannwhitney_p"])
 
     return c
 

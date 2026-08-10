@@ -254,17 +254,65 @@ def fig_conditions(bym: pd.DataFrame) -> None:
     plt.close(fig)
 
 
+def fig_expert_vs_lay(evl: pd.DataFrame, cov: pd.DataFrame) -> None:
+    """eFigure 1: blinded subspecialists vs lay readers on all three scales.
+
+    Lay readers are pooled across both presentations (385 ratings, 5 readers),
+    which is the contrast the manuscript reports. The point of the figure is that
+    lay raters sit closer to the ceiling than subspecialists on accuracy -- they
+    do not detect what the experts flag -- which is why the subspecialist review
+    is the primary endpoint.
+    """
+    n_exp = int(cov.loc[cov.condition == "expert_labeled", "reviewers"].iloc[0])
+    r_exp = int(cov.loc[cov.condition == "expert_labeled", "ratings"].iloc[0])
+    lay = cov[cov.condition.isin(["layperson_labeled", "layperson_neutral"])]
+    n_lay, r_lay = int(lay.reviewers.sum()), int(lay.ratings.sum())
+
+    axes_order = [("accuracy_1_5", "Accuracy"), ("completeness_1_5", "Completeness"),
+                  ("added_errors_1_5", "Added errors")]
+    e = evl.set_index("axis")
+    fig, ax = plt.subplots(figsize=(9.2, 5.6))
+    x = np.arange(len(axes_order))
+    w = 0.34
+    for j, (who, col, colr) in enumerate(
+            [("expert", "expert_mean", "#1F77B4"), ("lay", "layperson_mean", "#E8A33D")]):
+        vals = [e.loc[a, col] for a, _ in axes_order]
+        bars = ax.bar(x + (j - 0.5) * w, vals, w, color=colr, edgecolor="white", linewidth=0.7,
+                      label=(f"Subspecialists (n={n_exp}; {r_exp} ratings)" if who == "expert"
+                             else f"Lay readers (n={n_lay}; {r_lay} ratings)"))
+        _bar_labels(ax, bars, dy=0.03, size=9)
+    for i, (a, _) in enumerate(axes_order):
+        p = e.loc[a, "mannwhitney_p"]
+        mark = f"P = {p:.3f}" if p < 0.01 else f"P = {p:.2f}" + (" (ns)" if p >= 0.05 else "")
+        ax.text(i, 5.42, mark, ha="center", fontsize=9.5, color=MUTED)
+    ax.set_xticks(x)
+    ax.set_xticklabels([n for _, n in axes_order])
+    ax.set_ylabel("Mean rating (1–5)")
+    ax.set_ylim(1, 5.7)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.22), ncol=2, frameon=False, fontsize=9.5)
+    ax.set_title("Blinded subspecialists vs lay readers", fontweight="bold", loc="left")
+    fig.text(0.5, -0.10,
+             "Two-sided Mann–Whitney U. Lay readers scored accuracy significantly higher than "
+             "subspecialists,\nconsistent with lay raters missing issues the subspecialists detected.",
+             ha="center", fontsize=8, color=MUTED, style="italic")
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "aim3_expert_vs_lay.png", bbox_inches="tight")
+    plt.close(fig)
+
+
 def main() -> int:
     ensure_dirs()
     setup_style()
     bym = pd.read_csv(REPORTS_DIR / "aim3_compiled_by_model.csv")
     cov = pd.read_csv(REPORTS_DIR / "aim3_compiled_coverage.csv")
     pe = pd.read_csv(REPORTS_DIR / "aim3_compiled_presentation_effect.csv")
+    evl = pd.read_csv(REPORTS_DIR / "aim3_compiled_expert_vs_lay.csv")
     raw = load_raw()
     fig_primary(bym, raw, cov)
     fig_bias(bym, pe)
     fig_conditions(bym)
-    print("wrote 3 figures to", FIGURES_DIR)
+    fig_expert_vs_lay(evl, cov)
+    print("wrote 4 figures to", FIGURES_DIR)
     return 0
 
 
