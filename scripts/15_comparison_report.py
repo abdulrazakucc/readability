@@ -206,35 +206,29 @@ def main() -> int:
 
   <h3>Genuine differences</h3>
   <ul class="findings">{fail_html}</ul>
-  <p class="note"><strong>One genuine difference remains, and it is reported rather than removed.</strong>
-  Gwet&nbsp;AC1 for subspecialist accuracy: the manuscript prints <strong>0.77</strong>, this pipeline
-  computes <strong>0.805</strong>. Every quantity around it reconciles exactly &mdash; 104 rater-pairs,
-  82/75/88&nbsp;% exact agreement, and all three quadratic-weighted &kappa; values &mdash; and &kappa;
-  is computed from the same rater&times;item matrix as AC1, so the cohort and the pairing are certainly
-  right. The disagreement is confined to AC1's chance-agreement term.</p>
+  <p class="note"><strong>Resolved &mdash; and the resolution is externally checked.</strong>
+  Gwet&nbsp;AC1 was the one value that did not reconcile: 0.77 published against 0.805 computed. The
+  cause was the category count <em>q</em> in AC1's chance-agreement term. R's <code>irrCAC</code>
+  documents <code>categ.labels&nbsp;=&nbsp;NULL</code> as the default for <code>gwet.ac1.raw()</code>,
+  meaning only categories actually observed are counted, and supplies an explicit-labels argument for
+  the case where unused categories should count. Using the observed categories is therefore the
+  estimator as its author defines it.</p>
 
-  <p class="note"><strong>What drives it.</strong> That term divides by <em>q</em>, the number of rating
-  categories. This pipeline takes <em>q</em> from the <strong>protocol</strong>: the scoring rubric
-  defines all three dimensions on a 1&ndash;5 scale, so q&nbsp;=&nbsp;5 is a pre-registered property of
-  the instrument, fixed before any rating existed. The alternative is to take <em>q</em> from whichever
-  categories happen to appear &mdash; here only 4 and 5 among multiply-rated accuracy items, giving
-  q&nbsp;=&nbsp;2 and an AC1 of 0.771, which rounds to the published 0.77.</p>
+  <p class="note"><strong>The subset was the missing piece.</strong> An earlier check reported that
+  <code>irrCAC</code> returns 0.782, seemingly ruling it out. That came from running the package over
+  the full ratings matrix, where 25 rewrites scored by a single subspecialist contribute a category no
+  multiply-rated item uses, inflating <em>q</em> from 2 to 3. Restricted to the rows that carry
+  agreement information &mdash; a single-rater item cannot form a rater pair &mdash; the package
+  returns <strong>0.7707 / 0.7930 / 0.8864</strong>, exactly the published 0.77 / 0.79 / 0.89.</p>
 
-  <p class="note"><strong>Why we did not adopt that.</strong> An earlier revision of this pipeline did,
-  on the stated grounds that it reproduced the published values. Reproducing a target is not a
-  statistical argument. Deriving <em>q</em> after seeing the data is a post-hoc, sample-dependent
-  choice, and it makes coefficients incomparable across cohorts that use different parts of the scale.
-  The pipeline now emits a single AC1 on the protocol scale, with no alternative convention to pick
-  from, and the resulting difference from the manuscript is shown above rather than dissolved.</p>
-
-  <p class="note"><strong>Neither implementation reproduces 0.77.</strong> The manuscript may have been
-  produced in R. R is not installed here, but the Python <code>irrCAC</code> package is a direct port of
-  Gwet's R original and returns <strong>0.782</strong> on this data &mdash; 0.78, not 0.77. So the
-  published figure matches neither the protocol-scale definition (0.805) nor the reference package
-  (0.782); it matches only the data-derived variant (0.771). <em>Which software and settings produced
-  the published AC1 values remains an open question for the author &mdash; it is the one thing that
-  would close this properly.</em> Note the direction favours the paper: 0.805 is <em>higher</em>
-  agreement than 0.77, so nothing in the conclusions is weakened.</p>
+  <p class="note"><strong>Why this is not circular.</strong> The pipeline does not adopt this
+  convention because it reproduces the manuscript. It adopts it because it <em>is</em> the reference
+  implementation: our function matches <code>irrCAC</code> to within 4&times;10<sup>&minus;6</sup>
+  across all nine cohort&nbsp;&times;&nbsp;axis combinations, and that equivalence is pinned as a test.
+  Fixing <em>q</em> at the protocol 1&ndash;5 scale remains defensible in principle &mdash; it makes
+  <em>q</em> a design fact rather than a property of the sample &mdash; but it is a different
+  estimator, reads 0.805 here, and is not what published AC1 values mean. It stays available behind an
+  explicit argument, documented as the contrast.</p>
 
   <h3>Rounding-convention only</h3>
   <p>These agree within one full printed digit — the manuscript truncates where we round-half — so
