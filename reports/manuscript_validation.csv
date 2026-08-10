@@ -1,228 +1,204 @@
-section,quantity,manuscript,computed,tolerance,status,note
-Table 1,fkre mean,50.66,50.66076923076923,0.005,PASS,
-Table 1,fkre SD,12.06,12.059624844273364,0.005,PASS,
-Table 1,fkre median,53.97,53.965,0.005,PASS,
-Table 1,fkgl mean,10.54,10.536153846153846,0.005,PASS,
-Table 1,fkgl SD,2.45,2.451432359944817,0.005,PASS,
-Table 1,fkgl median,10.31,10.315,0.005,PASS,
-Table 1,gfi mean,13.71,13.711538461538462,0.005,PASS,
-Table 1,gfi SD,2.61,2.605066897118294,0.005,PASS,
-Table 1,gfi median,13.09,13.09,0.005,PASS,
-Table 1,smog mean,13.13,13.131538461538462,0.005,PASS,
-Table 1,smog SD,1.81,1.814589082536743,0.005,PASS,
-Table 1,smog median,12.72,12.725,0.005,PASS,
-Table 1,cli mean,11.51,11.505384615384612,0.005,PASS,
-Table 1,cli SD,1.93,1.9336912489210492,0.005,PASS,
-Table 1,cli median,11.23,11.23,0.005,PASS,
-Table 1,ari mean,11.41,11.40846153846154,0.005,PASS,
-Table 1,ari SD,2.88,2.8841632302041336,0.005,PASS,
-Table 1,ari median,10.98,10.98,0.005,PASS,
-Table 1,N pages,26,26,0.0,PASS,
-Aim 1,pages meeting FKGL<=6,0,0,0.0,PASS,
-Aim 1,Clopper-Pearson upper CI (%),13.2,13.22746044977541,0.05,PASS,
-Aim 1,min FKGL (most readable),6.95,6.95,0.005,PASS,
-Aim 1,max FKGL (least readable),16.36,16.36,0.005,PASS,
-Aim 1,mean cleaned words (manifest),872,872.0,0.5,PASS,
-Aim 1,min cleaned words (manifest),252,252,0.0,PASS,
-Aim 1,max cleaned words (manifest),3153,3153,0.0,PASS,
-Aim 1,manifest vs scorer word-count gap is known/bounded,True,True,0.0,PASS,two different word counters; manifest is the manuscript's source
-Aim 1,FKGL by-procedure P (ANOVA),0.94,0.938742400799892,0.005,PASS,
-Aim 1,FKGL by-site P (Kruskal),0.074,0.0740467986020198,0.0005,PASS,
-Aim 1,tavr n pages,10,10,0.0,PASS,
-Aim 1,tavr mean FKGL,10.7,10.696000000000002,0.05,PASS,
-Aim 1,tavr SD FKGL,3.1,3.0724300914205784,0.05,PASS,
-Aim 1,cta n pages,10,10,0.0,PASS,
-Aim 1,cta mean FKGL,10.6,10.559999999999999,0.05,PASS,
-Aim 1,cta SD FKGL,2.3,2.2799415197178488,0.05,PASS,
-Aim 1,laao n pages,6,6,0.0,PASS,
-Aim 1,laao mean FKGL,10.2,10.23,0.05,PASS,
-Aim 1,laao SD FKGL,1.9,1.8800425527099116,0.05,PASS,
-Table 2,fkre/claude delta,28.74,28.743076923076924,0.005,PASS,
-Table 2,fkre/claude CI low,24.9,24.89599735892929,0.005,PASS,
-Table 2,fkre/claude CI high,32.59,32.59015648722456,0.005,PASS,
-Table 2,fkre/claude Holm P<.001,True,True,0.0,PASS,
-Table 2,fkre/gemini delta,31.23,31.23153846153846,0.005,PASS,
-Table 2,fkre/gemini CI low,27.2,27.19991107474031,0.005,PASS,
-Table 2,fkre/gemini CI high,35.26,35.26316584833661,0.005,PASS,
-Table 2,fkre/gemini Holm P<.001,True,True,0.0,PASS,
-Table 2,fkre/openai delta,18.74,18.738,0.005,PASS,
-Table 2,fkre/openai CI low,15.34,15.336137078606653,0.005,PASS,
-Table 2,fkre/openai CI high,22.14,22.139862921393345,0.005,PASS,
-Table 2,fkre/openai Holm P<.001,True,True,0.0,PASS,
-Table 2,fkgl/claude delta,-5.52,-5.517307692307691,0.005,PASS,
-Table 2,fkgl/claude CI low,-6.32,-6.321498461668422,0.005,PASS,
-Table 2,fkgl/claude CI high,-4.71,-4.71311692294696,0.005,PASS,
-Table 2,fkgl/claude Holm P<.001,True,True,0.0,PASS,
-Table 2,fkgl/gemini delta,-5.74,-5.738076923076924,0.005,PASS,
-Table 2,fkgl/gemini CI low,-6.6,-6.597284158877793,0.005,PASS,
-Table 2,fkgl/gemini CI high,-4.88,-4.878869687276055,0.005,PASS,
-Table 2,fkgl/gemini Holm P<.001,True,True,0.0,PASS,
-Table 2,fkgl/openai delta,-3.9,-3.9036,0.005,PASS,
-Table 2,fkgl/openai CI low,-4.64,-4.641500627911245,0.005,PASS,
-Table 2,fkgl/openai CI high,-3.17,-3.165699372088755,0.005,PASS,
-Table 2,fkgl/openai Holm P<.001,True,True,0.0,PASS,
-Table 2,gfi/claude delta,-6.09,-6.088846153846154,0.005,PASS,
-Table 2,gfi/claude CI low,-6.99,-6.987331921409572,0.005,PASS,
-Table 2,gfi/claude CI high,-5.19,-5.190360386282736,0.005,PASS,
-Table 2,gfi/claude Holm P<.001,True,True,0.0,PASS,
-Table 2,gfi/gemini delta,-6.65,-6.651923076923078,0.005,PASS,
-Table 2,gfi/gemini CI low,-7.59,-7.58865843409164,0.005,PASS,
-Table 2,gfi/gemini CI high,-5.72,-5.715187719754516,0.005,PASS,
-Table 2,gfi/gemini Holm P<.001,True,True,0.0,PASS,
-Table 2,gfi/openai delta,-4.35,-4.3532,0.005,PASS,
-Table 2,gfi/openai CI low,-5.16,-5.159978202933747,0.005,PASS,
-Table 2,gfi/openai CI high,-3.55,-3.5464217970662535,0.005,PASS,
-Table 2,gfi/openai Holm P<.001,True,True,0.0,PASS,
-Table 2,smog/claude delta,-4.43,-4.434230769230769,0.005,PASS,
-Table 2,smog/claude CI low,-5.11,-5.107684297799098,0.005,PASS,
-Table 2,smog/claude CI high,-3.76,-3.7607772406624407,0.005,PASS,
-Table 2,smog/claude Holm P<.001,True,True,0.0,PASS,
-Table 2,smog/gemini delta,-4.92,-4.916153846153846,0.005,PASS,
-Table 2,smog/gemini CI low,-5.57,-5.568898441803753,0.005,PASS,
-Table 2,smog/gemini CI high,-4.26,-4.26340925050394,0.005,PASS,
-Table 2,smog/gemini Holm P<.001,True,True,0.0,PASS,
-Table 2,smog/openai delta,-3.11,-3.1091999999999995,0.005,PASS,
-Table 2,smog/openai CI low,-3.71,-3.710790048829693,0.005,PASS,
-Table 2,smog/openai CI high,-2.51,-2.507609951170306,0.005,PASS,
-Table 2,smog/openai Holm P<.001,True,True,0.0,PASS,
-Table 2,cli/claude delta,-4.7,-4.698846153846153,0.005,PASS,
-Table 2,cli/claude CI low,-5.28,-5.279553241567232,0.005,PASS,
-Table 2,cli/claude CI high,-4.12,-4.1181390661250745,0.005,PASS,
-Table 2,cli/claude Holm P<.001,True,True,0.0,PASS,
-Table 2,cli/gemini delta,-4.92,-4.921923076923076,0.005,PASS,
-Table 2,cli/gemini CI low,-5.57,-5.569496516777901,0.005,PASS,
-Table 2,cli/gemini CI high,-4.27,-4.274349637068251,0.005,PASS,
-Table 2,cli/gemini Holm P<.001,True,True,0.0,PASS,
-Table 2,cli/openai delta,-2.91,-2.9135999999999997,0.005,PASS,
-Table 2,cli/openai CI low,-3.44,-3.435159431071217,0.005,PASS,
-Table 2,cli/openai CI high,-2.39,-2.392040568928783,0.005,PASS,
-Table 2,cli/openai Holm P<.001,True,True,0.0,PASS,
-Table 2,ari/claude delta,-6.15,-6.150000000000001,0.005,PASS,
-Table 2,ari/claude CI low,-7.05,-7.053478038048151,0.005,PASS,
-Table 2,ari/claude CI high,-5.25,-5.246521961951851,0.005,PASS,
-Table 2,ari/claude Holm P<.001,True,True,0.0,PASS,
-Table 2,ari/gemini delta,-6.16,-6.164615384615384,0.005,PASS,
-Table 2,ari/gemini CI low,-7.16,-7.157965672049002,0.005,PASS,
-Table 2,ari/gemini CI high,-5.17,-5.171265097181767,0.005,PASS,
-Table 2,ari/gemini Holm P<.001,True,True,0.0,PASS,
-Table 2,ari/openai delta,-4.42,-4.422,0.005,PASS,
-Table 2,ari/openai CI low,-5.29,-5.285771342956692,0.005,PASS,
-Table 2,ari/openai CI high,-3.56,-3.558228657043307,0.005,PASS,
-Table 2,ari/openai Holm P<.001,True,True,0.0,PASS,
-Table 2,fkre Friedman chi2,39.9,39.920000000000016,0.05,PASS,
-Table 2,fkgl Friedman chi2,38.0,38.0,0.05,PASS,
-Table 2,gfi Friedman chi2,39.1,39.120000000000005,0.05,PASS,
-Table 2,smog Friedman chi2,40.9,40.879999999999995,0.05,PASS,
-Table 2,cli Friedman chi2,38.0,38.0,0.05,PASS,
-Table 2,ari Friedman chi2,34.6,34.56,0.05,PASS,
-Table 2,Friedman n pages,25,25,0.0,PASS,
-Aim 2,FKGL Friedman P,5.6e-09,5.602796437537276e-09,1e-10,PASS,
-Aim 2,claude Cohen dz,-2.77,-2.7710947319387556,0.005,PASS,
-Aim 2,claude post-rewrite mean FKGL,5.02,5.018846153846154,0.005,PASS,
-Aim 2,claude rewrites meeting FKGL<=6,22,22,0.0,PASS,
-Aim 2,claude n rewrites,26,26,0.0,PASS,
-Aim 2,gemini Cohen dz,-2.7,-2.6974393719696024,0.005,PASS,
-Aim 2,gemini post-rewrite mean FKGL,4.8,4.798076923076923,0.005,PASS,
-Aim 2,gemini rewrites meeting FKGL<=6,20,20,0.0,PASS,
-Aim 2,gemini n rewrites,26,26,0.0,PASS,
-Aim 2,openai Cohen dz,-2.18,-2.1836637943992123,0.005,PASS,
-Aim 2,openai post-rewrite mean FKGL,6.68,6.6772,0.005,PASS,
-Aim 2,openai rewrites meeting FKGL<=6,9,9,0.0,PASS,
-Aim 2,openai n rewrites,25,25,0.0,PASS,
-Table 3,claude n ratings,51,51,0.0,PASS,
-Table 3,claude accuracy mean,4.82,4.823529411764706,0.005,PASS,
-Table 3,claude accuracy SD,0.39,0.3850133687518488,0.005,PASS,
-Table 3,claude completeness mean,4.94,4.9411764705882355,0.005,PASS,
-Table 3,claude completeness SD,0.24,0.2376354103144018,0.005,PASS,
-Table 3,claude added-errors mean,1.1,1.0980392156862746,0.005,PASS,
-Table 3,claude added-errors SD,0.36,0.3608269369536766,0.005,PASS,
-Table 3,openai n ratings,49,49,0.0,PASS,
-Table 3,openai accuracy mean,4.84,4.836734693877551,0.005,PASS,
-Table 3,openai accuracy SD,0.62,0.6240639248610075,0.005,PASS,
-Table 3,openai completeness mean,4.84,4.836734693877551,0.005,PASS,
-Table 3,openai completeness SD,0.62,0.6240639248610075,0.005,PASS,
-Table 3,openai added-errors mean,1.1,1.1020408163265305,0.005,PASS,
-Table 3,openai added-errors SD,0.47,0.4674798551445682,0.005,PASS,
-Table 3,gemini n ratings,55,55,0.0,PASS,
-Table 3,gemini accuracy mean,4.85,4.8545454545454545,0.005,PASS,
-Table 3,gemini accuracy SD,0.36,0.3558079911965533,0.005,PASS,
-Table 3,gemini completeness mean,4.64,4.636363636363637,0.005,PASS,
-Table 3,gemini completeness SD,0.87,0.8684519297052397,0.005,PASS,
-Table 3,gemini added-errors mean,1.07,1.0727272727272728,0.005,PASS,
-Table 3,gemini added-errors SD,0.26,0.2620817977022989,0.005,PASS,
-Aim 3,expert reviewers,6,6,0.0,PASS,
-Aim 3,expert ratings,155,155,0.0,PASS,
-Aim 3,expert rewrites covered,77,77,0.0,PASS,
-Aim 3,expert pooled accuracy,4.84,4.838709677419355,0.005,PASS,
-Aim 3,% accuracy >=4,99.4,99.35483870967742,0.05,PASS,
-Aim 3,% accuracy =5,85.8,85.80645161290322,0.05,PASS,
-Aim 3,% added-errors <=2,98.7,98.70967741935485,0.05,PASS,
-Aim 3,n ratings accuracy <=3,1,1,0.0,PASS,
-Aim 3,n ratings added-errors >=3,2,2,0.0,PASS,
-Aim 3,expert rater-pairs,104,104,0.0,PASS,
-Aim 3,accuracy_1_5 exact agreement %,82,81.73076923076923,0.5,PASS,
-Aim 3,accuracy_1_5 within-1 >=95%,True,True,0.0,PASS,
-Aim 3,accuracy_1_5 Gwet AC1,0.77,0.8048748928461675,0.01,FAIL,manuscript reports AC1 to 2dp (truncated)
-Aim 3,accuracy_1_5 quad-weighted kappa,0.06,0.0604348570450253,0.005,PASS,
-Aim 3,completeness_1_5 exact agreement %,75,75.0,0.5,PASS,
-Aim 3,completeness_1_5 within-1 >=95%,True,True,0.0,PASS,
-Aim 3,completeness_1_5 Gwet AC1,0.79,0.796843036285006,0.01,PASS,manuscript reports AC1 to 2dp (truncated)
-Aim 3,completeness_1_5 quad-weighted kappa,0.12,0.1227844849730293,0.005,PASS,
-Aim 3,added_errors_1_5 exact agreement %,88,88.46153846153845,0.5,PASS,
-Aim 3,added_errors_1_5 within-1 >=95%,True,True,0.0,PASS,
-Aim 3,added_errors_1_5 Gwet AC1,0.89,0.8948787061994609,0.01,PASS,manuscript reports AC1 to 2dp (truncated)
-Aim 3,added_errors_1_5 quad-weighted kappa,-0.03,-0.0254237288135631,0.005,PASS,
-Aim 3,gemini Spearman rho (reduction vs accuracy),-0.37,-0.3714317865175867,0.005,PASS,
-Aim 3,gemini Spearman P,0.06,0.0617253514969513,0.005,PASS,
-Aim 3,claude Spearman rho (reduction vs accuracy),0.25,0.2498754111365849,0.005,PASS,
-Aim 3,claude Spearman P,0.22,0.2182850742665893,0.005,PASS,
-Aim 3,openai Spearman rho (reduction vs accuracy),0.03,0.0261552971753793,0.005,PASS,
-Aim 3,openai Spearman P,0.9,0.901234455979354,0.005,PASS,
-Lay arm,lay ratings (pooled),385,385,0.0,PASS,
-Lay arm,lay readers (neutral),3,3,0.0,PASS,
-Lay arm,lay readers (labeled),2,2,0.0,PASS,
-Lay arm,accuracy_1_5 lay mean,4.94,4.94025974025974,0.005,PASS,
-Lay arm,accuracy_1_5 expert mean,4.84,4.838709677419355,0.005,PASS,
-Lay arm,accuracy_1_5 lay-vs-expert P,0.001,0.000737467060528,0.01,PASS,
-Lay arm,completeness_1_5 lay mean,4.9,4.898701298701298,0.005,PASS,
-Lay arm,completeness_1_5 expert mean,4.8,4.8,0.005,PASS,
-Lay arm,completeness_1_5 lay-vs-expert P,0.2,0.1947162533161679,0.01,PASS,
-Lay arm,added_errors_1_5 lay mean,1.08,1.0831168831168831,0.005,PASS,
-Lay arm,added_errors_1_5 expert mean,1.09,1.0903225806451613,0.005,PASS,
-Lay arm,added_errors_1_5 lay-vs-expert P,0.95,0.9523073569832948,0.01,PASS,
-Presentation,accuracy_1_5 lay labeled mean,4.99,4.9935064935064934,0.005,PASS,
-Presentation,accuracy_1_5 lay neutral mean,4.9,4.904761904761905,0.005,PASS,
-Presentation,accuracy_1_5 P <= .001,True,True,0.0,PASS,
-Presentation,completeness_1_5 lay labeled mean,4.98,4.98051948051948,0.005,PASS,
-Presentation,completeness_1_5 lay neutral mean,4.84,4.8441558441558445,0.005,PASS,
-Presentation,completeness_1_5 P <= .001,True,True,0.0,PASS,
-Presentation,added_errors_1_5 lay labeled mean,1.0,1.0,0.005,PASS,
-Presentation,added_errors_1_5 lay neutral mean,1.14,1.1385281385281385,0.005,PASS,
-Presentation,added_errors_1_5 P <= .001,True,True,0.0,PASS,
-Table 4,openai accuracy_1_5 n,25,25,0.0,PASS,
-Table 4,openai accuracy_1_5 mean,4.998,5.0,0.006,PASS,
-Table 4,openai accuracy_1_5 SD,0.0,0.0,0.006,PASS,
-Table 4,openai completeness_1_5 n,25,25,0.0,PASS,
-Table 4,openai completeness_1_5 mean,4.95,4.947,0.006,PASS,
-Table 4,openai completeness_1_5 SD,0.16,0.158,0.006,PASS,
-Table 4,openai added_errors_1_5 n,25,25,0.0,PASS,
-Table 4,openai added_errors_1_5 mean,1.07,1.067,0.006,PASS,
-Table 4,openai added_errors_1_5 SD,0.17,0.167,0.006,PASS,
-Table 4,claude accuracy_1_5 n,26,26,0.0,PASS,
-Table 4,claude accuracy_1_5 mean,4.91,4.91,0.006,PASS,
-Table 4,claude accuracy_1_5 SD,0.18,0.178,0.006,PASS,
-Table 4,claude completeness_1_5 n,26,26,0.0,PASS,
-Table 4,claude completeness_1_5 mean,4.91,4.91,0.006,PASS,
-Table 4,claude completeness_1_5 SD,0.2,0.201,0.006,PASS,
-Table 4,claude added_errors_1_5 n,26,26,0.0,PASS,
-Table 4,claude added_errors_1_5 mean,1.18,1.179,0.006,PASS,
-Table 4,claude added_errors_1_5 SD,0.36,0.356,0.006,PASS,
-Table 4,gemini accuracy_1_5 n,26,26,0.0,PASS,
-Table 4,gemini accuracy_1_5 mean,4.69,4.692,0.006,PASS,
-Table 4,gemini accuracy_1_5 SD,0.44,0.441,0.006,PASS,
-Table 4,gemini completeness_1_5 n,26,26,0.0,PASS,
-Table 4,gemini completeness_1_5 mean,4.81,4.808,0.006,PASS,
-Table 4,gemini completeness_1_5 SD,0.29,0.286,0.006,PASS,
-Table 4,gemini added_errors_1_5 n,26,26,0.0,PASS,
-Table 4,gemini added_errors_1_5 mean,1.45,1.449,0.006,PASS,
-Table 4,gemini added_errors_1_5 SD,0.7,0.699,0.006,PASS,
+section,key,manuscript,manuscript_raw,computed,difference,tolerance,status
+Results,p.ac1.accuracy,0.77,0.77,0.8048748928461675,0.034874892846167516,0.005,FAIL
+Results,p.ac1.added_errors,0.89,0.89,0.8948787061994609,0.004878706199460847,0.005,PASS
+Results,p.ac1.completeness,0.79,0.79,0.796843036285006,0.006843036285005932,0.005,ROUNDING
+Results,p.aim3.n_ratings,155.0,155,155.0,0.0,0.5,PASS
+Results,p.aim3.n_reviewers,6.0,6,6.0,0.0,0.5,PASS
+Results,p.aim3.pct_added_le2,98.7,98.7,98.70967741935485,0.009677419354844119,0.05,PASS
+Results,p.aim3.pct_eq5,85.8,85.8,85.80645161290322,0.006451612903219939,0.05,PASS
+Results,p.aim3.pct_ge4,99.4,99.4,99.35483870967742,-0.045161290322582204,0.05,PASS
+Results,p.aim3.pooled_accuracy,4.84,4.84,4.838709677419355,-0.001290322580644876,0.005,PASS
+Results,p.benchmark.ci_high,13.2,13.2,13.22746044977541,0.027460449775411178,0.05,PASS
+Results,p.benchmark.meeting,0.0,0,0.0,0.0,0.5,PASS
+Results,p.benchmark.n,26.0,26,26.0,0.0,0.5,PASS
+Results,p.benchmark.pct,0.0,0,0.0,0.0,0.5,PASS
+Results,p.dz.claude,-2.77,-2.77,-2.7710947319387556,-0.0010947319387555332,0.005,PASS
+Results,p.dz.gemini,-2.7,-2.70,-2.6974393719696024,0.0025606280303978046,0.005,PASS
+Results,p.dz.openai,-2.18,-2.18,-2.1836637943992123,-0.0036637943992121613,0.005,PASS
+Results,p.fkgl.max,16.36,16.36,16.36,0.0,0.005,PASS
+Results,p.fkgl.mean,10.54,10.54,10.536153846153846,-0.0038461538461529443,0.005,PASS
+Results,p.fkgl.median,10.31,10.31,10.315,0.004999999999999005,0.005,PASS
+Results,p.fkgl.min,6.95,6.95,6.95,0.0,0.005,PASS
+Results,p.fkgl.sd,2.45,2.45,2.451432359944817,0.001432359944816941,0.005,PASS
+Results,p.friedman.fkgl_chi2,38.0,38.0,38.0,0.0,0.05,PASS
+Results,p.friedman.n_pages,25.0,25,25.0,0.0,0.5,PASS
+Results,p.irr.accuracy_exact,82.0,82,81.73076923076923,-0.2692307692307736,0.5,PASS
+Results,p.irr.added_errors_exact,88.0,88,88.46153846153845,0.4615384615384528,0.5,PASS
+Results,p.irr.completeness_exact,75.0,75,75.0,0.0,0.5,PASS
+Results,p.irr.pairs,104.0,104,104.0,0.0,0.5,PASS
+Results,p.kappa.accuracy,0.06,0.06,0.0604348570450253,0.00043485704502529976,0.005,PASS
+Results,p.kappa.added_errors,-0.03,-0.03,-0.0254237288135631,0.0045762711864369005,0.005,PASS
+Results,p.kappa.completeness,0.12,0.12,0.1227844849730293,0.0027844849730292998,0.005,PASS
+Results,p.lay.accuracy,4.94,4.94,4.94025974025974,0.000259740259739516,0.005,PASS
+Results,p.lay.accuracy_p,0.001,.001,0.000737467060528,-0.000262532939472,0.0005,PASS
+Results,p.lay.added,1.08,1.08,1.0831168831168831,0.0031168831168830735,0.005,PASS
+Results,p.lay.added_p,0.95,.95,0.9523073569832948,0.0023073569832948726,0.005,PASS
+Results,p.lay.completeness,4.9,4.90,4.898701298701298,-0.0012987012987020208,0.005,PASS
+Results,p.lay.completeness_p,0.2,.20,0.1947162533161679,-0.005283746683832108,0.005,ROUNDING
+Results,p.lay.expert_accuracy,4.84,4.84,4.838709677419355,-0.001290322580644876,0.005,PASS
+Results,p.lay.expert_added,1.09,1.09,1.0903225806451613,0.000322580645161219,0.005,PASS
+Results,p.lay.expert_completeness,4.8,4.80,4.8,0.0,0.005,PASS
+Results,p.lay.n_labeled,2.0,2,2.0,0.0,0.5,PASS
+Results,p.lay.n_neutral,3.0,3,3.0,0.0,0.5,PASS
+Results,p.lay.n_ratings,385.0,385,385.0,0.0,0.5,PASS
+Results,p.met.claude,22.0,22,22.0,0.0,0.5,PASS
+Results,p.met.claude_n,26.0,26,26.0,0.0,0.5,PASS
+Results,p.met.gemini,20.0,20,20.0,0.0,0.5,PASS
+Results,p.met.gemini_n,26.0,26,26.0,0.0,0.5,PASS
+Results,p.met.openai,9.0,9,9.0,0.0,0.5,PASS
+Results,p.met.openai_n,25.0,25,25.0,0.0,0.5,PASS
+Results,p.post.claude,5.02,5.02,5.018846153846154,-0.0011538461538451728,0.005,PASS
+Results,p.post.gemini,4.8,4.80,4.798076923076923,-0.0019230769230764722,0.005,PASS
+Results,p.post.openai,6.68,6.68,6.6772,-0.0027999999999996916,0.005,PASS
+Results,p.pres.accuracy_labeled,4.99,4.99,4.9935064935064934,0.0035064935064932357,0.005,PASS
+Results,p.pres.accuracy_neutral,4.9,4.90,4.904761904761905,0.004761904761904745,0.005,PASS
+Results,p.pres.added_labeled,1.0,1.00,1.0,0.0,0.005,PASS
+Results,p.pres.added_neutral,1.14,1.14,1.1385281385281385,-0.001471861471861402,0.005,PASS
+Results,p.pres.completeness_labeled,4.98,4.98,4.98051948051948,0.0005194805194799201,0.005,PASS
+Results,p.pres.completeness_neutral,4.84,4.84,4.8441558441558445,0.00415584415584469,0.005,PASS
+Results,p.proc.anova_p,0.94,.94,0.938742400799892,-0.0012575992001079284,0.005,PASS
+Results,p.proc.cta.mean,10.6,10.6,10.559999999999999,-0.040000000000000924,0.05,PASS
+Results,p.proc.cta.n,10.0,10,10.0,0.0,0.5,PASS
+Results,p.proc.cta.sd,2.3,2.3,2.2799415197178488,-0.02005848028215107,0.05,PASS
+Results,p.proc.laao.mean,10.2,10.2,10.23,0.030000000000001137,0.05,PASS
+Results,p.proc.laao.n,6.0,6,6.0,0.0,0.5,PASS
+Results,p.proc.laao.sd,1.9,1.9,1.8800425527099116,-0.019957447290088304,0.05,PASS
+Results,p.proc.tavr.mean,10.7,10.7,10.696000000000002,-0.003999999999997783,0.05,PASS
+Results,p.proc.tavr.n,10.0,10,10.0,0.0,0.5,PASS
+Results,p.proc.tavr.sd,3.1,3.1,3.0724300914205784,-0.027569908579421654,0.05,PASS
+Results,p.rho.claude,0.25,0.25,0.2498754111365849,-0.00012458886341509823,0.005,PASS
+Results,p.rho.claude_p,0.22,.22,0.2182850742665893,-0.0017149257334106993,0.005,PASS
+Results,p.rho.gemini,-0.37,-0.37,-0.3714317865175867,-0.0014317865175866862,0.005,PASS
+Results,p.rho.gemini_p,0.06,.06,0.0617253514969513,0.0017253514969512995,0.005,PASS
+Results,p.rho.openai,0.03,0.03,0.0261552971753793,-0.0038447028246207,0.005,PASS
+Results,p.rho.openai_p,0.9,.90,0.901234455979354,0.00123445597935401,0.005,PASS
+Results,p.site.kruskal_p,0.074,.074,0.0740467986020198,4.6798602019809676e-05,0.0005,PASS
+Results,p.words.max,3153.0,3153,3153.0,0.0,0.5,PASS
+Results,p.words.mean,872.0,872,872.0,0.0,0.5,PASS
+Results,p.words.min,252.0,252,252.0,0.0,0.5,PASS
+Table 1,t1.ari.mean,11.41,11.41,11.40846153846154,-0.0015384615384608225,0.005,PASS
+Table 1,t1.ari.median,10.98,10.98,10.98,0.0,0.005,PASS
+Table 1,t1.ari.n,26.0,26,26.0,0.0,0.5,PASS
+Table 1,t1.ari.sd,2.88,2.88,2.8841632302041336,0.004163230204133672,0.005,PASS
+Table 1,t1.cli.mean,11.51,11.51,11.505384615384612,-0.004615384615387796,0.005,PASS
+Table 1,t1.cli.median,11.23,11.23,11.23,0.0,0.005,PASS
+Table 1,t1.cli.n,26.0,26,26.0,0.0,0.5,PASS
+Table 1,t1.cli.sd,1.93,1.93,1.9336912489210492,0.003691248921049217,0.005,PASS
+Table 1,t1.fkgl.mean,10.54,10.54,10.536153846153846,-0.0038461538461529443,0.005,PASS
+Table 1,t1.fkgl.median,10.31,10.31,10.315,0.004999999999999005,0.005,PASS
+Table 1,t1.fkgl.n,26.0,26,26.0,0.0,0.5,PASS
+Table 1,t1.fkgl.sd,2.45,2.45,2.451432359944817,0.001432359944816941,0.005,PASS
+Table 1,t1.fkre.mean,50.66,50.66,50.66076923076923,0.0007692307692366285,0.005,PASS
+Table 1,t1.fkre.median,53.97,53.97,53.965,-0.0049999999999954525,0.005,PASS
+Table 1,t1.fkre.n,26.0,26,26.0,0.0,0.5,PASS
+Table 1,t1.fkre.sd,12.06,12.06,12.059624844273364,-0.0003751557266369332,0.005,PASS
+Table 1,t1.gfi.mean,13.71,13.71,13.711538461538462,0.0015384615384608225,0.005,PASS
+Table 1,t1.gfi.median,13.09,13.09,13.09,0.0,0.005,PASS
+Table 1,t1.gfi.n,26.0,26,26.0,0.0,0.5,PASS
+Table 1,t1.gfi.sd,2.61,2.61,2.605066897118294,-0.0049331028817056755,0.005,PASS
+Table 1,t1.smog.mean,13.13,13.13,13.131538461538462,0.0015384615384608225,0.005,PASS
+Table 1,t1.smog.median,12.72,12.72,12.725,0.004999999999999005,0.005,PASS
+Table 1,t1.smog.n,26.0,26,26.0,0.0,0.5,PASS
+Table 1,t1.smog.sd,1.81,1.81,1.814589082536743,0.00458908253674295,0.005,PASS
+Table 2,t2.ari.claude.ci_high,-5.25,-5.25,-5.246521961951851,0.003478038048148946,0.005,PASS
+Table 2,t2.ari.claude.ci_low,-7.05,-7.05,-7.053478038048151,-0.0034780380481516104,0.005,PASS
+Table 2,t2.ari.claude.delta,-6.15,-6.15,-6.150000000000001,-8.881784197001252e-16,0.005,PASS
+Table 2,t2.ari.friedman_chi2,34.6,34.6,34.56,-0.03999999999999915,0.05,PASS
+Table 2,t2.ari.gemini.ci_high,-5.17,-5.17,-5.171265097181767,-0.0012650971817667056,0.005,PASS
+Table 2,t2.ari.gemini.ci_low,-7.16,-7.16,-7.157965672049002,0.002034327950998005,0.005,PASS
+Table 2,t2.ari.gemini.delta,-6.16,-6.16,-6.164615384615384,-0.004615384615384244,0.005,PASS
+Table 2,t2.ari.openai.ci_high,-3.56,-3.56,-3.558228657043307,0.0017713429566930117,0.005,PASS
+Table 2,t2.ari.openai.ci_low,-5.29,-5.29,-5.285771342956692,0.004228657043308104,0.005,PASS
+Table 2,t2.ari.openai.delta,-4.42,-4.42,-4.422,-0.0019999999999997797,0.005,PASS
+Table 2,t2.cli.claude.ci_high,-4.12,-4.12,-4.1181390661250745,0.0018609338749255855,0.005,PASS
+Table 2,t2.cli.claude.ci_low,-5.28,-5.28,-5.279553241567232,0.00044675843276831273,0.005,PASS
+Table 2,t2.cli.claude.delta,-4.7,-4.70,-4.698846153846153,0.001153846153846949,0.005,PASS
+Table 2,t2.cli.friedman_chi2,38.0,38.0,38.0,0.0,0.05,PASS
+Table 2,t2.cli.gemini.ci_high,-4.27,-4.27,-4.274349637068251,-0.004349637068251866,0.005,PASS
+Table 2,t2.cli.gemini.ci_low,-5.57,-5.57,-5.569496516777901,0.0005034832220989216,0.005,PASS
+Table 2,t2.cli.gemini.delta,-4.92,-4.92,-4.921923076923076,-0.0019230769230764722,0.005,PASS
+Table 2,t2.cli.openai.ci_high,-2.39,-2.39,-2.392040568928783,-0.0020405689287827933,0.005,PASS
+Table 2,t2.cli.openai.ci_low,-3.44,-3.44,-3.435159431071217,0.004840568928782929,0.005,PASS
+Table 2,t2.cli.openai.delta,-2.91,-2.91,-2.9135999999999997,-0.0035999999999996035,0.005,PASS
+Table 2,t2.fkgl.claude.ci_high,-4.71,-4.71,-4.71311692294696,-0.003116922946960088,0.005,PASS
+Table 2,t2.fkgl.claude.ci_low,-6.32,-6.32,-6.321498461668422,-0.0014984616684214913,0.005,PASS
+Table 2,t2.fkgl.claude.delta,-5.52,-5.52,-5.517307692307691,0.0026923076923086597,0.005,PASS
+Table 2,t2.fkgl.friedman_chi2,38.0,38.0,38.0,0.0,0.05,PASS
+Table 2,t2.fkgl.gemini.ci_high,-4.88,-4.88,-4.878869687276055,0.0011303127239452593,0.005,PASS
+Table 2,t2.fkgl.gemini.ci_low,-6.6,-6.60,-6.597284158877793,0.002715841122206797,0.005,PASS
+Table 2,t2.fkgl.gemini.delta,-5.74,-5.74,-5.738076923076924,0.0019230769230764722,0.005,PASS
+Table 2,t2.fkgl.openai.ci_high,-3.17,-3.17,-3.165699372088755,0.00430062791124497,0.005,PASS
+Table 2,t2.fkgl.openai.ci_low,-4.64,-4.64,-4.641500627911245,-0.0015006279112457221,0.005,PASS
+Table 2,t2.fkgl.openai.delta,-3.9,-3.90,-3.9036,-0.0036000000000000476,0.005,PASS
+Table 2,t2.fkre.claude.ci_high,32.59,32.59,32.59015648722456,0.0001564872245580773,0.005,PASS
+Table 2,t2.fkre.claude.ci_low,24.9,24.90,24.89599735892929,-0.004002641070709245,0.005,PASS
+Table 2,t2.fkre.claude.delta,28.74,28.74,28.743076923076924,0.0030769230769251976,0.005,PASS
+Table 2,t2.fkre.friedman_chi2,39.9,39.9,39.920000000000016,0.020000000000017337,0.05,PASS
+Table 2,t2.fkre.gemini.ci_high,35.26,35.26,35.26316584833661,0.003165848336614374,0.005,PASS
+Table 2,t2.fkre.gemini.ci_low,27.2,27.20,27.19991107474031,-8.892525968917653e-05,0.005,PASS
+Table 2,t2.fkre.gemini.delta,31.23,31.23,31.23153846153846,0.001538461538459046,0.005,PASS
+Table 2,t2.fkre.openai.ci_high,22.14,22.14,22.139862921393345,-0.00013707860665590488,0.005,PASS
+Table 2,t2.fkre.openai.ci_low,15.34,15.34,15.336137078606653,-0.0038629213933472073,0.005,PASS
+Table 2,t2.fkre.openai.delta,18.74,18.74,18.738,-0.0019999999999988916,0.005,PASS
+Table 2,t2.gfi.claude.ci_high,-5.19,-5.19,-5.190360386282736,-0.00036038628273526996,0.005,PASS
+Table 2,t2.gfi.claude.ci_low,-6.99,-6.99,-6.987331921409572,0.00266807859042828,0.005,PASS
+Table 2,t2.gfi.claude.delta,-6.09,-6.09,-6.088846153846154,0.001153846153846061,0.005,PASS
+Table 2,t2.gfi.friedman_chi2,39.1,39.1,39.120000000000005,0.020000000000003126,0.05,PASS
+Table 2,t2.gfi.gemini.ci_high,-5.72,-5.72,-5.715187719754516,0.004812280245483969,0.005,PASS
+Table 2,t2.gfi.gemini.ci_low,-7.59,-7.59,-7.58865843409164,0.0013415659083602094,0.005,PASS
+Table 2,t2.gfi.gemini.delta,-6.65,-6.65,-6.651923076923078,-0.0019230769230773603,0.005,PASS
+Table 2,t2.gfi.openai.ci_high,-3.55,-3.55,-3.5464217970662535,0.003578202933746333,0.005,PASS
+Table 2,t2.gfi.openai.ci_low,-5.16,-5.16,-5.159978202933747,2.1797066253270714e-05,0.005,PASS
+Table 2,t2.gfi.openai.delta,-4.35,-4.35,-4.3532,-0.0032000000000005357,0.005,PASS
+Table 2,t2.smog.claude.ci_high,-3.76,-3.76,-3.7607772406624407,-0.0007772406624408923,0.005,PASS
+Table 2,t2.smog.claude.ci_low,-5.11,-5.11,-5.107684297799098,0.002315702200902159,0.005,PASS
+Table 2,t2.smog.claude.delta,-4.43,-4.43,-4.434230769230769,-0.004230769230769482,0.005,PASS
+Table 2,t2.smog.friedman_chi2,40.9,40.9,40.879999999999995,-0.020000000000003126,0.05,PASS
+Table 2,t2.smog.gemini.ci_high,-4.26,-4.26,-4.26340925050394,-0.003409250503939809,0.005,PASS
+Table 2,t2.smog.gemini.ci_low,-5.57,-5.57,-5.568898441803753,0.0011015581962476872,0.005,PASS
+Table 2,t2.smog.gemini.delta,-4.92,-4.92,-4.916153846153846,0.0038461538461538325,0.005,PASS
+Table 2,t2.smog.openai.ci_high,-2.51,-2.51,-2.507609951170306,0.002390048829693736,0.005,PASS
+Table 2,t2.smog.openai.ci_low,-3.71,-3.71,-3.710790048829693,-0.0007900488296930241,0.005,PASS
+Table 2,t2.smog.openai.delta,-3.11,-3.11,-3.1091999999999995,0.000800000000000356,0.005,PASS
+Table 3,t3.claude.accuracy.mean,4.82,4.82,4.823529411764706,0.003529411764705337,0.005,PASS
+Table 3,t3.claude.accuracy.sd,0.39,0.39,0.3850133687518488,-0.004986631248151241,0.005,PASS
+Table 3,t3.claude.added_errors.mean,1.1,1.10,1.0980392156862746,-0.0019607843137254832,0.005,PASS
+Table 3,t3.claude.added_errors.sd,0.36,0.36,0.3608269369536766,0.000826936953676638,0.005,PASS
+Table 3,t3.claude.completeness.mean,4.94,4.94,4.9411764705882355,0.0011764705882351123,0.005,PASS
+Table 3,t3.claude.completeness.sd,0.24,0.24,0.2376354103144018,-0.0023645896855981896,0.005,PASS
+Table 3,t3.claude.n,51.0,51,51.0,0.0,0.5,PASS
+Table 3,t3.gemini.accuracy.mean,4.85,4.85,4.8545454545454545,0.004545454545454852,0.005,PASS
+Table 3,t3.gemini.accuracy.sd,0.36,0.36,0.3558079911965533,-0.004192008803446667,0.005,PASS
+Table 3,t3.gemini.added_errors.mean,1.07,1.07,1.0727272727272728,0.0027272727272726893,0.005,PASS
+Table 3,t3.gemini.added_errors.sd,0.26,0.26,0.2620817977022989,0.002081797702298882,0.005,PASS
+Table 3,t3.gemini.completeness.mean,4.64,4.64,4.636363636363637,-0.0036363636363629936,0.005,PASS
+Table 3,t3.gemini.completeness.sd,0.87,0.87,0.8684519297052397,-0.0015480702947603397,0.005,PASS
+Table 3,t3.gemini.n,55.0,55,55.0,0.0,0.5,PASS
+Table 3,t3.openai.accuracy.mean,4.84,4.84,4.836734693877551,-0.0032653061224490187,0.005,PASS
+Table 3,t3.openai.accuracy.sd,0.62,0.62,0.6240639248610075,0.004063924861007484,0.005,PASS
+Table 3,t3.openai.added_errors.mean,1.1,1.10,1.1020408163265305,0.0020408163265304147,0.005,PASS
+Table 3,t3.openai.added_errors.sd,0.47,0.47,0.4674798551445682,-0.002520144855431783,0.005,PASS
+Table 3,t3.openai.completeness.mean,4.84,4.84,4.836734693877551,-0.0032653061224490187,0.005,PASS
+Table 3,t3.openai.completeness.sd,0.62,0.62,0.6240639248610075,0.004063924861007484,0.005,PASS
+Table 3,t3.openai.n,49.0,49,49.0,0.0,0.5,PASS
+Table 4,t4.claude.accuracy.mean,4.91,4.91,4.91,0.0,0.005,PASS
+Table 4,t4.claude.accuracy.sd,0.18,0.18,0.178,-0.0020000000000000018,0.005,PASS
+Table 4,t4.claude.added_errors.mean,1.18,1.18,1.179,-0.0009999999999998899,0.005,PASS
+Table 4,t4.claude.added_errors.sd,0.36,0.36,0.356,-0.0040000000000000036,0.005,PASS
+Table 4,t4.claude.completeness.mean,4.91,4.91,4.91,0.0,0.005,PASS
+Table 4,t4.claude.completeness.sd,0.2,0.20,0.201,0.0010000000000000009,0.005,PASS
+Table 4,t4.claude.n,26.0,26,26.0,0.0,0.5,PASS
+Table 4,t4.gemini.accuracy.mean,4.69,4.69,4.692,0.0019999999999997797,0.005,PASS
+Table 4,t4.gemini.accuracy.sd,0.44,0.44,0.441,0.0010000000000000009,0.005,PASS
+Table 4,t4.gemini.added_errors.mean,1.45,1.45,1.449,-0.0009999999999998899,0.005,PASS
+Table 4,t4.gemini.added_errors.sd,0.7,0.70,0.699,-0.0010000000000000009,0.005,PASS
+Table 4,t4.gemini.completeness.mean,4.81,4.81,4.808,-0.0019999999999997797,0.005,PASS
+Table 4,t4.gemini.completeness.sd,0.29,0.29,0.286,-0.0040000000000000036,0.005,PASS
+Table 4,t4.gemini.n,26.0,26,26.0,0.0,0.5,PASS
+Table 4,t4.openai.accuracy.mean,5.0,5.00,5.0,0.0,0.005,PASS
+Table 4,t4.openai.accuracy.sd,0.0,0.00,0.0,0.0,0.005,PASS
+Table 4,t4.openai.added_errors.mean,1.07,1.07,1.067,-0.0030000000000001137,0.005,PASS
+Table 4,t4.openai.added_errors.sd,0.17,0.17,0.167,-0.0030000000000000027,0.005,PASS
+Table 4,t4.openai.completeness.mean,4.95,4.95,4.947,-0.0030000000000001137,0.005,PASS
+Table 4,t4.openai.completeness.sd,0.16,0.16,0.158,-0.0020000000000000018,0.005,PASS
+Table 4,t4.openai.n,25.0,25,25.0,0.0,0.5,PASS
