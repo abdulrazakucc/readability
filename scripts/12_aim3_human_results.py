@@ -1,6 +1,6 @@
 """Aim 3 — compile the human-review results (interim).
 
-Reads every returned reviewer sheet under data/review/questionnaire_scores/ and
+Reads every returned reviewer sheet under data/review/reviewer_responses/ and
 separates the THREE conditions that were actually collected (the filename encodes
 all three signals):
 
@@ -41,7 +41,7 @@ from src.agreement import (  # noqa: E402
 )
 from src.config import REPORTS_DIR, REVIEW_DIR, SCORES_DIR  # noqa: E402
 
-SCORES_ROOT = REVIEW_DIR / "questionnaire_scores"
+SCORES_ROOT = REVIEW_DIR / "reviewer_responses"
 AXES = ["accuracy_1_5", "completeness_1_5", "added_errors_1_5"]
 MODEL_ORDER = ["claude", "openai", "gemini"]
 MODEL_LABEL = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
@@ -87,7 +87,7 @@ def load() -> pd.DataFrame:
     if not frames:
         raise SystemExit(f"no score sheets under {SCORES_ROOT}")
     df = pd.concat(frames, ignore_index=True)
-    df = df.merge(pd.read_csv(REVIEW_DIR / "blind_key.csv"), on="blind_id", how="left", validate="many_to_one")
+    df = df.merge(pd.read_csv(REVIEW_DIR / "unblinding_key.csv"), on="blind_id", how="left", validate="many_to_one")
     df["procedure"] = df["page_id"].str.split("__").str[1]
     for c in AXES:
         df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -104,7 +104,7 @@ def coverage(df: pd.DataFrame) -> pd.DataFrame:
     # Derived from the blinding key rather than written in: the total is a
     # property of the study design, and a literal here would silently go stale if
     # the rewrite set ever changed.
-    n_rewrites_total = pd.read_csv(REVIEW_DIR / "blind_key.csv").blind_id.nunique()
+    n_rewrites_total = pd.read_csv(REVIEW_DIR / "unblinding_key.csv").blind_id.nunique()
     rows = []
     for c in CONDITIONS:
         g = df[df.condition == c]

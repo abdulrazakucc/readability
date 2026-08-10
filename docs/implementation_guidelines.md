@@ -114,7 +114,7 @@ Two-way blinding:
 - The clinical reviewer never sees which model produced a rewrite during scoring.
 - The data scientist never sees clinical scores during data preparation.
 
-Mechanism: every rewrite is assigned a random `blind_id` at packet-build time. The mapping from `blind_id` → `(page_id, model)` lives in `data/scores/blind_key.csv`, which is NOT included in the review packet. After the reviewer returns scored sheets keyed by `blind_id`, the data scientist joins on the key.
+Mechanism: every rewrite is assigned a random `blind_id` at packet-build time. The mapping from `blind_id` → `(page_id, model)` lives in `data/scores/unblinding_key.csv`, which is NOT included in the review packet. After the reviewer returns scored sheets keyed by `blind_id`, the data scientist joins on the key.
 
 ## Reproducibility checklist (run before any manuscript submission)
 

@@ -2,8 +2,8 @@
 """Build the blinded review packet for Aim 3 clinical scoring.
 
 Outputs:
-  data/review/review_packet.csv  (hand to the reviewer)
-  data/review/blind_key.csv      (keep — used to unblind later)
+  data/review/blinded_review_packet.csv  (hand to the reviewer)
+  data/review/unblinding_key.csv      (keep — used to unblind later)
 """
 
 from __future__ import annotations

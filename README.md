@@ -104,9 +104,9 @@ data/urls.csv
    │
    ▼  05 score rewrites ─────────────────────► Aim 2
    │
-   ▼  06 build blinded packet ──► review_packet.csv + blind_key.csv
+   ▼  06 build blinded packet ──► blinded_review_packet.csv + unblinding_key.csv
    │
-   ├─── blinded human review ──► questionnaire_scores/ ──► 12, 13 ──► Aim 3 primary
+   ├─── blinded human review ──► reviewer_responses/ ──► 12, 13 ──► Aim 3 primary
    │
    └─── automated judge panel ──► 09, 10, 11 ─────────────────────► Aim 3 secondary
                                                                      (screening only)

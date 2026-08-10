@@ -22,7 +22,7 @@ rewrite exactly once.
 - Send **one** HTML file to each reviewer — nothing else. Instructions and the
   rubric are built into the page. You may assign the same set to more than one
   reviewer for inter-rater agreement; they work independently.
-- Do **not** send `blind_key.csv` or any automated LLM scores — they would break
+- Do **not** send `unblinding_key.csv` or any automated LLM scores — they would break
   the model blinding.
 
 ## Collecting & combining for analysis
@@ -38,7 +38,7 @@ CSVs (they share one header) and join to the un-blinding key on `blind_id`:
 
     import pandas as pd, glob
     scores = pd.concat(pd.read_csv(f) for f in glob.glob('aim3_scores_*.csv'))
-    key = pd.read_csv('blind_key.csv')          # researcher-only
+    key = pd.read_csv('unblinding_key.csv')          # researcher-only
     df = scores.merge(key, on='blind_id')        # adds page_id, model_id
 
 `set_id` lets you track coverage and compute inter-rater agreement within a set;

@@ -42,6 +42,11 @@ tests/test_manuscript.py
 reports/manuscript_validation.csv
 reports/comparison_report.html
 
+# Superseded combined instrument. Reviewers were given the balanced A/B/C sets,
+# never this single-file version; build_review_questionnaire.py still emits it, so
+# it is ignored rather than tracked to keep the tree clean.
+data/review/aim3_accuracy_questionnaire.html
+
 # Raw captures and derived artifacts (regenerable + potentially large)
 # data/raw/
 # data/cleaned/

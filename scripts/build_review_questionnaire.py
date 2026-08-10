@@ -4,15 +4,15 @@
 One file works for all reviewers: each reviewer opens it in a browser, enters their
 name/role, scores every blinded rewrite on the three 1-5 rubric dimensions, and
 exports a CSV keyed by `blind_id`. That CSV joins straight back to
-`data/review/blind_key.csv` to un-blind, so no spreadsheet is ever hand-edited and
+`data/review/unblinding_key.csv` to un-blind, so no spreadsheet is ever hand-edited and
 the reproducibility floor stays intact.
 
 Input:
-  data/review/review_packet_with_text.csv   (built by scripts/06_build_review_packet.py)
+  data/review/blinded_review_packet_with_text.csv   (built by scripts/06_build_review_packet.py)
 
 Output:
   data/review/aim3_accuracy_questionnaire.html          (full, all rewrites)
-  data/review/questionnaire_parts/aim3_accuracy_questionnaire_set_{A,B,C}.html
+  data/review/instrument_labeled_sets/aim3_accuracy_questionnaire_set_{A,B,C}.html
         procedure-balanced subsets for sharing the workload across reviewer
         groups, plus a README.md describing distribution and how to combine the
         returned CSVs. Pass --no-parts to emit only the full file.
@@ -35,11 +35,11 @@ from src.config import MANIFEST_PATH, REVIEW_DIR, ensure_dirs  # noqa: E402
 
 log = logging.getLogger("questionnaire")
 
-PACKET_NAME = "review_packet_with_text.csv"
+PACKET_NAME = "blinded_review_packet_with_text.csv"
 OUTPUT_NAME = "aim3_accuracy_questionnaire.html"
-PARTS_DIRNAME = "questionnaire_parts"
-NEUTRAL_DIRNAME = "questionnaire_neutral"
-NEUTRAL_OUTPUT_NAME = "aim3_accuracy_questionnaire_neutral.html"
+PARTS_DIRNAME = "instrument_labeled_sets"
+NEUTRAL_DIRNAME = "instrument_neutral_sets"
+NEUTRAL_OUTPUT_NAME = "aim3_accuracy_instrument_neutral_sets.html"
 # Marker woven into the neutral variant's file names and exported CSV names so the
 # two builds stay distinguishable once files leave this folder.
 NEUTRAL_TAG = "neutral"
@@ -66,7 +66,7 @@ def load_items(packet_path: Path) -> list[dict]:
 #
 # Presentation ONLY. The items, their order, the blind IDs, the three 1-5 scales
 # and the exported CSV schema are byte-for-byte identical to the standard build,
-# so sheets returned from either variant concatenate and join to blind_key.csv
+# so sheets returned from either variant concatenate and join to unblinding_key.csv
 # the same way and previously collected feedback stays usable.
 #
 # What changes is wording: the page no longer frames the task as "original vs
@@ -190,7 +190,7 @@ def load_procedures() -> dict[str, str]:
     Read only on the researcher's machine at build time to balance the split; the
     procedure label never enters the rendered HTML, so model blinding is untouched.
     """
-    key_path = REVIEW_DIR / "blind_key.csv"
+    key_path = REVIEW_DIR / "unblinding_key.csv"
     bid_to_page = {r["blind_id"]: r["page_id"] for r in csv.DictReader(key_path.open(encoding="utf-8"))}
     page_to_proc = {
         r["page_id"]: r["procedure"] for r in csv.DictReader(MANIFEST_PATH.open(encoding="utf-8"))
@@ -239,7 +239,7 @@ def build_set_html(items: list[dict], label: str, *, neutral: bool = False) -> s
     # Distinct storage key so a reviewer opening both variants on one device keeps
     # independent drafts. The CSV suffix is deliberately unchanged so returned
     # sheets keep the same filename pattern and concatenate with existing data.
-    prefix = "aim3_questionnaire_neutral_v1" if neutral else "aim3_questionnaire_v1"
+    prefix = "aim3_instrument_neutral_sets_v1" if neutral else "aim3_questionnaire_v1"
     return build_html(
         items,
         store_key=f"{prefix}_set_{label}",
@@ -298,7 +298,7 @@ def main(argv: list[str] | None = None) -> int:
     out_path.write_text(
         build_html(
             items,
-            store_key=("aim3_questionnaire_neutral_v1" if args.neutral else "aim3_questionnaire_v1"),
+            store_key=("aim3_instrument_neutral_sets_v1" if args.neutral else "aim3_questionnaire_v1"),
             csv_suffix=(f"_{NEUTRAL_TAG}" if args.neutral else ""),
             neutral=args.neutral,
         ),
@@ -357,7 +357,7 @@ def _write_parts_readme(
                 "",
                 "> **Neutral-presentation variant.** Same items, same order, same blind IDs,",
                 "> same 1-5 scales and the same exported CSV schema as the standard build in",
-                "> `../questionnaire_parts/`. Only the wording differs: the page does not frame",
+                "> `../instrument_labeled_sets/`. Only the wording differs: the page does not frame",
                 "> the task as original vs AI (left panel is the *reference passage*, right is",
                 "> the *passage to score*). Returned sheets therefore concatenate with feedback",
                 "> already collected from the standard build.",
@@ -392,7 +392,7 @@ def _write_parts_readme(
         "- Send **one** HTML file to each reviewer — nothing else. Instructions and the",
         "  rubric are built into the page. You may assign the same set to more than one",
         "  reviewer for inter-rater agreement; they work independently.",
-        "- Do **not** send `blind_key.csv` or any automated LLM scores — they would break",
+        "- Do **not** send `unblinding_key.csv` or any automated LLM scores — they would break",
         "  the model blinding.",
         "",
         "## Collecting & combining for analysis",
@@ -408,7 +408,7 @@ def _write_parts_readme(
         "",
         "    import pandas as pd, glob",
         "    scores = pd.concat(pd.read_csv(f) for f in glob.glob('aim3_scores_*.csv'))",
-        "    key = pd.read_csv('blind_key.csv')          # researcher-only",
+        "    key = pd.read_csv('unblinding_key.csv')          # researcher-only",
         "    df = scores.merge(key, on='blind_id')        # adds page_id, model_id",
         "",
         "`set_id` lets you track coverage and compute inter-rater agreement within a set;",

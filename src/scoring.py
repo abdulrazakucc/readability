@@ -4,7 +4,7 @@ For Aim 3:
 - For each page, take the three rewrites and produce a blinded packet.
 - Shuffle rewrite order using a seeded RNG (reproducibility).
 - Strip model identifiers; assign each rewrite a `blind_id`.
-- Emit `blind_key.csv` separately (never shipped to the reviewer).
+- Emit `unblinding_key.csv` separately (never shipped to the reviewer).
 - After reviewer returns scored sheets, `join_accuracy_scores` unblinds.
 """
 
@@ -83,8 +83,8 @@ def build_packet(
         rng.shuffle(per_page)
         entries.extend(per_page)
 
-    packet_path = out_dir / "review_packet.csv"
-    blind_key_path = out_dir / "blind_key.csv"
+    packet_path = out_dir / "blinded_review_packet.csv"
+    blind_key_path = out_dir / "unblinding_key.csv"
 
     with packet_path.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
