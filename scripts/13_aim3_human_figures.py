@@ -5,10 +5,13 @@ Writes to reports/figures/:
   aim3_human_compiled.png     PRIMARY: per-model clinical ratings by blinded
                               subspecialists (labeled instrument) + the
                               readability-accuracy trade-off.
-  aim3_presentation_bias.png  labeled vs neutral-presentation expert accuracy
-                              (the presentation-bias check), with significance marks.
-  aim3_three_conditions.png   accuracy and completeness across all three cohorts
-                              (labeled experts, neutral experts, laypersons).
+  aim3_presentation_bias.png  labeled vs neutral-presentation accuracy WITHIN the
+                              lay cohort (the presentation-bias check), with
+                              significance marks. Lay readers scored both
+                              presentations; only one subspecialist scored the
+                              neutral instrument, too thin to carry this contrast.
+  aim3_three_conditions.png   accuracy and completeness across all four cohorts
+                              (subspecialists labeled/neutral, lay labeled/neutral).
 
 Bar values are read from the compiled tables (reports/aim3_compiled_*.csv) so the
 figures and tables never disagree; the trade-off scatter is recomputed from the
@@ -30,7 +33,14 @@ from scipy import stats  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
-from src.config import FIGURES_DIR, REPORTS_DIR, REVIEW_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
+from src.config import (  # noqa: E402
+    FIGURE_DPI,
+    FIGURES_DIR,
+    REPORTS_DIR,
+    REVIEW_DIR,
+    SCORES_DIR,
+    ensure_dirs,
+)
 
 MODELS = ["claude", "openai", "gemini"]
 LABELS = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
@@ -43,7 +53,7 @@ _SLUG_RE = re.compile(r"^aim3_scores_(?:neutral_)?set_[a-c]_(.+?)_(?:expert|laym
 
 def setup_style() -> None:
     plt.rcParams.update({
-        "figure.dpi": 150,
+        "figure.dpi": FIGURE_DPI,
         "font.family": "DejaVu Sans",
         "font.size": 11,
         "text.color": INK, "axes.labelcolor": INK, "axes.edgecolor": "#c7d0d8",
@@ -70,7 +80,8 @@ def load_raw() -> pd.DataFrame:
     for c in AXES:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     df["condition"] = np.where(
-        df.reviewer_type == "layperson", "layperson",
+        df.reviewer_type == "layperson",
+        np.where(df.presentation == "neutral", "layperson_neutral", "layperson_labeled"),
         np.where(df.presentation == "neutral", "expert_neutral", "expert_labeled"))
     return df
 
@@ -162,8 +173,11 @@ def fig_primary(bym: pd.DataFrame, raw: pd.DataFrame, cov: pd.DataFrame) -> None
 
 def fig_bias(bym: pd.DataFrame, pe: pd.DataFrame) -> None:
     fig, ax = plt.subplots(figsize=(8.8, 5.4))
-    conds = [("expert_labeled", "Standard instrument (labeled “AI rewrite”)", "#2f4f6f"),
-             ("expert_neutral", "Neutral presentation", "#8fb2d4")]
+    # The labeling contrast is a WITHIN-LAY comparison: both presentations were
+    # scored by lay readers (2 labeled, 3 neutral). Only one subspecialist scored
+    # the neutral instrument, too thin to carry this figure.
+    conds = [("layperson_labeled", "Standard instrument (labeled “AI rewrite”)", "#2f4f6f"),
+             ("layperson_neutral", "Neutral presentation", "#8fb2d4")]
     x = np.arange(len(MODELS))
     w = 0.36
     for j, (c, name, col) in enumerate(conds):
@@ -204,10 +218,14 @@ def fig_bias(bym: pd.DataFrame, pe: pd.DataFrame) -> None:
 
 
 def fig_conditions(bym: pd.DataFrame) -> None:
-    conds = [("expert_labeled", "Experts\n(labeled)"),
-             ("expert_neutral", "Experts\n(neutral)"),
-             ("layperson", "Laypersons")]
-    fig, axes = plt.subplots(1, 2, figsize=(12.6, 5.3))
+    # Four cohorts: reviewer type x instrument presentation. The lay cohorts are
+    # shown separately, never pooled, so the presentation contrast stays visible.
+    conds = [("expert_labeled", "Subspecialists\n(labeled)"),
+             ("expert_neutral", "Subspecialist\n(neutral)"),
+             ("layperson_labeled", "Lay readers\n(labeled)"),
+             ("layperson_neutral", "Lay readers\n(neutral)")]
+    # Wide enough that four two-line cohort labels do not collide.
+    fig, axes = plt.subplots(1, 2, figsize=(15.4, 5.6))
     panels = [("accuracy_1_5", "Accuracy"), ("completeness_1_5", "Completeness")]
     for ax, (metric, title) in zip(axes, panels, strict=True):
         x = np.arange(len(conds))

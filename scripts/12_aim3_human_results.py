@@ -34,6 +34,7 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from src.agreement import gwet_ac1, mean_pairwise_weighted_kappa  # noqa: E402
 from src.config import REPORTS_DIR, REVIEW_DIR, SCORES_DIR  # noqa: E402
 
 SCORES_ROOT = REVIEW_DIR / "questionnaire_scores"
@@ -42,12 +43,19 @@ MODEL_ORDER = ["claude", "openai", "gemini"]
 MODEL_LABEL = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
 
 
-CONDITIONS = ["expert_labeled", "expert_neutral", "layperson"]
+# Four cohorts, because presentation and reviewer type vary independently.
+# Collapsing the two lay cohorts would pool the labeled and neutral instruments
+# into one mean, which is exactly the confound the study is designed to measure.
+CONDITIONS = ["expert_labeled", "expert_neutral", "layperson_labeled", "layperson_neutral"]
 CONDITION_LABEL = {
     "expert_labeled": "Subspecialist, standard instrument (primary)",
     "expert_neutral": "Subspecialist, neutral presentation",
-    "layperson": "Layperson, standard instrument",
+    "layperson_labeled": "Layperson, standard (labeled) instrument",
+    "layperson_neutral": "Layperson, neutral presentation",
 }
+# The manuscript reports lay readers pooled across both presentations (385
+# ratings from 5 readers) when contrasting them with the subspecialists.
+LAY_CONDITIONS = ["layperson_labeled", "layperson_neutral"]
 
 # Reviewer identity is taken from the file NAME slug, not the free-text
 # `reviewer_name` field, which is inconsistent across returns (eg, "Hafsa" vs
@@ -79,7 +87,8 @@ def load() -> pd.DataFrame:
     for c in AXES:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     df["condition"] = np.where(
-        df.reviewer_type == "layperson", "layperson",
+        df.reviewer_type == "layperson",
+        np.where(df.presentation == "neutral", "layperson_neutral", "layperson_labeled"),
         np.where(df.presentation == "neutral", "expert_neutral", "expert_labeled"),
     )
     df["reviewer_display"] = df["reviewer_id"].str.replace("_", " ").str.title()
@@ -112,11 +121,23 @@ def reviewers(df: pd.DataFrame) -> pd.DataFrame:
     return g
 
 
+def _condition_groups(df: pd.DataFrame) -> list[tuple[str, pd.DataFrame]]:
+    """The four cohorts, plus lay readers pooled across both presentations.
+
+    `layperson_all` is the 385-rating pooled lay cohort the manuscript contrasts
+    with the subspecialists. It is reported as an extra row, never as a
+    replacement for the two lay cohorts, so the presentation split stays visible.
+    """
+    groups = [(c, df[df.condition == c]) for c in CONDITIONS]
+    groups.append(("layperson_all", df[df.condition.isin(LAY_CONDITIONS)]))
+    return groups
+
+
 def by_model(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for c in ["expert_labeled", "expert_neutral", "layperson"]:
+    for c, sub in _condition_groups(df):
         for m in MODEL_ORDER:
-            g = df[(df.condition == c) & (df.model_id == m)]
+            g = sub[sub.model_id == m]
             r = {"condition": c, "model_id": m, "model": MODEL_LABEL[m], "n": len(g)}
             for ax in AXES:
                 r[f"{ax}_mean"] = g[ax].mean()
@@ -128,8 +149,7 @@ def by_model(df: pd.DataFrame) -> pd.DataFrame:
 
 def pooled(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for c in ["expert_labeled", "expert_neutral", "layperson"]:
-        g = df[df.condition == c]
+    for c, g in _condition_groups(df):
         rows.append({
             "condition": c, "ratings": len(g),
             "accuracy_mean": g.accuracy_1_5.mean(), "completeness_mean": g.completeness_1_5.mean(),
@@ -144,7 +164,14 @@ def pooled(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def irr(df: pd.DataFrame) -> pd.DataFrame:
-    """Pairwise agreement on multiply-scored rewrites, per condition and axis."""
+    """Agreement on multiply-scored rewrites, per condition and axis.
+
+    Reports raw percent agreement alongside two chance-corrected coefficients.
+    Under this study's strong ceiling (~86% of expert accuracy ratings are 5),
+    quadratic-weighted Cohen kappa collapses toward zero while agreement is in
+    fact excellent; Gwet AC1 is reported because it is resistant to that paradox.
+    Both are shown so the contrast is visible rather than hidden.
+    """
     rows = []
     for c in CONDITIONS:
         g = df[df.condition == c]
@@ -158,16 +185,29 @@ def irr(df: pd.DataFrame) -> pd.DataFrame:
                     w1.append(abs(a - b) <= 1)
             rows.append({"condition": c, "axis": ax, "rater_pairs": len(ex),
                          "pct_exact": 100 * np.mean(ex) if ex else np.nan,
-                         "pct_within_1": 100 * np.mean(w1) if w1 else np.nan})
+                         "pct_within_1": 100 * np.mean(w1) if w1 else np.nan,
+                         "gwet_ac1": gwet_ac1(piv) if len(piv.columns) > 1 else np.nan,
+                         "quad_weighted_kappa": (
+                             mean_pairwise_weighted_kappa(piv) if len(piv.columns) > 1 else np.nan
+                         )})
     return pd.DataFrame(rows)
 
 
 def presentation_effect(df: pd.DataFrame) -> pd.DataFrame:
-    """Labeled vs neutral experts (between-reviewer; confounded by rater identity)."""
+    """Labeled vs neutral presentation, WITHIN the lay cohort.
+
+    Both presentations were scored by lay readers (2 labeled, 3 neutral), so this
+    is the contrast the manuscript reports. Different people scored each
+    presentation, so the effect is confounded with rater identity and is
+    descriptive only -- it is not evidence of an AI-labeling effect.
+
+    The subspecialists are not used here: only one expert (M.N.) scored the
+    neutral instrument, which is too thin to support the contrast.
+    """
     rows = []
     for _scope, m in [("overall", None)] + [("model", m) for m in MODEL_ORDER]:
-        lab = df[df.condition == "expert_labeled"]
-        neu = df[df.condition == "expert_neutral"]
+        lab = df[df.condition == "layperson_labeled"]
+        neu = df[df.condition == "layperson_neutral"]
         if m:
             lab, neu = lab[lab.model_id == m], neu[neu.model_id == m]
         for ax in AXES:
@@ -183,10 +223,11 @@ def presentation_effect(df: pd.DataFrame) -> pd.DataFrame:
 def expert_vs_lay(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
     lab = df[df.condition == "expert_labeled"]
-    lay = df[df.condition == "layperson"]
+    lay = df[df.condition.isin(LAY_CONDITIONS)]  # pooled across both presentations
     for ax in AXES:
         a, b = lab[ax].dropna(), lay[ax].dropna()
-        rows.append({"axis": ax, "expert_mean": a.mean(), "layperson_mean": b.mean(),
+        rows.append({"axis": ax, "expert_mean": a.mean(), "expert_n": len(a),
+                     "layperson_mean": b.mean(), "layperson_n": len(b),
                      "mannwhitney_p": stats.mannwhitneyu(a, b, alternative="two-sided")[1]})
     return pd.DataFrame(rows)
 
