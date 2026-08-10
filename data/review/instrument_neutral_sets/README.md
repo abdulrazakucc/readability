@@ -5,14 +5,14 @@ re-running the generator overwrites this folder.
 
 > **Neutral-presentation variant.** Same items, same order, same blind IDs,
 > same 1-5 scales and the same exported CSV schema as the standard build in
-> `../questionnaire_parts/`. Only the wording differs: the page does not frame
+> `../instrument_labeled_sets/`. Only the wording differs: the page does not frame
 > the task as original vs AI (left panel is the *reference passage*, right is
 > the *passage to score*). Returned sheets therefore concatenate with feedback
 > already collected from the standard build.
 
 ## What these files are
 
-The full questionnaire (`aim3_accuracy_questionnaire_neutral.html`, all items) has
+The full questionnaire (`aim3_accuracy_instrument_neutral_sets.html`, all items) has
 been divided into 3 self-contained sets so the workload can be shared
 across reviewer groups. Each set is balanced across all three procedures (coronary
 CTA, TAVR, LAAO/Watchman). The sets are mutually exclusive and together cover every
@@ -29,7 +29,7 @@ rewrite exactly once.
 - Send **one** HTML file to each reviewer — nothing else. Instructions and the
   rubric are built into the page. You may assign the same set to more than one
   reviewer for inter-rater agreement; they work independently.
-- Do **not** send `blind_key.csv` or any automated LLM scores — they would break
+- Do **not** send `unblinding_key.csv` or any automated LLM scores — they would break
   the model blinding.
 
 ## Collecting & combining for analysis
@@ -45,7 +45,7 @@ CSVs (they share one header) and join to the un-blinding key on `blind_id`:
 
     import pandas as pd, glob
     scores = pd.concat(pd.read_csv(f) for f in glob.glob('aim3_scores_*.csv'))
-    key = pd.read_csv('blind_key.csv')          # researcher-only
+    key = pd.read_csv('unblinding_key.csv')          # researcher-only
     df = scores.merge(key, on='blind_id')        # adds page_id, model_id
 
 `set_id` lets you track coverage and compute inter-rater agreement within a set;

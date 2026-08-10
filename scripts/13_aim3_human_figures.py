@@ -67,7 +67,7 @@ def setup_style() -> None:
 
 def load_raw() -> pd.DataFrame:
     frames = []
-    for f in sorted((REVIEW_DIR / "questionnaire_scores").rglob("aim3_scores_*.csv")):
+    for f in sorted((REVIEW_DIR / "reviewer_responses").rglob("aim3_scores_*.csv")):
         d = pd.read_csv(f)
         s = f.stem.lower()
         m = _SLUG_RE.match(s)
@@ -76,7 +76,7 @@ def load_raw() -> pd.DataFrame:
         d["presentation"] = "neutral" if "neutral" in s else "standard"
         frames.append(d)
     df = pd.concat(frames, ignore_index=True).merge(
-        pd.read_csv(REVIEW_DIR / "blind_key.csv"), on="blind_id", how="left")
+        pd.read_csv(REVIEW_DIR / "unblinding_key.csv"), on="blind_id", how="left")
     for c in AXES:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     df["condition"] = np.where(

@@ -41,9 +41,9 @@ See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in
 - `reports/aim1_*.csv` (n=26) + `reports/aim2_paired_tests.csv` + `reports/aim2_across_models.csv` (3-model Friedman)
 - `reports/aim3_llm_*.csv` (Aim 3 SECONDARY automated panel: descriptives, model comparison, inter-judge agreement, self-preference, trade-off) + `data/scores/accuracy_llm{,_raw}.csv` (231 judgments)
 - `reports/figures/aim1_fkgl_by_*.png` (2) + `aim2_fkgl_delta_by_model.png` + `aim3_llm_scores_by_model.png` + `aim3_llm_tradeoff.png` (scatter) + `aim3_llm_tradeoff_alt.png` (dual-axis summary)
-- `data/review/review_packet.csv` (77 blinded entries) + `data/review/blind_key.csv` (unblinding key, do not share)
-- `data/review/questionnaire_parts/` + `data/review/questionnaire_neutral/`, the reviewer-facing HTML instrument split into procedure-balanced sets A/B/C, in the labeled and neutral-presentation variants
-- `data/review/questionnaire_scores/set_{A,B,C}/`, **21 returned reviewer sheets** from 11 reviewers across the 3 cohorts (565 ratings total)
+- `data/review/blinded_review_packet.csv` (77 blinded entries) + `data/review/unblinding_key.csv` (unblinding key, do not share)
+- `data/review/instrument_labeled_sets/` + `data/review/instrument_neutral_sets/`, the reviewer-facing HTML instrument split into procedure-balanced sets A/B/C, in the labeled and neutral-presentation variants
+- `data/review/reviewer_responses/set_{A,B,C}/`, **21 returned reviewer sheets** from 11 reviewers across the 3 cohorts (565 ratings total)
 - `reports/aim3_compiled_*.csv` (Aim 3 PRIMARY human review, interim): `coverage`, `reviewers`, `pooled`, `by_model`, `irr`, `presentation_effect`, `expert_vs_lay`, `tradeoff`, `across_model`
 - `reports/figures/aim3_human_compiled.png` (primary endpoint + trade-off), `aim3_presentation_bias.png` (labeled vs neutral), `aim3_three_conditions.png` (all 3 cohorts)
 - Docs: `docs/methods_and_statistics_companion.md` (plain-language methods/metrics/stats with worked examples), `docs/aim3_automated_accuracy_assessment.md` (panel write-up), the reviewer guide (kept on the `draft` branch) (clinical reviewer instructions)
@@ -130,12 +130,12 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
 
 ### Step 5: Build the blinded review packet
 - **Command:** `.venv/bin/python scripts/06_build_review_packet.py`
-- **Outputs:** `data/review/review_packet.csv` (for the blinded reviewer; original text + three model-stripped rewrites in randomized order, each tagged with `blind_id`) and `data/review/blind_key.csv` (NOT shared with the subspecialist reviewer; maps `blind_id` → `(page_id, model_id)`).
-- **Hand-off:** send `review_packet.csv` to the blinded subspecialist reviewer along with `docs/accuracy_scoring_rubric.md`. Do NOT send `blind_key.csv`.
+- **Outputs:** `data/review/blinded_review_packet.csv` (for the blinded reviewer; original text + three model-stripped rewrites in randomized order, each tagged with `blind_id`) and `data/review/unblinding_key.csv` (NOT shared with the subspecialist reviewer; maps `blind_id` → `(page_id, model_id)`).
+- **Hand-off:** send `blinded_review_packet.csv` to the blinded subspecialist reviewer along with `docs/accuracy_scoring_rubric.md`. Do NOT send `unblinding_key.csv`.
 - **Done when:** the packet is sent and the blind key is committed locally but not surfaced to the reviewer.
 
 ### Step 6: Receive scored sheets, unblind, and compile (DONE 2026-08-06 — interim)
-- **Input (per reviewer):** one CSV per set into `data/review/questionnaire_scores/set_<X>/`, named `aim3_scores_[neutral_]set_<x>_<name>_<expert|layman>.csv`, with columns `blind_id, accuracy_1_5, completeness_1_5, added_errors_1_5, notes`. The filename convention is load-bearing — `12` parses cohort and reviewer identity from it.
+- **Input (per reviewer):** one CSV per set into `data/review/reviewer_responses/set_<X>/`, named `aim3_scores_[neutral_]set_<x>_<name>_<expert|layman>.csv`, with columns `blind_id, accuracy_1_5, completeness_1_5, added_errors_1_5, notes`. The filename convention is load-bearing — `12` parses cohort and reviewer identity from it.
 - **Commands:**
   ```bash
   .venv/bin/python scripts/12_aim3_human_results.py   # -> reports/aim3_compiled_*.csv (9 tables)
@@ -172,7 +172,7 @@ After clearing **B1 (API keys)**, the minimum sequence to go from current state 
 
 # Phase 4: blinded packet for clinical scoring
 .venv/bin/python scripts/06_build_review_packet.py
-# … send data/review/review_packet.csv to the blinded subspecialist reviewer with docs/accuracy_scoring_rubric.md …
+# … send data/review/blinded_review_packet.csv to the blinded subspecialist reviewer with docs/accuracy_scoring_rubric.md …
 # … receive scored sheet: save as data/scores/accuracy_raw_from_reviewer.csv …
 # … join on blind_id to produce data/scores/accuracy.csv …
 

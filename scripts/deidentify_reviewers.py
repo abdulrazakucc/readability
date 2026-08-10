@@ -38,7 +38,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from src.config import REVIEW_DIR  # noqa: E402
 
-SCORES_ROOT = REVIEW_DIR / "questionnaire_scores"
+SCORES_ROOT = REVIEW_DIR / "reviewer_responses"
 CROSSWALK = REPO_ROOT / "private" / "reviewer_crosswalk.csv"
 
 # `<slug>` is whatever sits between the set id and the role suffix.

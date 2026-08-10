@@ -114,7 +114,7 @@ Three reproducibility rules govern the chain (full version in `docs/implementati
 
 1. **Raw is immutable.** `data/raw/` is never edited after capture. The 5 pages that blocked automated capture (Hopkins x3, Mayo x2) were recovered by manual browser paste and that fact is recorded in their provenance and in `docs/stats_deviations.md`; the corpus is n = 26.
 2. **One prompt, three models.** Every model gets the identical rewrite prompt (`prompts/rewrite_v1.txt`). A per-page prompt tweak would bias the cross-model comparison, so it is forbidden; any prompt change gets a new version and a deviation-log entry.
-3. **Two-way blinding for Aim 3.** The clinical reviewer never sees which model wrote a rewrite (each is given a random `blind_id`), and the data scientist never sees the clinical scores during data prep. The unblinding key (`data/review/blind_key.csv`) is kept out of the reviewer's packet.
+3. **Two-way blinding for Aim 3.** The clinical reviewer never sees which model wrote a rewrite (each is given a random `blind_id`), and the data scientist never sees the clinical scores during data prep. The unblinding key (`data/review/unblinding_key.csv`) is kept out of the reviewer's packet.
 
 ---
 
