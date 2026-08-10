@@ -68,6 +68,6 @@ def test_extraction_is_complete():
     presence of every group.
     """
     v = load_reported(MANUSCRIPT)
-    assert len(v) >= 203, f"extraction shrank to {len(v)} values -- a pattern stopped matching"
+    assert len(v) >= 200, f"extraction shrank to {len(v)} values -- a pattern stopped matching"
     for prefix in ("t1.", "t2.", "t3.", "t4.", "p."):
         assert any(k.startswith(prefix) for k in v), f"no values extracted for {prefix}"

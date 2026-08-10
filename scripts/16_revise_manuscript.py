@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""Produce a revised manuscript implementing the external implementation review.
+"""Apply the implementation-review corrections to the manuscript as TRACKED CHANGES.
 
-Two rules govern this script:
+Edits are made IN PLACE, as real Word revisions, so each can be reviewed, accepted
+or rejected individually.
 
-1. **The author's file is never edited in place.** It is opened read-only and a new
-   document is written alongside it, so the original remains the reference.
-2. **No result is typed in.** Every numeric replacement is read from the regenerated
-   reports, so a re-run after a pipeline change updates the manuscript automatically
-   and a stale value cannot survive.
+python-docx has no tracked-changes API: editing paragraph text through it produces
+silent, untracked edits, removing the reviewability this document depends on. So the
+revision XML is written directly -- the old phrase in `w:del`/`w:delText`, the new
+phrase in `w:ins`, each with an author and timestamp. Only the changed phrase is
+marked, so revision marks stay readable.
+
+No result is typed in: every numeric replacement is read from the regenerated
+reports. A timestamped backup goes to `private/` before anything is modified.
 
 Wording changes come from section 7 of the review, which supplies replacement text
 for the passages it identifies as inaccurate.
@@ -22,12 +26,15 @@ the run summary as outstanding.
 
 from __future__ import annotations
 
+import copy
+import shutil
 import sys
-from datetime import date
+from datetime import datetime, timezone
 from pathlib import Path
 
 import docx
 import pandas as pd
+from docx.oxml.ns import qn
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
@@ -35,9 +42,11 @@ sys.path.insert(0, str(REPO_ROOT))
 from src.config import REPORTS_DIR  # noqa: E402
 
 PUB = REPO_ROOT / "publication"
-SOURCE = PUB / "Naeem_final_clean_cardiac_CT_readability.docx"
-OUT = PUB / f"Naeem_revised_{date.today().isoformat()}.docx"
-AUDIT = PUB / f"manuscript_revision_audit_{date.today().isoformat()}.csv"
+MANUSCRIPT = PUB / "Naeem_final_clean_cardiac_CT_readability.docx"
+BACKUP_DIR = REPO_ROOT / "private" / "manuscript_backups"
+AUDIT = PUB / "manuscript_revision_audit.csv"
+REVISION_AUTHOR = "Implementation review"
+_rev_id = [1000]
 
 MODEL_NAME = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
 
@@ -180,46 +189,70 @@ def build_edits() -> list[dict]:
     return E
 
 
-def apply_edits(doc, edits: list[dict]) -> list[dict]:
-    """Replace at paragraph level, preserving each paragraph's leading run formatting."""
-    applied = []
-    for e in edits:
-        hit = False
-        for para in doc.paragraphs:
-            if e["old"] in para.text:
-                new_text = para.text.replace(e["old"], e["new"])
-                for r in list(para.runs)[1:]:
-                    r._element.getparent().remove(r._element)
-                if para.runs:
-                    para.runs[0].text = new_text
-                else:
-                    para.add_run(new_text)
-                hit = True
-                break
-        if not hit:
-            for tbl in doc.tables:
-                for row in tbl.rows:
-                    for cell in row.cells:
-                        if e["old"] in cell.text:
-                            for p in cell.paragraphs:
-                                if e["old"] in p.text:
-                                    txt = p.text.replace(e["old"], e["new"])
-                                    for r in list(p.runs)[1:]:
-                                        r._element.getparent().remove(r._element)
-                                    if p.runs:
-                                        p.runs[0].text = txt
-                                    else:
-                                        p.add_run(txt)
-                                    hit = True
-                                    break
-                        if hit:
-                            break
-                    if hit:
-                        break
-                if hit:
-                    break
-        applied.append({**e, "status": "APPLIED" if hit else "NOT FOUND"})
-    return applied
+def _stamp() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _run(text, rpr, deleted=False):
+    r = docx.oxml.OxmlElement("w:r")
+    if rpr is not None:
+        r.append(copy.deepcopy(rpr))
+    t = docx.oxml.OxmlElement("w:delText" if deleted else "w:t")
+    t.set(qn("xml:space"), "preserve")
+    t.text = text
+    r.append(t)
+    return r
+
+
+def _revision(tag, child):
+    _rev_id[0] += 1
+    el = docx.oxml.OxmlElement(tag)
+    el.set(qn("w:id"), str(_rev_id[0]))
+    el.set(qn("w:author"), REVISION_AUTHOR)
+    el.set(qn("w:date"), _stamp())
+    el.append(child)
+    return el
+
+
+def apply_paragraph_edits(para, edits: list[dict]) -> int:
+    """Apply every edit belonging to this paragraph in ONE pass.
+
+    Applying them one at a time is unsafe: after the first, part of the paragraph
+    lives inside a `w:ins` element, which python-docx cannot see. A second edit
+    reading `para.text` would get a truncated string and, on rewriting the runs,
+    silently delete the first insertion along with the surrounding prose. This bug
+    destroyed text on an earlier run, hence the single-pass rebuild.
+    """
+    text = para.text
+    spans = sorted((text.find(e["old"]), e) for e in edits if text.find(e["old"]) >= 0)
+    if not spans:
+        return 0
+
+    rpr = None
+    if para.runs and para.runs[0]._element.find(qn("w:rPr")) is not None:
+        rpr = para.runs[0]._element.find(qn("w:rPr"))
+    for r in list(para.runs):
+        r._element.getparent().remove(r._element)
+
+    p, cursor = para._element, 0
+    for i, e in spans:
+        if i < cursor:
+            continue
+        if i > cursor:
+            p.append(_run(text[cursor:i], rpr))
+        p.append(_revision("w:del", _run(e["old"], rpr, deleted=True)))
+        p.append(_revision("w:ins", _run(e["new"], rpr)))
+        cursor = i + len(e["old"])
+    if cursor < len(text):
+        p.append(_run(text[cursor:], rpr))
+    return len(spans)
+
+
+def enable_track_changes(document) -> None:
+    """Switch on <w:trackChanges/> so later editing in Word is tracked too."""
+    settings = document.settings.element
+    if settings.find(qn("w:trackChanges")) is None:
+        settings.insert(0, docx.oxml.OxmlElement("w:trackChanges"))
 
 
 OUTSTANDING = [
@@ -236,35 +269,53 @@ OUTSTANDING = [
 
 
 def main() -> int:
-    if not SOURCE.exists():
-        print(f"source manuscript not found: {SOURCE}")
+    if not MANUSCRIPT.exists():
+        print(f"manuscript not found: {MANUSCRIPT}")
         return 2
 
-    edits = build_edits()
-    doc = docx.Document(str(SOURCE))          # opened read-only; never saved back
-    applied = apply_edits(doc, edits)
-    doc.save(str(OUT))
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    backup = BACKUP_DIR / f"{MANUSCRIPT.stem}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+    shutil.copy2(MANUSCRIPT, backup)
+
+    document = docx.Document(str(MANUSCRIPT))
+    enable_track_changes(document)
+
+    paragraphs = list(document.paragraphs)
+    for tbl in document.tables:
+        for row in tbl.rows:
+            for cell in row.cells:
+                paragraphs.extend(cell.paragraphs)
+
+    assigned: dict[int, list[dict]] = {}
+    applied = []
+    for e in build_edits():
+        target = next((i for i, para in enumerate(paragraphs) if e["old"] in para.text), None)
+        applied.append({**e, "status": "NOT FOUND" if target is None else "APPLIED"})
+        if target is not None:
+            assigned.setdefault(target, []).append(e)
+
+    for idx, group in assigned.items():
+        apply_paragraph_edits(paragraphs[idx], group)
+
+    document.save(str(MANUSCRIPT))
 
     audit = pd.DataFrame(applied)[["status", "rationale", "source", "old", "new"]]
     audit.to_csv(AUDIT, index=False)
-
     n_ok = int((audit.status == "APPLIED").sum())
-    n_miss = int((audit.status == "NOT FOUND").sum())
-    print("=" * 88)
-    print("MANUSCRIPT REVISION")
-    print("=" * 88)
-    print(f"  source (unmodified): {SOURCE.name}")
-    print(f"  revised output     : {OUT.name}")
-    print(f"  audit trail        : {AUDIT.name}")
-    print(f"\n  {n_ok} edit(s) applied, {n_miss} not found\n")
+
+    print("=" * 84)
+    print("MANUSCRIPT REVISED IN PLACE, AS TRACKED CHANGES")
+    print("=" * 84)
+    print(f"  file   : {MANUSCRIPT.name}")
+    print(f"  backup : {backup.relative_to(REPO_ROOT)}")
+    print(f"  audit  : {AUDIT.name}")
+    print(f"\n  {n_ok} of {len(applied)} edits applied as tracked revisions\n")
     for _, r in audit.iterrows():
-        mark = "OK " if r.status == "APPLIED" else "MISS"
-        print(f"  [{mark}] {r.rationale[:76]}")
-        if r.status == "NOT FOUND":
-            print(f"         looked for: {r.old[:70]}...")
-    print("\n  Outstanding — need author judgement, not automation:")
+        print(f"  [{'OK ' if r.status == 'APPLIED' else 'MISS'}] {r.rationale[:72]}")
+    print("\n  Outstanding, needing author judgement:")
     for o in OUTSTANDING:
         print(f"    - {o}")
+    print("\n  In Word: Review > Tracking to step through each change.")
     return 0
 
 

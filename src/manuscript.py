@@ -136,6 +136,31 @@ def _add(out: dict[str, Reported], key: str, raw: str, source: str) -> None:
 # Tables
 # --------------------------------------------------------------------------
 
+
+def paragraph_texts(doc: docx.document.Document) -> list[str]:
+    """Paragraph text read as if every tracked change were accepted.
+
+    `python-docx` only reads runs that are direct children of a paragraph, so any
+    text inside a tracked insertion (`w:ins`) is invisible to it and any deleted
+    text still appears. Once the manuscript carries revisions, reading it through
+    the plain API silently drops the corrected values -- the harness would validate
+    against text that is no longer there.
+
+    This walks the XML instead: insertions and ordinary runs are included, deletions
+    (`w:delText`) are skipped. That is the "all changes accepted" view, which is the
+    correct thing to validate.
+    """
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    out = []
+    for para in doc.paragraphs:
+        parts = []
+        for node in para._element.iter():
+            if node.tag == f"{W}t" and node.text:
+                parts.append(node.text)
+        out.append("".join(parts))
+    return out
+
+
 def parse_tables(doc: docx.document.Document) -> dict[str, Reported]:
     """Read Tables 1-4. Tables are identified by their header row, not position,
     so inserting a table upstream does not silently shift the mapping."""
@@ -245,9 +270,9 @@ _PROSE: list[tuple[str | list[str], str]] = [
     (["p.kappa.accuracy", "p.kappa.completeness", "p.kappa.added_errors"],
      rf"Cohen kappa was near (?:zero|0) \({_N}, {_N}, and {_N}\)"),
     (["p.rho.gemini", "p.rho.gemini_p"],
-     rf"Spearman rho = {_N} between grade levels removed and accuracy; P = {_N}\)"),
-    (["p.rho.claude", "p.rho.claude_p"], rf"Claude Opus 4.8 \(rho = {_N}; P = {_N}\)"),
-    (["p.rho.openai", "p.rho.openai_p"], rf"GPT-5.5 \(rho = {_N}; P = {_N}\)"),
+     rf"Spearman rho = {_N} between grade levels removed and accuracy;(?:[^)]*?)P [=<] {_N}\)"),
+    (["p.rho.claude", "p.rho.claude_p"], rf"Claude Opus 4.8 \(rho = {_N};(?:[^)]*?)P [=<] {_N}\)"),
+    (["p.rho.openai", "p.rho.openai_p"], rf"GPT-5.5 \(rho = {_N};(?:[^)]*?)P [=<] {_N}\)"),
     # Lay arm and presentation
     (["p.lay.n_neutral", "p.lay.n_labeled", "p.lay.n_ratings"],
      rf"{_N} scored the neutral-presentation variant .*? and {_N} scored the standard, labeled instrument, for {_N} lay ratings"),
@@ -303,7 +328,7 @@ def _fold_word_numbers(text: str) -> str:
 
 
 def parse_prose(doc: docx.document.Document) -> dict[str, Reported]:
-    text = _fold_word_numbers(normalize(" ".join(p.text for p in doc.paragraphs)))
+    text = _fold_word_numbers(normalize(" ".join(paragraph_texts(doc))))
     out: dict[str, Reported] = {}
     for keys, pattern in _PROSE:
         m = re.search(pattern, text, flags=re.IGNORECASE)
