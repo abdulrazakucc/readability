@@ -39,17 +39,18 @@ def test_ac1_handles_the_ceiling_case():
     assert np.isnan(quadratic_weighted_kappa(df.r1.to_numpy(), df.r2.to_numpy()))
 
 
-def test_ac1_defaults_to_observed_categories():
-    """The default is the reference estimator: q from the observed categories.
+def test_ac1_defaults_to_the_protocol_category_universe():
+    """Production default is the predefined 1-5 rubric, not the observed categories.
 
-    Fixing q at the protocol scale is a different estimator and gives a materially
-    higher number under a ceiling. Pinning both keeps the contrast explicit and
-    stops the default drifting.
+    Fixing q as a design property stops it changing merely because a ceiling sample
+    never used the low categories. The observed-category estimator (what irrCAC does
+    by default, and what the manuscript's published values reflect) remains reachable
+    explicitly and gives a materially lower number here.
     """
     df = pd.DataFrame({"r1": [5, 5, 5, 4, 5, 4], "r2": [5, 5, 4, 4, 5, 5]})
-    observed = gwet_ac1(df)                    # default: q = 2 here
-    protocol = gwet_ac1(df, RATING_CATEGORIES)  # q = 5
-    assert observed == pytest.approx(gwet_ac1(df, (4, 5)))
+    protocol = gwet_ac1(df)                 # default: q = 5
+    observed = gwet_ac1(df, (4, 5))         # q = 2
+    assert protocol == pytest.approx(gwet_ac1(df, RATING_CATEGORIES))
     assert protocol > observed
     assert protocol - observed > 0.1
 
@@ -158,20 +159,21 @@ def _matrix():
     })
 
 
-def test_ac1_reproduces_the_reference_implementation():
-    """Our default IS the reference estimator, to within display precision.
+def test_observed_category_mode_reproduces_the_reference_implementation():
+    """Passing the observed categories explicitly reproduces irrCAC to 5 decimals.
 
-    This is the external validation the default rests on: not "it matches the
-    published numbers" but "it matches Gwet's own implementation". irrCAC rounds
-    its reported coefficient to 5 decimals, hence the tolerance.
+    irrCAC defaults to categ.labels = NULL, i.e. observed categories, so this pins
+    that our formula is the same estimator once the category universe matches. The
+    production default deliberately differs (q = 5); that contrast is the next test.
     """
     m = _matrix()
-    ours = gwet_ac1(m)
+    observed = tuple(sorted({int(v) for v in m.to_numpy().ravel()}))
     ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
-    assert ours == pytest.approx(ref, abs=1e-5)
+    assert gwet_ac1(m, observed) == pytest.approx(ref, abs=1e-5)
 
 
-def test_protocol_scale_is_a_different_estimator():
-    """Fixing q at 1-5 departs from the reference by a wide margin under a ceiling."""
+def test_production_default_differs_from_the_reference_under_a_ceiling():
+    """q = 5 departs from the observed-category reference by a wide margin here."""
     m = _matrix()
-    assert gwet_ac1(m, RATING_CATEGORIES) - gwet_ac1(m) > 0.02
+    ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
+    assert gwet_ac1(m) - ref > 0.02

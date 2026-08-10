@@ -14,7 +14,7 @@ The order of rewrites within a packet is randomized (seeded RNG). The original i
 
 ## Rubric
 
-Score each rewrite on each of three 1–5 dimensions. Higher is better on all three (the "added errors" axis is **reverse-coded** at scoring time — see below).
+Score each rewrite on each of three 1–5 dimensions. Higher is better on all three (the "added errors" axis runs the other way — lower is better; see below).
 
 ### 1. Accuracy (1–5)
 
@@ -40,11 +40,13 @@ Did the rewrite preserve the key preparation, risk, and safety points from the o
 | 2     | Multiple major points dropped; rewrite is materially less informative than original.    |
 | 1     | Rewrite omits most prep/risk/safety information.                                        |
 
-### 3. Added errors (1–5, REVERSE-CODED)
+### 3. Added errors (1–5; lower is better, 1 = none)
 
 Did the rewrite invent medical claims not in the original?
 
-Score 1–5 where **higher means MORE invented content** (worse). The analysis script flips this at compute time so all three dimensions face the same direction in figures.
+Score 1–5 where **higher means MORE invented content** (worse), so **lower is better and 1 = none**.
+
+The scale is analysed exactly as collected: the analysis does **not** flip it. Earlier wording here claimed a reverse-coding step at compute time; no such step exists in the code, and the raw intuitive error-count scale is retained. Every table and figure labels the axis explicitly as "Added errors (lower is better; 1 = none)."
 
 | Score | Meaning                                                                          |
 |-------|----------------------------------------------------------------------------------|

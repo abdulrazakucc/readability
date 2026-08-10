@@ -42,43 +42,33 @@ RATING_CATEGORIES: tuple[int, ...] = (1, 2, 3, 4, 5)
 
 def gwet_ac1(
     ratings: pd.DataFrame,
-    categories: tuple[int, ...] | None = None,
+    categories: tuple[int, ...] = RATING_CATEGORIES,
 ) -> float:
     """Gwet's AC1 for an items x raters matrix, allowing missing cells.
 
-    `ratings` is indexed by item with one column per rater; NaN means that rater
-    did not score that item. Items rated by fewer than 2 raters carry no agreement
+    `ratings` is indexed by item with one column per rater; NaN means that rater did
+    not score that item. Items rated by fewer than 2 raters carry no agreement
     information and are dropped -- they cannot form a rater pair.
 
     Multiple-rater generalisation from Gwet (2008): observed agreement is the mean
     over items of the proportion of concordant rater pairs, and chance agreement is
     built from the mean category prevalences over q categories.
 
-    The category set q
-    ------------------
-    `categories=None` (default) derives q from the categories observed among the
-    items that contribute agreement information. This is the estimator as defined
-    by Gwet's own reference implementation: `irrCAC` documents `categ.labels = NULL`
-    as its default, meaning only categories actually present are used, and offers
-    the explicit-labels argument for the case where unused categories should be
-    counted.
+    The category universe is a DESIGN property: q = 5
+    -------------------------------------------------
+    `categories` defaults to the full 1-5 scale that `docs/accuracy_scoring_rubric.md`
+    defines for all three rubric dimensions. Fixing it this way stops q changing
+    merely because a ceiling sample never used the low categories, and keeps
+    coefficients comparable across cohorts and axes.
 
-    This is externally validated, not chosen to match a target: on this study's
-    data the function reproduces `irrCAC` to within 4e-6 across all nine
-    cohort x axis combinations (see `tests/test_agreement.py`). Published AC1
-    values computed with standard tooling mean this estimator, so departing from it
-    would silently produce numbers incomparable with the literature.
+    The alternative -- taking q from whichever categories appear -- is what Gwet's
+    `irrCAC` package does by default (`categ.labels = NULL`), and it is what the
+    manuscript's published values reflect: 0.771 rather than 0.805 for subspecialist
+    accuracy, because only 4 and 5 occur among multiply-rated items there. That
+    estimator remains reachable by passing an explicit set, and
+    `tests/test_agreement.py` pins the contrast, but it is not the production path.
 
-    Passing an explicit set (eg `RATING_CATEGORIES`) fixes q at the protocol's 1-5
-    scale instead. That is defensible in principle -- q becomes a design fact rather
-    than a property of the sample -- but it is a different estimator, and under a
-    ceiling the gap is large: 0.805 against 0.771 for this study's subspecialist
-    accuracy. Production code should not pass it; the parameter exists for tests and
-    for documenting the contrast.
-
-    Returns 1.0 when every contributing rating falls in a single category (perfect
-    agreement, chance agreement undefined), and NaN when no item has 2 or more
-    raters.
+    Returns NaN when no item has 2 or more raters.
     """
     counts_rows = []
     for _, row in ratings.iterrows():
@@ -89,14 +79,9 @@ def gwet_ac1(
     if not counts_rows:
         return float("nan")
 
-    if categories is None:
-        categories = tuple(sorted({int(v) for vals in counts_rows for v in vals}))
     q = len(categories)
     if q < 2:
-        # Every contributing rating is the same category: agreement is perfect by
-        # construction and the chance term is undefined. The reference
-        # implementation reports 1.0 here, and that is the sensible reading.
-        return 1.0
+        raise ValueError("need at least 2 rating categories")
 
     counts, weights = [], []
     for vals in counts_rows:

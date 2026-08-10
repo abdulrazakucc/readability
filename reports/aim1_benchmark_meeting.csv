@@ -1,2 +1,2 @@
-n,meeting,fraction
-26,0,0.0
+n,meeting,fraction,ci_low,ci_high,ci_low_pct,ci_high_pct
+26,0,0.0,0.0,0.1322746044977541,0.0,13.22746044977541
