@@ -24,14 +24,14 @@ import seaborn as sns
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.config import FIGURES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
+from src.config import FIGURE_DPI, FIGURES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
 
 log = logging.getLogger("figures")
 
 
 def _save(fig, name: str) -> Path:
     out = FIGURES_DIR / name
-    fig.savefig(out, dpi=300, bbox_inches="tight")
+    fig.savefig(out, dpi=FIGURE_DPI, bbox_inches="tight")
     plt.close(fig)
     log.info("wrote %s", out)
     return out

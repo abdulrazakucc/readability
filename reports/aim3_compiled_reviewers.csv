@@ -5,9 +5,9 @@ expert_labeled,kristopher_cummings,Kristopher Cummings,26,A
 expert_labeled,matthew_stib,Matthew Stib,26,B
 expert_labeled,mike_gotway,Mike Gotway,25,C
 expert_labeled,muhammad_naeem,Muhammad Naeem,26,A
-expert_neutral,hafsa_awan,Hafsa Awan,77,"A, B, C"
-expert_neutral,hamna_awan,Hamna Awan,77,"A, B, C"
 expert_neutral,muhammad_naeem,Muhammad Naeem,25,C
-expert_neutral,shaheer_rehman,Shaheer Rehman,77,"A, B, C"
-layperson,imran_waheed,Imran Waheed,77,"A, B, C"
-layperson,marriam_waheed,Marriam Waheed,77,"A, B, C"
+layperson_labeled,imran_waheed,Imran Waheed,77,"A, B, C"
+layperson_labeled,marriam_waheed,Marriam Waheed,77,"A, B, C"
+layperson_neutral,hafsa_awan,Hafsa Awan,77,"A, B, C"
+layperson_neutral,hamna_awan,Hamna Awan,77,"A, B, C"
+layperson_neutral,shaheer_rehman,Shaheer Rehman,77,"A, B, C"

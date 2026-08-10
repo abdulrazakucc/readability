@@ -32,6 +32,11 @@ CONFIG_DIR = REPO_ROOT / "config"
 PROMPTS_DIR = REPO_ROOT / "prompts"
 REPORTS_DIR = REPO_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
+
+# Publication raster resolution. JAMA asks for >=300 dpi for halftones and >=600
+# for line art and combination art; every figure here is line/combination art, so
+# 600 is the floor. Set in one place so no figure can silently ship at screen dpi.
+FIGURE_DPI = 600
 LITERATURE_DIR = REPO_ROOT / "literature"
 
 MANIFEST_PATH = DATA_DIR / "manifest.csv"

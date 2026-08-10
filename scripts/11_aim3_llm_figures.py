@@ -20,7 +20,7 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
-from src.config import FIGURES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
+from src.config import FIGURE_DPI, FIGURES_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
 
 MODELS = ["claude", "openai", "gemini"]
 LABELS = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
@@ -55,7 +55,7 @@ def main() -> int:
     ax.figure.text(0.5, -0.04, "Automated 3-LLM-judge screen; not the primary human subspecialist review.",
                    ha="center", fontsize=7, style="italic")
     fig.tight_layout()
-    fig.savefig(FIGURES_DIR / "aim3_llm_scores_by_model.png", dpi=150, bbox_inches="tight")
+    fig.savefig(FIGURES_DIR / "aim3_llm_scores_by_model.png", dpi=FIGURE_DPI, bbox_inches="tight")
     plt.close(fig)
 
     # --- Figure B: trade-off, reading-level reduction vs consensus accuracy ---
@@ -79,7 +79,7 @@ def main() -> int:
     ax.figure.text(0.5, -0.02, "Automated 3-LLM-judge screen; accuracy is preliminary pending blinded subspecialist review.",
                    ha="center", fontsize=7, style="italic")
     fig.tight_layout()
-    fig.savefig(FIGURES_DIR / "aim3_llm_tradeoff.png", dpi=150, bbox_inches="tight")
+    fig.savefig(FIGURES_DIR / "aim3_llm_tradeoff.png", dpi=FIGURE_DPI, bbox_inches="tight")
     plt.close(fig)
 
     # --- Figure C: same trade-off, different encoding ---------------------
@@ -130,7 +130,7 @@ def main() -> int:
              "Automated 3-LLM-judge screen; pending blinded subspecialist review.",
              ha="center", fontsize=7, style="italic")
     fig.tight_layout()
-    fig.savefig(FIGURES_DIR / "aim3_llm_tradeoff_alt.png", dpi=150, bbox_inches="tight")
+    fig.savefig(FIGURES_DIR / "aim3_llm_tradeoff_alt.png", dpi=FIGURE_DPI, bbox_inches="tight")
     plt.close(fig)
 
     print("wrote reports/figures/aim3_llm_scores_by_model.png, "
