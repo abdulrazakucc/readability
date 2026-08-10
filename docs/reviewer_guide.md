@@ -1,6 +1,6 @@
 # Reviewer Guide — Blinded Clinical Accuracy Scoring (Aim 3)
 
-**For:** Dr. Muhammad Naeem (subspecialist reviewer)
+**For:** Dr. Muhammad the blinded subspecialist reviewer (subspecialist reviewer)
 **Prepared by:** the data-science pipeline, 2026-06-09
 **Your task in one line:** score each AI-rewritten patient page against its original on three 1–5 scales, blinded to which AI model wrote it.
 
