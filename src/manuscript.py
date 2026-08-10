@@ -234,7 +234,7 @@ _PROSE: list[tuple[str | list[str], str]] = [
      rf"Friedman chi\^?2? = {_N}; P = [\d.]+ x 10\^?-9; {_N} pages"),
     # Aim 3 primary
     (["p.aim3.n_reviewers"], rf"{_N} cardiothoracic radiologists"),
-    (["p.aim3.n_ratings"], rf"contributing {_N} independent ratings"),
+    (["p.aim3.n_ratings"], rf"contributing {_N} (?:independent|expert) ratings"),
     (["p.aim3.pooled_accuracy"], rf"pooled {_N}\)"),
     (["p.aim3.pct_ge4", "p.aim3.pct_eq5", "p.aim3.pct_added_le2"],
      rf"{_N}% of accuracy ratings were 4 or 5 \({_N}% were 5\) and {_N}% of added-error ratings"),
