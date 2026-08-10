@@ -57,17 +57,28 @@ def gwet_ac1(
     The category set drives chance agreement, so it changes the answer materially
     -- this is not a detail:
 
-    * `categories=None` (default) derives the categories from the data, which is
-      what Gwet's reference implementation (the `irrCAC` package, R and Python)
-      does. Use this to reproduce published values or to match standard tooling.
+    * `categories=None` (default) derives the categories from the data actually
+      observed. This is the ONLY variant that reproduces all three published AC1
+      values, and it is why it is the default.
+
+      Be clear about the status of that choice: it was selected because it
+      matches the manuscript, not because an external reference validates it.
+      The `irrCAC` package -- Gwet's own reference implementation -- gives 0.782
+      for subspecialist accuracy where this gives 0.771 and the manuscript prints
+      0.77, so irrCAC does NOT reproduce the published value. Whether the
+      published numbers came from a third implementation is unresolved and only
+      the manuscript's author can settle it. `tests/test_agreement.py` pins the
+      divergence so it cannot quietly drift.
     * Passing an explicit set (eg `RATING_CATEGORIES`) fixes q across cohorts,
       which makes coefficients comparable between groups that happen to use
       different parts of the scale.
 
     The two differ sharply under a ceiling. On this study's expert accuracy
     ratings only categories 4 and 5 ever occur, so the data-derived q is 2 and
-    AC1 is 0.771, whereas fixing q=5 gives 0.805. Both are correct answers to
-    different questions; `scripts/12` reports both side by side.
+    AC1 is 0.771, whereas fixing q=5 gives 0.805. Deriving q is the load-bearing
+    choice; how prevalence is weighted (per item vs per rating) shifts the answer
+    by under 0.001 and does not matter. Both q modes are correct answers to
+    different questions, so `scripts/12` reports them side by side.
 
     Returns NaN when no item has 2 or more raters.
     """

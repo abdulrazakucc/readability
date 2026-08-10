@@ -206,15 +206,20 @@ def main() -> int:
 
   <h3>Genuine differences</h3>
   <ul class="findings">{fail_html}</ul>
-  <p class="note"><strong>Resolved:</strong> the one difference that previously stood — Gwet&nbsp;AC1
-  for subspecialist accuracy, 0.77 in the manuscript against 0.805 computed — was traced to the
-  category set used for chance agreement. Gwet's reference implementation (the <code>irrCAC</code>
-  package) derives the categories from the data actually observed; our first implementation fixed
-  them at the nominal 1&ndash;5 scale. Among multiply-rated items the subspecialists only ever used
-  4 and 5 for accuracy, so the data-derived q is 2, not 5. Matching the reference behaviour
-  reproduces all three published values exactly (0.771, 0.793, 0.886 against 0.77, 0.79, 0.89). The
-  pipeline now defaults to the reference behaviour and additionally reports the fixed-scale variant,
-  because under a ceiling the two answer different questions and the gap is large.</p>
+  <p class="note"><strong>Resolved, with one assumption stated plainly.</strong> The difference that
+  previously stood — Gwet&nbsp;AC1 for subspecialist accuracy, 0.77 published against 0.805 computed —
+  came from the category set used for chance agreement. Among multiply-rated items the subspecialists
+  only ever used 4 and 5 for accuracy, so deriving the categories from the data gives 2 rather than
+  the nominal 5, and that single choice moves the coefficient. Deriving them reproduces all three
+  published values exactly (0.771, 0.793, 0.886 against 0.77, 0.79, 0.89).</p>
+  <p class="note"><strong>What that rests on.</strong> The choice was made because it matches, not
+  because an independent tool confirms it. Running Gwet's reference <code>irrCAC</code> package on the
+  same data gives <strong>0.782</strong> for accuracy — which rounds to 0.78, not the published 0.77 —
+  so the published values did not come from that package at default settings. Deriving q is the
+  load-bearing decision; prevalence weighting shifts the answer by under 0.001. The pipeline reports
+  both q modes and the test suite pins our relationship to <code>irrCAC</code> so the divergence
+  cannot drift. <em>Which software produced the published AC1 values is still an open question for
+  the author.</em></p>
 
   <h3>Rounding-convention only</h3>
   <p>These agree within one full printed digit — the manuscript truncates where we round-half — so

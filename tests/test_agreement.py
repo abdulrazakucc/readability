@@ -140,3 +140,40 @@ def test_percent_agreement_counts_every_pair():
     assert out["rater_pairs"] == 3
     assert out["pct_exact"] == pytest.approx(100 * 1 / 3)
     assert out["pct_within_1"] == pytest.approx(100.0)
+
+
+# --- Cross-check against Gwet's reference implementation -------------------
+# Installing `irrCAC` is optional; where it is present these tests pin how our
+# implementation relates to it, including where the two legitimately disagree.
+
+irrCAC_raw = pytest.importorskip("irrCAC.raw", reason="irrCAC not installed")
+
+
+def _matrix():
+    """Ratings that only ever use the top two categories -- the ceiling shape."""
+    return pd.DataFrame({
+        "r1": [5, 5, 4, 5, 5, 4, 5, 5],
+        "r2": [5, 4, 4, 5, 5, 5, 5, 4],
+        "r3": [5, 5, 4, 4, 5, 5, 5, 5],
+    })
+
+
+def test_our_ac1_is_close_to_irrcac_but_not_identical():
+    """Our default and irrCAC agree in the large but not to the last digit.
+
+    Both derive the category set from the data; they differ in the internals of
+    the chance-agreement term. The gap is small but real, and it is exactly why
+    'matches the reference package' cannot be claimed without checking.
+    """
+    m = _matrix()
+    ours = gwet_ac1(m)
+    ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
+    assert abs(ours - ref) < 0.05, "our AC1 should track the reference closely"
+
+
+def test_fixed_scale_differs_from_reference_under_a_ceiling():
+    """Fixing q at 1-5 departs from any data-derived implementation, by a lot."""
+    m = _matrix()
+    fixed = gwet_ac1(m, RATING_CATEGORIES)
+    ref = irrCAC_raw.CAC(m.copy()).gwet()["est"]["coefficient_value"]
+    assert fixed - ref > 0.02
