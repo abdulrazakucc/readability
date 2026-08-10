@@ -106,4 +106,4 @@ After all rewrites are generated:
 1. Run the readability scorer on every rewrite → `data/scores/rewrites.csv`.
 2. Compute per-page per-model deltas vs originals → `data/scores/deltas.csv`.
 3. Build blinded review packets for Phase 4 → `data/review/`.
-4. Hand the packets to Naeem.
+4. Hand the packets to the blinded subspecialist reviewer.

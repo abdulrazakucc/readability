@@ -9,7 +9,7 @@ other planning and background documents. This file is the *state snapshot* on to
 
 2026-08-06, **Aim 3 primary human review reached full coverage in all three collected cohorts** (77/77 rewrites each). The blinded review instrument was rendered in two presentation variants (labeled and neutral) and handed out as procedure-balanced sets A/B/C; 11 reviewers returned sheets. The two interim-analysis scripts were consolidated into `scripts/12_aim3_human_results.py` (tables) + `scripts/13_aim3_human_figures.py` (figures), replacing the older `12`/`14`/`15` trio. `12` is now **variant-aware**: it derives the condition from the filename slug so neutral sheets are never pooled with labeled ones, and it takes reviewer identity from the slug rather than the inconsistent free-text `reviewer_name` column. Outputs are `reports/aim3_compiled_*.csv` (9 tables) and three publication-quality figures. Headline: rewrites are clinically sound under blinded subspecialist review (accuracy 4.84/5, 85.8% maximal, 1/155 ratings ≤3); the three models do **not** differ on human accuracy (Friedman p = .52), which is a different picture from the automated judge panel; and neutral-presentation scores are no *lower* than labeled ones, arguing against an anti-AI rating penalty. Still interim, not the locked `07` analysis.
 
-2026-06-09, ran the full pipeline end-to-end on n=26 with all three model arms. Aim 1 re-scored (0/26 meet FKGL ≤ 6; median 10.3). AI rewrite arm complete for all 3 models — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26). Aim 2 paired tests + 3-model Friedman + figures generated; blinded review packet built; manuscript markdown + `.docx` rebuilt. A secondary, exploratory automated 3-LLM-judge accuracy panel (231 judgments) was also run and documented (`docs/aim3_automated_accuracy_assessment.md`); the PRIMARY Aim 3 (blinded human subspecialist scoring) is the only remaining step and needs Dr. Naeem (packet + guide ready). Total API cost ~\$3–6 including the judge panel. Model panel + sampling-param deviations and the Gemini/GPT-5.5 incidents are logged in stats_deviations.md.
+2026-06-09, ran the full pipeline end-to-end on n=26 with all three model arms. Aim 1 re-scored (0/26 meet FKGL ≤ 6; median 10.3). AI rewrite arm complete for all 3 models — Claude Opus 4.8 (26/26), GPT-5.5 (25/26, 1 content-filter exclusion), Gemini 3.1 Pro (26/26). Aim 2 paired tests + 3-model Friedman + figures generated; blinded review packet built; manuscript markdown + `.docx` rebuilt. A secondary, exploratory automated 3-LLM-judge accuracy panel (231 judgments) was also run and documented (`docs/aim3_automated_accuracy_assessment.md`); the PRIMARY Aim 3 (blinded human subspecialist scoring) is the only remaining step and needs the blinded subspecialist reviewer (packet + guide ready). Total API cost ~\$3–6 including the judge panel. Model panel + sampling-param deviations and the Gemini/GPT-5.5 incidents are logged in stats_deviations.md.
 
 2026-06-08, recovered and re-cleaned the 5 previously-blocked Hopkins/Mayo pages (manual browser capture); included corpus is now 26 pages.
 
@@ -46,7 +46,7 @@ See [stats_deviations.md](stats_deviations.md) for protocol deviations logged in
 - `data/review/questionnaire_scores/set_{A,B,C}/`, **21 returned reviewer sheets** from 11 reviewers across the 3 cohorts (565 ratings total)
 - `reports/aim3_compiled_*.csv` (Aim 3 PRIMARY human review, interim): `coverage`, `reviewers`, `pooled`, `by_model`, `irr`, `presentation_effect`, `expert_vs_lay`, `tradeoff`, `across_model`
 - `reports/figures/aim3_human_compiled.png` (primary endpoint + trade-off), `aim3_presentation_bias.png` (labeled vs neutral), `aim3_three_conditions.png` (all 3 cohorts)
-- Docs: `docs/methods_and_statistics_companion.md` (plain-language methods/metrics/stats with worked examples), `docs/aim3_automated_accuracy_assessment.md` (panel write-up), `docs/reviewer_guide_naeem.md` (clinical reviewer instructions)
+- Docs: `docs/methods_and_statistics_companion.md` (plain-language methods/metrics/stats with worked examples), `docs/aim3_automated_accuracy_assessment.md` (panel write-up), the reviewer guide (kept on the `draft` branch) (clinical reviewer instructions)
 
 Headline finding (Aim 1, n=26): **0/26 included pages meet FKGL ≤ 6** (NIH/AMA 6th-grade benchmark). Median FKGL = 10.3 (IQR 8.7–11.9).
 Headline finding (Aim 2, all 3 models): Gemini 3.1 Pro lowered FKGL by 5.7 grade levels (20/26 rewrites meet ≤6); Claude Opus 4.8 by 5.5 (22/26); GPT-5.5 by 3.9 (9/25); all Holm p < 0.001; models differ (Friedman p = 5.6e-9), Claude≈Gemini > GPT-5.5.
@@ -75,7 +75,7 @@ Johns Hopkins (×3 pages: CCTA, TAVR, LAAO) and Mayo Clinic (×2 pages: CCTA, TA
 
 ### B3: Clinical reviewer availability for Aim 3 (RESOLVED 2026-08-06)
 
-Originally scoped as one reviewer (Dr. Naeem) scoring all 77 rewrites (~4–6 hours). Solved instead by **splitting the instrument into three procedure-balanced, mutually exclusive sets (A/B/C)** rendered as an HTML questionnaire, so each reviewer scores ~26 rewrites (~1.5 hours) and the sets still cover every rewrite exactly once. 11 reviewers returned sheets across 3 cohorts; all three cohorts are at 77/77 coverage. See `reports/aim3_compiled_reviewers.csv` for the roster.
+Originally scoped as one reviewer (the blinded subspecialist reviewer) scoring all 77 rewrites (~4–6 hours). Solved instead by **splitting the instrument into three procedure-balanced, mutually exclusive sets (A/B/C)** rendered as an HTML questionnaire, so each reviewer scores ~26 rewrites (~1.5 hours) and the sets still cover every rewrite exactly once. 11 reviewers returned sheets across 3 cohorts; all three cohorts are at 77/77 coverage. See `reports/aim3_compiled_reviewers.csv` for the roster.
 
 ### B4: Collapsing multi-rater sheets into the locked `07` analysis (OPEN)
 
@@ -130,8 +130,8 @@ Each step lists: inputs → outputs → command → done-when. Steps are mostly 
 
 ### Step 5: Build the blinded review packet
 - **Command:** `.venv/bin/python scripts/06_build_review_packet.py`
-- **Outputs:** `data/review/review_packet.csv` (for Naeem; original text + three model-stripped rewrites in randomized order, each tagged with `blind_id`) and `data/review/blind_key.csv` (NOT shared with Naeem; maps `blind_id` → `(page_id, model_id)`).
-- **Hand-off:** send `review_packet.csv` to Naeem along with `docs/accuracy_scoring_rubric.md`. Do NOT send `blind_key.csv`.
+- **Outputs:** `data/review/review_packet.csv` (for the blinded reviewer; original text + three model-stripped rewrites in randomized order, each tagged with `blind_id`) and `data/review/blind_key.csv` (NOT shared with the subspecialist reviewer; maps `blind_id` → `(page_id, model_id)`).
+- **Hand-off:** send `review_packet.csv` to the blinded subspecialist reviewer along with `docs/accuracy_scoring_rubric.md`. Do NOT send `blind_key.csv`.
 - **Done when:** the packet is sent and the blind key is committed locally but not surfaced to the reviewer.
 
 ### Step 6: Receive scored sheets, unblind, and compile (DONE 2026-08-06 — interim)
@@ -172,8 +172,8 @@ After clearing **B1 (API keys)**, the minimum sequence to go from current state 
 
 # Phase 4: blinded packet for clinical scoring
 .venv/bin/python scripts/06_build_review_packet.py
-# … send data/review/review_packet.csv to Naeem with docs/accuracy_scoring_rubric.md …
-# … receive scored sheet: save as data/scores/accuracy_raw_from_naeem.csv …
+# … send data/review/review_packet.csv to the blinded subspecialist reviewer with docs/accuracy_scoring_rubric.md …
+# … receive scored sheet: save as data/scores/accuracy_raw_from_reviewer.csv …
 # … join on blind_id to produce data/scores/accuracy.csv …
 
 # Phase 5: full statistics & figures

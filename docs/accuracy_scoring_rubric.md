@@ -1,6 +1,6 @@
 # Accuracy Scoring Rubric (Aim 3)
 
-Used by the clinical subspecialist (Naeem) — and a blinded second reader where possible — to score each AI rewrite against its original.
+Used by the clinical subspecialist (blinded subspecialist) — and a blinded second reader where possible — to score each AI rewrite against its original.
 
 ## Setup
 
@@ -66,7 +66,7 @@ The reviewer never sees:
 - The order in which models were called (the packet is shuffled with a seeded RNG).
 - Other reviewers' scores until the data scientist joins them post-hoc.
 
-The data scientist never sees the scored sheets until Naeem returns the entire packet.
+The data scientist never sees the scored sheets until the reviewer returns the entire packet.
 
 ## Inter-rater agreement (if a second reader scores a subset)
 

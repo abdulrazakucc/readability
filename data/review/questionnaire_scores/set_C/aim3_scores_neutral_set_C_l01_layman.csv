@@ -1,0 +1,26 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+L01,layperson,2026-07-29,C,B-HBRPOIG8F1,5,5,1,
+L01,layperson,2026-07-29,C,B-HYF9SXMECO,5,5,1,
+L01,layperson,2026-07-29,C,B-UN5Z3JQIP9,4,5,1,Accuracy as 4 because of some generalized statements like minimally invasive surgery -> cuts; does not change meaning however.
+L01,layperson,2026-07-29,C,B-1ZXOI65FDH,5,5,1,
+L01,layperson,2026-07-29,C,B-DPFF5E8II4,5,5,1,
+L01,layperson,2026-07-29,C,B-Q71N8MTZX2,5,5,1,
+L01,layperson,2026-07-29,C,B-G1W103DGDZ,4,5,1,
+L01,layperson,2026-07-29,C,B-PE29GD8AFP,5,5,1,
+L01,layperson,2026-07-29,C,B-8DUDD467KD,4,5,1,omits stating what minimally invasive means
+L01,layperson,2026-07-29,C,B-T7A9TGIQHG,3,5,2,"Scored passage adds adjective like 'safe,' and over generalizes some details such as 'shows healthy and sick parts' vs healthy vs diseased tissue. Passage does no describe minimally invasive and instead states 'uses cuts and needles.'"
+L01,layperson,2026-07-29,C,B-9AHEJ8CX9J,5,5,1,
+L01,layperson,2026-07-29,C,B-ERW6Z8VBHQ,5,5,1,
+L01,layperson,2026-07-29,C,B-VUHT6T0UZS,4,5,1,
+L01,layperson,2026-07-29,C,B-M0YLTZ9ATS,5,5,1,
+L01,layperson,2026-07-29,C,B-JAG1OL73D9,5,5,2,Scored passage adds definition of esophagus not present in reference article.
+L01,layperson,2026-07-29,C,B-2ESPRVU8FI,5,5,1,
+L01,layperson,2026-07-29,C,B-BYVZK3I8BZ,4,5,1,
+L01,layperson,2026-07-29,C,B-8DWOECBPMB,5,5,1,
+L01,layperson,2026-07-29,C,B-GTHCW81XE6,5,5,1,
+L01,layperson,2026-07-29,C,B-7R8431RUPF,4,5,1,
+L01,layperson,2026-07-29,C,B-P059P452BF,5,5,1,
+L01,layperson,2026-07-29,C,B-W3RTQOHMUH,5,4,2,"Some added details, like definition of atrial fibrillation. Some details also omitted like ""electrophysiologists, interventional cardiologists, surgeons, and imaging specialists."""
+L01,layperson,2026-07-29,C,B-DQ4HEZ5EDJ,5,5,1,
+L01,layperson,2026-07-29,C,B-T1TDGNNQFK,5,5,1,
+L01,layperson,2026-07-29,C,B-3TZR6852FC,5,5,1,

@@ -11,6 +11,10 @@ publication/
 # Local-only working docs (RUNBOOK, MAINTENANCE_LOG). Keep local, never commit.
 local-docs/
 
+# Participant re-identification key. NEVER commit: this is the only file that
+# maps participant IDs back to real people. Keep it with the IRB records.
+private/
+
 CLAUDE.md
 
 # Kept on the `draft` branch only — never re-add these to `main`.

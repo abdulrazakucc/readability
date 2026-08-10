@@ -11,7 +11,6 @@ Sample selection protocol: [docs/sample_selection_protocol.md](docs/sample_selec
 AI rewrite protocol: [docs/ai_rewrite_protocol.md](docs/ai_rewrite_protocol.md)
 Accuracy scoring rubric: [docs/accuracy_scoring_rubric.md](docs/accuracy_scoring_rubric.md)
 Automated LLM-judge accuracy assessment (Aim 3 secondary): [docs/aim3_automated_accuracy_assessment.md](docs/aim3_automated_accuracy_assessment.md)
-Reviewer guide for the clinical subspecialist: [docs/reviewer_guide_naeem.md](docs/reviewer_guide_naeem.md)
 
 > **Scope of this branch.** `main` carries only what is needed to reproduce and
 > evaluate the results: code, locked config, data, reports, and the protocol
@@ -111,7 +110,7 @@ data/urls.csv
   ▼
 06_build_review_packet ──► data/review/{review_packet,blind_key}.csv
   │
-  clinical scoring (Naeem) → data/scores/accuracy.csv
+  clinical scoring (blinded subspecialist) → data/scores/accuracy.csv
   │
   ▼
   07_run_statistics ──► reports/aim1_*, aim2_*
@@ -119,7 +118,7 @@ data/urls.csv
   ▼
   08_generate_figures ──► reports/figures/aim1_*, aim2_*
 
-  ── Aim 3 secondary (automated LLM-judge panel; runs off the rewrites, not blocked on Naeem) ──
+  ── Aim 3 secondary (automated LLM-judge panel; runs off the rewrites, not blocked on the subspecialist review) ──
   04/05 rewrites + data/cleaned ─► 09_llm_accuracy ──► data/scores/accuracy_llm{,_raw}.csv
                                       │
                                       ▼
