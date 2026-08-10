@@ -12,6 +12,7 @@ import pandas as pd
 import pytest
 
 from src.agreement import (
+    RATING_CATEGORIES,
     gwet_ac1,
     mean_pairwise_weighted_kappa,
     pairwise_percent_agreement,
@@ -25,15 +26,32 @@ def test_ac1_perfect_agreement_is_one():
 
 
 def test_ac1_handles_the_ceiling_case():
-    """All raters give 5 on every item: perfect agreement.
+    """All raters give 5 on every item.
 
-    This is the case that makes kappa collapse. AC1 must still report 1.0 --
-    that behaviour is the entire reason we report it.
+    Under the fixed 1-5 scale this is perfect agreement (1.0) -- the behaviour
+    that makes AC1 worth reporting where kappa collapses. With the category set
+    derived from the data there is only one category, so chance agreement is
+    undefined and the answer is NaN rather than a spurious 1.0.
     """
     df = pd.DataFrame({"r1": [5] * 10, "r2": [5] * 10})
-    assert gwet_ac1(df) == pytest.approx(1.0)
+    assert gwet_ac1(df, RATING_CATEGORIES) == pytest.approx(1.0)
+    assert np.isnan(gwet_ac1(df))
     # Cohen's kappa is undefined here (both raters use one category).
     assert np.isnan(quadratic_weighted_kappa(df.r1.to_numpy(), df.r2.to_numpy()))
+
+
+def test_ac1_category_set_changes_the_answer_under_a_ceiling():
+    """The q choice is a real methodological fork, not a detail.
+
+    Ratings that only ever use the top two categories give a much smaller
+    chance-agreement term when q is fixed at 5 than when q is derived as 2.
+    Pinning this keeps the two modes from being confused for each other.
+    """
+    df = pd.DataFrame({"r1": [5, 5, 5, 4, 5, 4], "r2": [5, 5, 4, 4, 5, 5]})
+    derived = gwet_ac1(df)                       # q = 2
+    fixed = gwet_ac1(df, RATING_CATEGORIES)      # q = 5
+    assert derived < fixed
+    assert fixed - derived > 0.1
 
 
 def test_ac1_matches_hand_computation():
@@ -48,14 +66,15 @@ def test_ac1_matches_hand_computation():
     AC1 = (0.75 - 0.1171875)/(1 - 0.1171875) = 0.716814...
     """
     df = pd.DataFrame({"r1": [5, 5, 4, 5], "r2": [5, 5, 4, 4]})
-    assert gwet_ac1(df) == pytest.approx(0.7168141592920354, rel=1e-9)
+    assert gwet_ac1(df, RATING_CATEGORIES) == pytest.approx(0.7168141592920354, rel=1e-9)
 
 
 def test_ac1_ignores_items_rated_once():
     """An item with a single rater carries no agreement information."""
     paired = pd.DataFrame({"r1": [5, 4], "r2": [5, 4]})
     with_singleton = pd.DataFrame({"r1": [5, 4, 3], "r2": [5, 4, np.nan]})
-    assert gwet_ac1(with_singleton) == pytest.approx(gwet_ac1(paired))
+    assert gwet_ac1(with_singleton, RATING_CATEGORIES) == pytest.approx(
+        gwet_ac1(paired, RATING_CATEGORIES))
 
 
 def test_ac1_returns_nan_without_any_paired_item():

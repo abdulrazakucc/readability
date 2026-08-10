@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-check the pipeline against Dr Naeem's manuscript.
+"""Cross-check the pipeline against the finalized manuscript.
 
 Nothing here is hard-coded. Both sides of every comparison are derived:
 
