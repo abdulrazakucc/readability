@@ -206,29 +206,27 @@ def main() -> int:
 
   <h3>Genuine differences</h3>
   <ul class="findings">{fail_html}</ul>
-  <p class="note"><strong>Resolved &mdash; and the resolution is externally checked.</strong>
-  Gwet&nbsp;AC1 was the one value that did not reconcile: 0.77 published against 0.805 computed. The
-  cause was the category count <em>q</em> in AC1's chance-agreement term. R's <code>irrCAC</code>
-  documents <code>categ.labels&nbsp;=&nbsp;NULL</code> as the default for <code>gwet.ac1.raw()</code>,
-  meaning only categories actually observed are counted, and supplies an explicit-labels argument for
-  the case where unused categories should count. Using the observed categories is therefore the
-  estimator as its author defines it.</p>
+  <p class="note"><strong>These are expected, and the manuscript is what must change.</strong>
+  Every remaining difference is a direct consequence of a correction required by the external
+  implementation review, not a regression. The review is explicit that regenerated Python output is
+  authoritative and that old values must not be preserved by hand.</p>
 
-  <p class="note"><strong>The subset was the missing piece.</strong> An earlier check reported that
-  <code>irrCAC</code> returns 0.782, seemingly ruling it out. That came from running the package over
-  the full ratings matrix, where 25 rewrites scored by a single subspecialist contribute a category no
-  multiply-rated item uses, inflating <em>q</em> from 2 to 3. Restricted to the rows that carry
-  agreement information &mdash; a single-rater item cannot form a rater pair &mdash; the package
-  returns <strong>0.7707 / 0.7930 / 0.8864</strong>, exactly the published 0.77 / 0.79 / 0.89.</p>
+  <p class="note"><strong>1. Gwet AC1, subspecialist accuracy (0.77 &rarr; 0.805).</strong> The
+  category universe is now fixed at the protocol's 1&ndash;5 rubric for every axis and cohort, so
+  <em>q</em> cannot shrink merely because a ceiling sample never used the low categories. The
+  published value reflects the observed-category estimator (<code>irrCAC</code>'s
+  <code>categ.labels&nbsp;=&nbsp;NULL</code> default). Same ratings, different category universe.</p>
 
-  <p class="note"><strong>Why this is not circular.</strong> The pipeline does not adopt this
-  convention because it reproduces the manuscript. It adopts it because it <em>is</em> the reference
-  implementation: our function matches <code>irrCAC</code> to within 4&times;10<sup>&minus;6</sup>
-  across all nine cohort&nbsp;&times;&nbsp;axis combinations, and that equivalence is pinned as a test.
-  Fixing <em>q</em> at the protocol 1&ndash;5 scale remains defensible in principle &mdash; it makes
-  <em>q</em> a design fact rather than a property of the sample &mdash; but it is a different
-  estimator, reads 0.805 here, and is not what published AC1 values mean. It stays available behind an
-  explicit argument, documented as the contrast.</p>
+  <p class="note"><strong>2. The eight lay / subspecialist comparison values.</strong> Two changes
+  drive these. The unit moved from the rating to the rewrite &mdash; several readers scoring one
+  rewrite are repeated observations of a single unit, so the previous Mann&ndash;Whitney tests on 155
+  vs 385 raw ratings were pseudo-replicated. And the lay comparator changed from all 385 pooled
+  ratings to the <em>same-instrument</em> lay cohort, so the contrast is reader type rather than reader
+  type confounded with instrument wording. Both P values consequently move a long way; the paired
+  rewrite-level tests are the defensible ones.</p>
+
+  <p class="note">Aims 1 and 2 and the automated judge panel are unaffected: all 105 of their extracted
+  values still reconcile exactly.</p>
 
   <h3>Rounding-convention only</h3>
   <p>These agree within one full printed digit — the manuscript truncates where we round-half — so

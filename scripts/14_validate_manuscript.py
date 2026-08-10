@@ -167,8 +167,8 @@ def compute() -> dict[str, float]:
         c[f"p.kappa.{axis}"] = float(ei.loc[col, "quad_weighted_kappa"])
 
     for m in MODELS:
-        c[f"p.rho.{m}"] = float(trade.loc[m, "spearman_rho_reduction_vs_accuracy"])
-        c[f"p.rho.{m}_p"] = float(trade.loc[m, "p_value"])
+        c[f"p.rho.{m}"] = float(trade[(trade.index == m) & (trade.axis == "accuracy_1_5")]["spearman_rho"].iloc[0])
+        c[f"p.rho.{m}_p"] = float(trade[(trade.index == m) & (trade.axis == "accuracy_1_5")]["p_value"].iloc[0])
 
     # ---- Lay arm and presentation sub-study ----
     c["p.lay.n_ratings"] = float(pooled.loc["layperson_all", "ratings"])
@@ -179,7 +179,7 @@ def compute() -> dict[str, float]:
                  "added_errors": "added"}[axis]
         c[f"p.lay.{short}"] = float(evl.loc[col, "layperson_mean"])
         c[f"p.lay.expert_{short}"] = float(evl.loc[col, "expert_mean"])
-        c[f"p.lay.{short}_p"] = float(evl.loc[col, "mannwhitney_p"])
+        c[f"p.lay.{short}_p"] = float(evl.loc[col, "wilcoxon_p"])
 
     po = pres[pres.scope == "overall"].set_index("axis")
     for axis, col in AXES.items():
