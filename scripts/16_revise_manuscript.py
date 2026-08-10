@@ -182,6 +182,77 @@ def build_edits() -> list[dict]:
         "The deviation log records the judge panel as a later addition.")
 
     # ---- 7.11 non-causal language ----
+    # ---- Item 2: Methods, reproducibility (review 7.1) ----
+    add("The site allowlist, the LLM rewrite prompt, the locked model versions, and the "
+        "statistical analysis plan were committed to the project's version-controlled repository "
+        "before Phase 1 capture began, and were specified in advance in the version-controlled "
+        "project repository. The capture, cleaning, scoring, statistical analysis, and "
+        "figure-generation scripts are deterministic given the raw HTML captures and the locked "
+        "configuration files.",
+        "The study aims, site allowlist, rewrite prompt, and statistical analysis plan were "
+        "specified in the version-controlled repository before inferential analysis. The final "
+        "production model panel and provider-specific runtime parameters were finalized before the "
+        "rewrite experiments; changes from earlier placeholder model identifiers and "
+        "provider-imposed parameter constraints were documented in the deviation log. Downstream "
+        "text normalization, readability scoring, statistical analysis, and figure generation are "
+        "reproducible from the committed study inputs and pinned Python environment.",
+        "Model versions were finalized after Phase 1, and the LLM generation calls are not "
+        "byte-reproducible; only the downstream analysis is.")
+
+    # ---- Item 3: Methods, sample selection (review 7.2) ----
+    add("For each of the 3 procedures, candidate URLs were identified via a single-operator search "
+        "(signed out, incognito mode, fixed geographic context) using the prespecified queries "
+        "listed in the project repository.",
+        "For each procedure, candidate URLs were identified programmatically using the prespecified "
+        "search queries restricted to the locked patient-facing site allowlist. This differed from "
+        "the originally planned signed-out incognito-browser search; the substitution and the "
+        "absence of per-result SERP HTML archival were recorded prospectively in the project "
+        "deviation log. Inclusion criteria were unchanged.",
+        "The documented run used programmatic search, not an incognito browser session.")
+
+    # ---- Item 4: Results, sample capture dates (review 7.5) ----
+    add("Of 26 candidate pages captured between June 2 and June 3, 2026, all 26 met inclusion "
+        "criteria.",
+        "Twenty-six candidate pages were identified during June 2-3, 2026. Twenty-one were captured "
+        "automatically during that window; 5 pages that returned HTTP 403 responses were recovered "
+        "by manual browser capture on June 8, 2026. All 26 met the final inclusion criteria and "
+        "were analyzed.",
+        "The original sentence implies all 26 were captured June 2-3; five came on June 8.")
+
+    # ---- Item 5: Aim 1 site post-hoc (review 7.6) ----
+    site_ph = pd.read_csv(REPORTS_DIR / "aim1_posthoc_sites.csv")
+    n_sig = int((site_ph.p_adj < 0.05).sum())
+    survived = ("no pairwise contrast survived Holm correction" if n_sig == 0
+                else f"{n_sig} pairwise contrast(s) survived Holm correction")
+    add("Differences across the 10 sites contributing 2 or more included pages were borderline "
+        "(Kruskal–Wallis on FKGL, P = .074).",
+        "Differences across the 10 sites contributing 2 or more included pages were borderline for "
+        "FKGL (Kruskal-Wallis P = .074). Two secondary measures showed significant site-level "
+        "omnibus differences (Flesch-Kincaid Reading Ease P = .042; Coleman-Liau Index P = .046); "
+        f"in post-hoc Dunn tests with Holm adjustment, {survived}. Because 5 sites contributed only "
+        "2 pages each, site-level comparisons are exploratory.",
+        "Two significant site-level omnibus tests were unreported, and the SAP requires post-hoc "
+        "follow-up. Five sites contribute n = 2, so the comparison is exploratory.",
+        "reports/aim1_posthoc_sites.csv")
+
+    # ---- Item 6: Discussion, non-causal language (review 7.11) ----
+    add("localizes the residual risk to reduced completeness in the most aggressive simplifier "
+        "(Gemini 3.1 Pro)",
+        "localizes the lowest observed completeness to the most aggressive simplifier "
+        "(Gemini 3.1 Pro), a descriptive observation rather than a demonstrated causal effect",
+        "The across-model completeness test is not significant, so causal wording is unsupported.")
+    add("If a model can demonstrably lower the FKGL by 2 or more grade levels with no clinically "
+        "significant drop in accuracy or completeness",
+        "If a model can demonstrably lower the reading level with no clinically significant drop in "
+        "accuracy or completeness",
+        "The '2 or more grade levels' threshold is not defined in the analysis plan.")
+
+    # ---- Item 7: deviations count (review 7.12) ----
+    add("Five deviations from the prespecified protocol are noted",
+        "Fourteen deviations from the prespecified protocol are noted",
+        "The repository deviation log now records 14 dated entries.",
+        "docs/stats_deviations.md")
+
     # Reference integrity: SciPy and pandas are named in the text but never cited.
     add("Analyses were performed in Python 3.11 using SciPy and pandas.",
         "Analyses were performed in Python 3.11 using SciPy and pandas.19,20",
@@ -221,6 +292,25 @@ def _revision(tag, child):
     return el
 
 
+def _fold(text: str) -> str:
+    """Fold typography for matching only.
+
+    Every substitution is 1:1 in length, so an index found in the folded string is
+    valid in the original. Word uses en/em dashes, curly quotes and non-breaking
+    spaces; search strings written in ASCII would otherwise never match.
+    """
+    for a, b in (("\u2013", "-"), ("\u2014", "-"), ("\u2212", "-"), ("\u2010", "-"),
+                 ("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"'),
+                 ("\u00a0", " "), ("\u2009", " "), ("\u202f", " ")):
+        text = text.replace(a, b)
+    return text
+
+
+def find_in(text: str, needle: str) -> int:
+    """Index of `needle` in `text`, ignoring typographic variants."""
+    return _fold(text).find(_fold(needle))
+
+
 def apply_paragraph_edits(para, edits: list[dict]) -> int:
     """Apply every edit belonging to this paragraph in ONE pass.
 
@@ -231,7 +321,7 @@ def apply_paragraph_edits(para, edits: list[dict]) -> int:
     destroyed text on an earlier run, hence the single-pass rebuild.
     """
     text = para.text
-    spans = sorted((text.find(e["old"]), e) for e in edits if text.find(e["old"]) >= 0)
+    spans = sorted((find_in(text, e["old"]), e) for e in edits if find_in(text, e["old"]) >= 0)
     if not spans:
         return 0
 
@@ -247,7 +337,9 @@ def apply_paragraph_edits(para, edits: list[dict]) -> int:
             continue
         if i > cursor:
             p.append(_run(text[cursor:i], rpr))
-        p.append(_revision("w:del", _run(e["old"], rpr, deleted=True)))
+        # Delete the document's own wording, not the ASCII search string, so the
+        # revision shows exactly what was removed.
+        p.append(_revision("w:del", _run(text[i:i + len(e["old"])], rpr, deleted=True)))
         p.append(_revision("w:ins", _run(e["new"], rpr)))
         cursor = i + len(e["old"])
     if cursor < len(text):
@@ -273,6 +365,52 @@ OUTSTANDING = [
     "§7.12 Deviations summary — update the count; the repository log now has 10 entries",
     "§7.13 eFigure 1 / eFigure 2 — regenerate and add the missing eFigure 2 legend",
 ]
+
+
+def _accepted_text(cell) -> str:
+    """Cell text with tracked changes accepted, so an already-revised cell is not
+    re-edited into nonsense on a second run."""
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    return "".join(n.text for n in cell._element.iter() if n.tag == f"{W}t" and n.text)
+
+
+def revise_table3(document, prim) -> int:
+    """Item 1: Table 3 counts rewrites, not rating events.
+
+    Targeted by table position and cell coordinates, never by text search. Searching
+    the document for a bare "55" would match inside "155" and silently corrupt an
+    unrelated number; only the count column of this one table may change.
+    """
+    # Match on the accepted-changes header so an already-revised table is still
+    # found, and take the FIRST such table: Table 3 (human) precedes Table 4 (judges).
+    table = next((t for t in document.tables
+                  if _accepted_text(t.rows[0].cells[1]).strip().startswith("No. r")), None)
+    if table is None:
+        return 0
+    changed = 0
+    header = table.rows[0].cells[1].paragraphs[0]
+    if apply_paragraph_edits(header, [{"old": "No. ratings", "new": "No. rewrites"}]):
+        changed += 1
+    key = {"Claude Opus 4.8": "claude", "GPT-5.5": "openai", "Gemini 3.1 Pro": "gemini"}
+    for row in table.rows[1:]:
+        model = key.get(row.cells[0].text.strip())
+        if model is None:
+            continue
+        # Column 1 is the count; columns 2-4 are accuracy, completeness, added
+        # errors as "mean (SD)". All are rewritten from the primary table.
+        targets = {1: str(int(prim.loc[model, "n_rewrites"]))}
+        for col, axis in ((2, "accuracy_1_5"), (3, "completeness_1_5"), (4, "added_errors_1_5")):
+            targets[col] = (f"{prim.loc[model, axis + '_mean']:.2f} "
+                            f"({prim.loc[model, axis + '_sd']:.2f})")
+        for col, new in targets.items():
+            if col >= len(row.cells):
+                continue
+            cell = row.cells[col]
+            old = _accepted_text(cell).strip()
+            if old and old != new:
+                if apply_paragraph_edits(cell.paragraphs[0], [{"old": old, "new": new}]):
+                    changed += 1
+    return changed
 
 
 def clean_whitespace(document) -> int:
@@ -322,7 +460,8 @@ def main() -> int:
     assigned: dict[int, list[dict]] = {}
     applied = []
     for e in build_edits():
-        target = next((i for i, para in enumerate(paragraphs) if e["old"] in para.text), None)
+        target = next((i for i, para in enumerate(paragraphs)
+                       if find_in(para.text, e["old"]) >= 0), None)
         applied.append({**e, "status": "NOT FOUND" if target is None else "APPLIED"})
         if target is not None:
             assigned.setdefault(target, []).append(e)
@@ -330,6 +469,8 @@ def main() -> int:
     for idx, group in assigned.items():
         apply_paragraph_edits(paragraphs[idx], group)
 
+    n_t3 = revise_table3(document, pd.read_csv(
+        REPORTS_DIR / "aim3_compiled_by_model_primary.csv").set_index("model_id"))
     n_ws = clean_whitespace(document)
     document.save(str(MANUSCRIPT))
 
@@ -343,6 +484,7 @@ def main() -> int:
     print(f"  file   : {MANUSCRIPT.name}")
     print(f"  backup : {backup.relative_to(REPO_ROOT)}")
     print(f"  audit  : {AUDIT.name}")
+    print(f"  Table 3 cells revised  : {n_t3}")
     print(f"  whitespace runs cleaned: {n_ws}")
     print(f"\n  {n_ok} of {len(applied)} edits applied as tracked revisions\n")
     for _, r in audit.iterrows():

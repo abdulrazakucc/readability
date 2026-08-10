@@ -27,6 +27,7 @@ from src.stats import (  # noqa: E402
     aim3_tradeoff_correlations,
     clopper_pearson,
     describe_by,
+    dunn_posthoc,
     fraction_meeting_benchmark,
     pairwise_posthoc_models,
 )
@@ -72,6 +73,25 @@ def main(argv: list[str] | None = None) -> int:
 
         aim1_across_groups(originals, "site").to_csv(REPORTS_DIR / "aim1_inference_by_site.csv", index=False)
         aim1_across_groups(originals, "procedure").to_csv(REPORTS_DIR / "aim1_inference_by_procedure.csv", index=False)
+
+        # SAP requires post-hoc follow-up after a significant omnibus. FKRE and CLI
+        # both show significant site-level differences that the manuscript does not
+        # currently report.
+        site_ph = []
+        site_inf = aim1_across_groups(originals, "site")
+        for _, r in site_inf.iterrows():
+            if not (r["p"] < 0.05):
+                continue
+            groups = {g: sub[r["score"]].dropna().to_numpy()
+                      for g, sub in originals.groupby("site")}
+            groups = {k: v for k, v in groups.items() if len(v) >= 2}
+            out = dunn_posthoc(groups)
+            out.insert(0, "score", r["score"])
+            site_ph.append(out)
+        if site_ph:
+            pd.concat(site_ph, ignore_index=True).to_csv(
+                REPORTS_DIR / "aim1_posthoc_sites.csv", index=False)
+            log.info("Aim 1: wrote site post-hoc for %d score(s)", len(site_ph))
 
         bench = fraction_meeting_benchmark(originals)
         # Exact binomial CI belongs in the report, not only in the manuscript prose.

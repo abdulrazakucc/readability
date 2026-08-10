@@ -128,6 +128,8 @@ def _key(text: str) -> str:
 
 
 def _add(out: dict[str, Reported], key: str, raw: str, source: str) -> None:
+    if not raw or not re.search(r"\d", raw):
+        return
     out[key] = Reported(key=key, value=_num(raw), raw=raw.strip(),
                         decimals=_decimals(raw), source=source)
 
@@ -161,12 +163,24 @@ def paragraph_texts(doc: docx.document.Document) -> list[str]:
     return out
 
 
+def cell_text(cell) -> str:
+    """Cell text with all tracked changes accepted.
+
+    Same reason as `paragraph_texts`: python-docx cannot see runs nested inside a
+    tracked insertion, so a revised table cell reads as empty and parsing it raises.
+    """
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    return "".join(n.text for n in cell._element.iter()
+                   if n.tag == f"{W}t" and n.text)
+
+
 def parse_tables(doc: docx.document.Document) -> dict[str, Reported]:
     """Read Tables 1-4. Tables are identified by their header row, not position,
     so inserting a table upstream does not silently shift the mapping."""
     out: dict[str, Reported] = {}
+    seen_clinical = [0]
     for t in doc.tables:
-        rows = [[normalize(c.text) for c in r.cells] for r in t.rows]
+        rows = [[normalize(cell_text(c)) for c in r.cells] for r in t.rows]
         if not rows:
             continue
         header = " | ".join(rows[0]).lower()
@@ -205,8 +219,13 @@ def parse_tables(doc: docx.document.Document) -> dict[str, Reported]:
 
         # Tables 3 and 4 share a shape; the count column tells them apart.
         elif "accuracy" in header and "completeness" in header and "added errors" in header:
-            tag = "t4" if "rewrites" in header else "t3"
-            src = "Table 4" if tag == "t4" else "Table 3"
+            # Tables 3 and 4 share a shape and, since Table 3 was corrected to count
+            # rewrites, they now share the "No. rewrites" header too. Document order
+            # is the reliable discriminator: Table 3 (human review) precedes Table 4
+            # (automated judges).
+            seen_clinical[0] += 1
+            tag = "t3" if seen_clinical[0] == 1 else "t4"
+            src = "Table 3" if tag == "t3" else "Table 4"
             for r in rows[1:]:
                 mk = MODEL_KEYS.get(_key(r[0]))
                 if not mk:

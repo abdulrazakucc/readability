@@ -301,6 +301,45 @@ def fig_expert_vs_lay(evl: pd.DataFrame, cov: pd.DataFrame) -> None:
     plt.close(fig)
 
 
+def fig_expert_vs_lay(evl: pd.DataFrame, cov: pd.DataFrame) -> None:
+    """eFigure 1: subspecialists vs lay readers on the SAME standard instrument.
+
+    Rewrite-level means, paired on blind_id, so each rewrite contributes once. The
+    earlier version pooled lay readers across both instruments, which confounded
+    reader type with instrument wording; this holds the instrument constant.
+    """
+    axes = [("accuracy_1_5", "Accuracy"), ("completeness_1_5", "Completeness"),
+            ("added_errors_1_5", "Added errors\n(lower is better; 1 = none)")]
+    fig, ax = plt.subplots(figsize=(9.2, 5.4))
+    x = np.arange(len(axes))
+    w = 0.36
+    e_means = [evl.loc[a, "expert_mean"] for a, _ in axes]
+    l_means = [evl.loc[a, "layperson_mean"] for a, _ in axes]
+    b1 = ax.bar(x - w / 2, e_means, w, label="Subspecialists", color="#2f4f6f",
+                edgecolor="white", linewidth=0.6)
+    b2 = ax.bar(x + w / 2, l_means, w, label="Lay readers", color="#d9a441",
+                edgecolor="white", linewidth=0.6)
+    _bar_labels(ax, b1, dy=0.02, size=9)
+    _bar_labels(ax, b2, dy=0.02, size=9)
+    for i, (a, _) in enumerate(axes):
+        p = evl.loc[a, "wilcoxon_p"]
+        txt = "P < .001" if p < 0.001 else f"P = {p:.2f}".replace("0.", ".")
+        ax.text(i, 5.32, txt, ha="center", fontsize=9.5, color=MUTED)
+    ax.set_xticks(x)
+    ax.set_xticklabels([n for _, n in axes])
+    ax.set_ylabel("Mean rating per rewrite (1–5)")
+    ax.set_ylim(1, 5.6)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False, fontsize=10)
+    n = int(evl.iloc[0]["n_rewrites"])
+    fig.text(0.5, -0.04,
+             f"Paired Wilcoxon signed-rank across {n} rewrites, both cohorts scoring the same "
+             "standard instrument. Each rewrite contributes one mean per cohort.",
+             ha="center", fontsize=8, color=MUTED, style="italic")
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "aim3_efigure1_expert_vs_lay.png", bbox_inches="tight")
+    plt.close(fig)
+
+
 def main() -> int:
     ensure_dirs()
     setup_style()
@@ -312,7 +351,8 @@ def main() -> int:
     fig_primary(bym, raw, cov)
     fig_bias(bym, pe)
     fig_conditions(bym)
-    fig_expert_vs_lay(evl, cov)
+    fig_expert_vs_lay(
+        pd.read_csv(REPORTS_DIR / "aim3_compiled_expert_vs_lay.csv").set_index("axis"), cov)
     print("wrote 4 figures to", FIGURES_DIR)
     return 0
 

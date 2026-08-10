@@ -144,9 +144,12 @@ def compute() -> dict[str, float]:
     c["p.friedman.n_pages"] = float(across.loc["fkgl", "n_pages"])
 
     # ---- Table 3 + Aim 3 primary prose (blinded subspecialists, labeled) ----
-    lab = bym[bym.condition == "expert_labeled"].set_index("model_id")
+    # Table 3 is the PRIMARY summary: one expert mean per rewrite. The rating-level
+    # table (aim3_compiled_by_model.csv) is a supporting descriptive and is not what
+    # Table 3 reports.
+    lab = pd.read_csv(REPORTS_DIR / "aim3_compiled_by_model_primary.csv").set_index("model_id")
     for m in MODELS:
-        c[f"t3.{m}.n"] = float(lab.loc[m, "n"])
+        c[f"t3.{m}.n"] = float(lab.loc[m, "n_rewrites"])
         for axis, col in AXES.items():
             c[f"t3.{m}.{axis}.mean"] = float(lab.loc[m, f"{col}_mean"])
             c[f"t3.{m}.{axis}.sd"] = float(lab.loc[m, f"{col}_sd"])
