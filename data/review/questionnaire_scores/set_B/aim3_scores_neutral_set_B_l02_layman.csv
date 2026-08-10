@@ -1,0 +1,27 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+L02,layperson,2026-07-24,B,B-CBFNO6B9M8,5,5,1,
+L02,layperson,2026-07-24,B,B-GFYGWWQC38,5,5,1,
+L02,layperson,2026-07-24,B,B-OUDOCUZREN,5,5,1,
+L02,layperson,2026-07-24,B,B-JK1EYY37Q9,5,5,1,
+L02,layperson,2026-07-24,B,B-6L6GT6MJXK,5,5,1,
+L02,layperson,2026-07-24,B,B-72HPOEVB9O,5,5,1,
+L02,layperson,2026-07-24,B,B-VGPMM82I1L,5,3,3,The passage omits key details regarding patients who would not be ideal candidates. The passage also adds a claim regarding aneurysms that is not in the reference.
+L02,layperson,2026-07-24,B,B-YQ3S195JMS,5,5,1,
+L02,layperson,2026-07-24,B,B-6FLEEPZHPC,5,5,1,
+L02,layperson,2026-07-24,B,B-3UEA3GE8N6,5,5,1,
+L02,layperson,2026-07-24,B,B-F1RCAVIQK2,5,4,1,
+L02,layperson,2026-07-24,B,B-W90JPKL0BL,5,5,2,"This passage had minor added claims and explanations like, ""These are the blood vessels that feed your heart."""
+L02,layperson,2026-07-24,B,B-0PRKGYC4OM,5,5,1,
+L02,layperson,2026-07-24,B,B-CG1WU16HYM,5,5,1,
+L02,layperson,2026-07-24,B,B-FS6VFPTOMJ,5,5,1,"Although the ""To be Scored"" passage does not contain the information at the end of the ""reference passage,"" it was not key information that was omitted."
+L02,layperson,2026-07-24,B,B-PH3I379U26,5,4,1,"The passage does not include the specifics of ""electrolyte levels, kidney, liver, and thyroid"" when discussing blood levels."
+L02,layperson,2026-07-24,B,B-JOYJNE00V8,5,5,1,
+L02,layperson,2026-07-24,B,B-DN0YBY4AWT,5,5,2,"The passage expands on what the aortic valve is in the first paragraph, saying that it helps blood move through the heart, which is not mentioned in the reference."
+L02,layperson,2026-07-24,B,B-F1I3LDQYUN,5,5,1,
+L02,layperson,2026-07-24,B,B-KTGBTYZMEP,5,5,1,
+L02,layperson,2026-07-24,B,B-A05G1X3J1L,5,5,1,
+L02,layperson,2026-07-24,B,B-SOZPTX497W,5,5,1,
+L02,layperson,2026-07-24,B,B-8LMN4R7SGM,5,5,1,
+L02,layperson,2026-07-24,B,B-JTFPH90O7Y,5,4,1,The passage does not mention electrophysiologists when discussing the team that works to lower the risk of stroke.
+L02,layperson,2026-07-24,B,B-COSS3EOQM1,5,3,2,"The passage does not mention that some people have problems with the medications like warfarin. The passage does not include the specific shape of the left atrial appendages-chicken wing, cactus, windsock, and cauliflower. The passage also omits some statistics including ""an 80% decrease in strokes..."" and ""rates above 95%..."" The passage adds a section about calling the doctor if there is chest pain or trouble breathing."
+L02,layperson,2026-07-24,B,B-1UQBFOBRCL,5,5,1,

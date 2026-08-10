@@ -11,6 +11,10 @@ publication/
 # Local-only working docs (RUNBOOK, MAINTENANCE_LOG). Keep local, never commit.
 local-docs/
 
+# Participant re-identification key. NEVER commit: this is the only file that
+# maps participant IDs back to real people. Keep it with the IRB records.
+private/
+
 CLAUDE.md
 
 # NOTE: this block differs from `main` on purpose — do not merge it across.
@@ -18,6 +22,17 @@ CLAUDE.md
 # can never be re-added there. `draft` is the full working branch and DOES keep
 # them (notebooks/, literature/, IRB/, and the planning/background docs), so the
 # ignore rules are deliberately absent here.
+
+# Manuscript cross-check tooling and the reviewer guide live on `draft` only.
+# `main` is the journal reproduction package: it must not carry the manuscript,
+# anything parsed from it, or any file naming a participant.
+docs/reviewer_guide_*.md
+src/manuscript.py
+scripts/14_validate_manuscript.py
+scripts/15_comparison_report.py
+tests/test_manuscript.py
+reports/manuscript_validation.csv
+reports/comparison_report.html
 
 # Raw captures and derived artifacts (regenerable + potentially large)
 # data/raw/

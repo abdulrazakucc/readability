@@ -1,6 +1,6 @@
 # Methods, Metrics, and Statistics: A Plain-Language Companion
 
-**Who this is for.** Dr. Naeem and any clinician co-author who wants to understand exactly what every number in the manuscript means, and any data scientist or student who wants to follow or re-implement the project end to end. It assumes no statistics background. Where a test or metric is named in the manuscript, this document explains it in words, shows the formula, and works a small example using the project's own data.
+**Who this is for.** the blinded subspecialist reviewer and any clinician co-author who wants to understand exactly what every number in the manuscript means, and any data scientist or student who wants to follow or re-implement the project end to end. It assumes no statistics background. Where a test or metric is named in the manuscript, this document explains it in words, shows the formula, and works a small example using the project's own data.
 
 **How to read it.** Sections 1 to 3 are the conceptual orientation (the question, the metrics, the pipeline). Section 4 is the statistics, one test at a time, each with a worked example. Section 5 covers the automated LLM-judge panel (the secondary Aim 3 analysis). Section 6 is a plain-language glossary. Section 7 is the reproduction map: which script produces which number. A clinician can read 1 to 3 and the glossary and skip the arithmetic; an implementer can read the whole thing.
 
@@ -16,7 +16,7 @@ These map to the three Aims:
 
 - **Aim 1** (descriptive): how readable are the original pages, and do any meet the recommended 6th-grade level?
 - **Aim 2** (the rewrite effect): does each AI model lower the reading level, and by how much?
-- **Aim 3** (the trade-off): does lowering the reading level cost medical accuracy or completeness? The primary measure here is a blinded subspecialist review (Dr. Naeem); a secondary automated LLM-judge panel is reported as a screening signal only.
+- **Aim 3** (the trade-off): does lowering the reading level cost medical accuracy or completeness? The primary measure here is a blinded subspecialist review (the blinded subspecialist reviewer); a secondary automated LLM-judge panel is reported as a screening signal only.
 
 ---
 
@@ -203,7 +203,7 @@ The **Friedman test** is the non-parametric way to compare three or more matched
 
 ### 4.7 Aim 3 primary: the human accuracy review (pending)
 
-The **primary** Aim 3 endpoint is Dr. Naeem's blinded scoring of all 77 rewrites on three 1-to-5 ordinal dimensions defined in `docs/accuracy_scoring_rubric.md`:
+The **primary** Aim 3 endpoint is the blinded subspecialist's blinded scoring of all 77 rewrites on three 1-to-5 ordinal dimensions defined in `docs/accuracy_scoring_rubric.md`:
 
 - **Accuracy** (5 = every medical statement correct; 1 = major errors likely to harm).
 - **Completeness** (5 = all key prep/risk/safety points kept; 1 = most omitted).
@@ -221,7 +221,7 @@ This is the measurement that actually answers the deploy/do-not-deploy question,
 
 ## 5. The automated LLM-judge panel (Aim 3 secondary)
 
-Because the human review takes time, we built a **secondary, clearly-labeled** screening analysis: a panel of three LLM judges (the same three models) scored all 77 rewrites against their originals on the same three rubric dimensions, each judge blinded to which model wrote the rewrite. That is 77 rewrites × 3 judges = **231 judgments** (`data/scores/accuracy_llm_raw.csv`). This is a triage and validation tool, **not** a substitute for Dr. Naeem; the manuscript states this in every place the panel appears, and full detail is in `docs/aim3_automated_accuracy_assessment.md`.
+Because the human review takes time, we built a **secondary, clearly-labeled** screening analysis: a panel of three LLM judges (the same three models) scored all 77 rewrites against their originals on the same three rubric dimensions, each judge blinded to which model wrote the rewrite. That is 77 rewrites × 3 judges = **231 judgments** (`data/scores/accuracy_llm_raw.csv`). This is a triage and validation tool, **not** a substitute for the blinded subspecialist reviewer; the manuscript states this in every place the panel appears, and full detail is in `docs/aim3_automated_accuracy_assessment.md`.
 
 ### 5.1 Consensus score
 
@@ -325,4 +325,4 @@ The test logic lives in `src/stats.py` (locked at Phase 5). The readability form
 
 ---
 
-*Companion to the manuscript and to `docs/statistical_analysis_plan.md` (the pre-registered plan). For the rubric Dr. Naeem uses, see `docs/accuracy_scoring_rubric.md`; for step-by-step reviewer instructions, `docs/reviewer_guide_naeem.md`; for the automated-panel write-up, `docs/aim3_automated_accuracy_assessment.md`.*
+*Companion to the manuscript and to `docs/statistical_analysis_plan.md` (the pre-registered plan). For the rubric the blinded subspecialist reviewer uses, see `docs/accuracy_scoring_rubric.md`; for step-by-step reviewer instructions, the reviewer guide (kept on the `draft` branch); for the automated-panel write-up, `docs/aim3_automated_accuracy_assessment.md`.*

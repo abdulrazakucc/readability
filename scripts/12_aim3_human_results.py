@@ -61,10 +61,11 @@ CONDITION_LABEL = {
 # ratings from 5 readers) when contrasting them with the subspecialists.
 LAY_CONDITIONS = ["layperson_labeled", "layperson_neutral"]
 
-# Reviewer identity is taken from the file NAME slug, not the free-text
-# `reviewer_name` field, which is inconsistent across returns (eg, "Hafsa" vs
-# "Hafsa Awan", "MUHAMMAD NAEEM" vs "Muhammad Naeem"). The slug is stable, so it
-# is the canonical id used for counting reviewers and pairing raters.
+# Reviewer identity is taken from the file NAME slug. Sheets are keyed by opaque
+# participant IDs (E01-E06 subspecialists, L01-L05 lay readers); the name-to-ID
+# crosswalk lives outside version control. Historically the free-text
+# `reviewer_name` column was inconsistent across returns, which is why the slug --
+# not that column -- is the canonical id for counting reviewers and pairing raters.
 _SLUG_RE = re.compile(r"^aim3_scores_(?:neutral_)?set_[a-c]_(.+?)_(?:expert|layman|layperson)$")
 
 
@@ -100,6 +101,10 @@ def load() -> pd.DataFrame:
 
 
 def coverage(df: pd.DataFrame) -> pd.DataFrame:
+    # Derived from the blinding key rather than written in: the total is a
+    # property of the study design, and a literal here would silently go stale if
+    # the rewrite set ever changed.
+    n_rewrites_total = pd.read_csv(REVIEW_DIR / "blind_key.csv").blind_id.nunique()
     rows = []
     for c in CONDITIONS:
         g = df[df.condition == c]
@@ -109,7 +114,7 @@ def coverage(df: pd.DataFrame) -> pd.DataFrame:
             "reviewers": g.reviewer_id.nunique(),
             "ratings": len(g),
             "rewrites_covered": g.blind_id.nunique(),
-            "rewrites_total": 77,
+            "rewrites_total": n_rewrites_total,
             "mean_raters_per_rewrite": round(len(g) / max(g.blind_id.nunique(), 1), 2),
             "sets": ", ".join(sorted(g.set_id.astype(str).unique())),
         })
@@ -195,8 +200,10 @@ def irr(df: pd.DataFrame) -> pd.DataFrame:
                          # the manuscript. The fixed-scale variant holds q at 5
                          # so cohorts stay comparable; under a ceiling the two
                          # diverge sharply, so both are reported.
-                         "gwet_ac1": gwet_ac1(piv) if len(piv.columns) > 1 else np.nan,
-                         "gwet_ac1_fixed_scale": (
+                         "gwet_ac1_observed_categories": (
+                             gwet_ac1(piv) if len(piv.columns) > 1 else np.nan
+                         ),
+                         "gwet_ac1_full_scale": (
                              gwet_ac1(piv, RATING_CATEGORIES) if len(piv.columns) > 1 else np.nan
                          ),
                          "quad_weighted_kappa": (

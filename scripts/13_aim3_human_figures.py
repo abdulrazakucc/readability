@@ -98,6 +98,7 @@ def fig_primary(bym: pd.DataFrame, raw: pd.DataFrame, cov: pd.DataFrame) -> None
     lab = bym[bym.condition == "expert_labeled"].set_index("model_id")
     n_rev = int(cov.loc[cov.condition == "expert_labeled", "reviewers"].iloc[0])
     n_rat = int(cov.loc[cov.condition == "expert_labeled", "ratings"].iloc[0])
+    n_rw = int(cov.loc[cov.condition == "expert_labeled", "rewrites_total"].iloc[0])
 
     fig, (axA, axB) = plt.subplots(1, 2, figsize=(13.2, 5.7),
                                    gridspec_kw={"width_ratios": [1.05, 1]})
@@ -163,7 +164,7 @@ def fig_primary(bym: pd.DataFrame, raw: pd.DataFrame, cov: pd.DataFrame) -> None
     fig.suptitle("Aim 3 primary endpoint (interim): blinded subspecialist review of LLM rewrites",
                  fontsize=13.5, fontweight="bold", x=0.5, y=1.05)
     fig.text(0.5, -0.035,
-             f"{n_rev} subspecialist reviewers · {n_rat} ratings · all 77 rewrites · labeled instrument. "
+             f"{n_rev} subspecialist reviewers · {n_rat} ratings · all {n_rw} rewrites · labeled instrument. "
              "Large X = model mean; points jittered vertically to separate ties.",
              ha="center", fontsize=8, color=MUTED, style="italic")
     fig.tight_layout(w_pad=2.5)

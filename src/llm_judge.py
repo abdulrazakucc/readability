@@ -3,7 +3,7 @@
 IMPORTANT: This is NOT the pre-registered blinded human subspecialist review and
 must never be presented as such. It is an automated, reproducible screening
 signal produced by a panel of large language models. The primary Aim 3 endpoint
-remains the blinded subspecialist (Dr. Naeem) scoring of `data/review/review_packet.csv`.
+remains the blinded subspecialist scoring of `data/review/review_packet.csv`.
 
 Design:
   - A panel of three LLM judges (the same three models used for rewriting) scores

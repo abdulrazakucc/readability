@@ -1,0 +1,27 @@
+reviewer_name,reviewer_role,review_date,set_id,blind_id,accuracy_1_5,completeness_1_5,added_errors_1_5,notes
+L02,layperson,2026-07-24,A,B-0O2RAK1VRJ,5,5,1,The passage omits
+L02,layperson,2026-07-24,A,B-SFOGYR3XKX,5,5,1,
+L02,layperson,2026-07-24,A,B-REK8PK3YR9,5,5,1,
+L02,layperson,2026-07-24,A,B-AH8RVHS1K3,5,4,1,The passage omits the Food and Drug Administration that approved TAVR for use.
+L02,layperson,2026-07-24,A,B-87AU5BHXTP,5,5,1,
+L02,layperson,2026-07-24,A,B-OAEDOECVE6,5,4,1,
+L02,layperson,2026-07-24,A,B-5N8I4P40MG,5,5,1,
+L02,layperson,2026-07-24,A,B-K054NZDKYA,5,5,1,
+L02,layperson,2026-07-24,A,B-F07UQNUPQZ,5,5,1,
+L02,layperson,2026-07-24,A,B-QIWEPXSK28,5,5,1,
+L02,layperson,2026-07-24,A,B-RSNVNQ65QD,5,5,1,
+L02,layperson,2026-07-24,A,B-1ICTXCWNPG,5,5,1,
+L02,layperson,2026-07-24,A,B-3WTOOBMZVR,5,5,1,
+L02,layperson,2026-07-24,A,B-QC1A78MX1E,5,5,1,
+L02,layperson,2026-07-24,A,B-N1U322N64K,5,5,2,
+L02,layperson,2026-07-24,A,B-P4E30MY5ZP,5,5,1,
+L02,layperson,2026-07-24,A,B-K42QPR75PR,5,5,1,
+L02,layperson,2026-07-24,A,B-Y088O5OR15,5,5,1,
+L02,layperson,2026-07-24,A,B-3UVYR0QF4B,5,4,1,This passage does not reference the Interventional Cardiology Program when discussing taking on complicated cases.
+L02,layperson,2026-07-24,A,B-PI4HN3QXKH,5,5,1,
+L02,layperson,2026-07-24,A,B-R2P3YVB5UL,5,5,1,
+L02,layperson,2026-07-24,A,B-WQVRR9A7MF,5,5,1,
+L02,layperson,2026-07-24,A,B-SOXLTA8IRC,5,5,2,"The passage adds ""warfarin"" in the first paragraph as a blood thinner, which is not in the reference."
+L02,layperson,2026-07-24,A,B-I5GAS442VL,5,5,1,
+L02,layperson,2026-07-24,A,B-PL9EKA024S,5,5,1,
+L02,layperson,2026-07-24,A,B-JRJEDKTS2H,5,4,1,"The passage omits minor points, like that an ICD can work as a defibrillator, and that a LAA closure is also known as a Left Atrial Appendage occlusion (LAAO)."
