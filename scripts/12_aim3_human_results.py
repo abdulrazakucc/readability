@@ -34,7 +34,11 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from src.agreement import gwet_ac1, mean_pairwise_weighted_kappa  # noqa: E402
+from src.agreement import (  # noqa: E402
+    RATING_CATEGORIES,
+    gwet_ac1,
+    mean_pairwise_weighted_kappa,
+)
 from src.config import REPORTS_DIR, REVIEW_DIR, SCORES_DIR  # noqa: E402
 
 SCORES_ROOT = REVIEW_DIR / "questionnaire_scores"
@@ -186,7 +190,15 @@ def irr(df: pd.DataFrame) -> pd.DataFrame:
             rows.append({"condition": c, "axis": ax, "rater_pairs": len(ex),
                          "pct_exact": 100 * np.mean(ex) if ex else np.nan,
                          "pct_within_1": 100 * np.mean(w1) if w1 else np.nan,
+                         # Default AC1 derives the category set from the data,
+                         # matching Gwet's reference implementation (irrCAC) and
+                         # the manuscript. The fixed-scale variant holds q at 5
+                         # so cohorts stay comparable; under a ceiling the two
+                         # diverge sharply, so both are reported.
                          "gwet_ac1": gwet_ac1(piv) if len(piv.columns) > 1 else np.nan,
+                         "gwet_ac1_fixed_scale": (
+                             gwet_ac1(piv, RATING_CATEGORIES) if len(piv.columns) > 1 else np.nan
+                         ),
                          "quad_weighted_kappa": (
                              mean_pairwise_weighted_kappa(piv) if len(piv.columns) > 1 else np.nan
                          )})

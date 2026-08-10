@@ -42,7 +42,7 @@ RATING_CATEGORIES: tuple[int, ...] = (1, 2, 3, 4, 5)
 
 def gwet_ac1(
     ratings: pd.DataFrame,
-    categories: tuple[int, ...] = RATING_CATEGORIES,
+    categories: tuple[int, ...] | None = None,
 ) -> float:
     """Gwet's AC1 for an items x raters matrix, allowing missing cells.
 
@@ -54,22 +54,44 @@ def gwet_ac1(
     mean over items of the proportion of concordant rater pairs, and chance
     agreement is built from the mean category prevalences.
 
+    The category set drives chance agreement, so it changes the answer materially
+    -- this is not a detail:
+
+    * `categories=None` (default) derives the categories from the data, which is
+      what Gwet's reference implementation (the `irrCAC` package, R and Python)
+      does. Use this to reproduce published values or to match standard tooling.
+    * Passing an explicit set (eg `RATING_CATEGORIES`) fixes q across cohorts,
+      which makes coefficients comparable between groups that happen to use
+      different parts of the scale.
+
+    The two differ sharply under a ceiling. On this study's expert accuracy
+    ratings only categories 4 and 5 ever occur, so the data-derived q is 2 and
+    AC1 is 0.771, whereas fixing q=5 gives 0.805. Both are correct answers to
+    different questions; `scripts/12` reports both side by side.
+
     Returns NaN when no item has 2 or more raters.
     """
-    q = len(categories)
-    if q < 2:
-        raise ValueError("need at least 2 rating categories")
-
-    counts, weights = [], []
+    counts_rows = []
     for _, row in ratings.iterrows():
         vals = row.dropna().to_numpy()
-        r_i = len(vals)
-        if r_i < 2:
+        if len(vals) < 2:
             continue
-        counts.append([int((vals == k).sum()) for k in categories])
-        weights.append(r_i)
-    if not counts:
+        counts_rows.append(vals)
+    if not counts_rows:
         return float("nan")
+
+    if categories is None:
+        categories = tuple(sorted({int(v) for vals in counts_rows for v in vals}))
+    q = len(categories)
+    if q < 2:
+        # Every rater used a single category: agreement is perfect by
+        # construction and chance agreement is undefined.
+        return float("nan")
+
+    counts, weights = [], []
+    for vals in counts_rows:
+        counts.append([int((vals == k).sum()) for k in categories])
+        weights.append(len(vals))
 
     n_ik = np.asarray(counts, dtype=float)
     r = np.asarray(weights, dtype=float)

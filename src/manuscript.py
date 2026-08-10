@@ -1,4 +1,4 @@
-"""Extract every reported value from Dr Naeem's manuscript .docx.
+"""Extract every reported value from the finalized manuscript .docx.
 
 Why parse rather than transcribe
 --------------------------------
