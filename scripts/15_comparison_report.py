@@ -206,20 +206,35 @@ def main() -> int:
 
   <h3>Genuine differences</h3>
   <ul class="findings">{fail_html}</ul>
-  <p class="note"><strong>Resolved, with one assumption stated plainly.</strong> The difference that
-  previously stood — Gwet&nbsp;AC1 for subspecialist accuracy, 0.77 published against 0.805 computed —
-  came from the category set used for chance agreement. Among multiply-rated items the subspecialists
-  only ever used 4 and 5 for accuracy, so deriving the categories from the data gives 2 rather than
-  the nominal 5, and that single choice moves the coefficient. Deriving them reproduces all three
-  published values exactly (0.771, 0.793, 0.886 against 0.77, 0.79, 0.89).</p>
-  <p class="note"><strong>What that rests on.</strong> The choice was made because it matches, not
-  because an independent tool confirms it. Running Gwet's reference <code>irrCAC</code> package on the
-  same data gives <strong>0.782</strong> for accuracy — which rounds to 0.78, not the published 0.77 —
-  so the published values did not come from that package at default settings. Deriving q is the
-  load-bearing decision; prevalence weighting shifts the answer by under 0.001. The pipeline reports
-  both q modes and the test suite pins our relationship to <code>irrCAC</code> so the divergence
-  cannot drift. <em>Which software produced the published AC1 values is still an open question for
-  the author.</em></p>
+  <p class="note"><strong>One genuine difference remains, and it is reported rather than removed.</strong>
+  Gwet&nbsp;AC1 for subspecialist accuracy: the manuscript prints <strong>0.77</strong>, this pipeline
+  computes <strong>0.805</strong>. Every quantity around it reconciles exactly &mdash; 104 rater-pairs,
+  82/75/88&nbsp;% exact agreement, and all three quadratic-weighted &kappa; values &mdash; and &kappa;
+  is computed from the same rater&times;item matrix as AC1, so the cohort and the pairing are certainly
+  right. The disagreement is confined to AC1's chance-agreement term.</p>
+
+  <p class="note"><strong>What drives it.</strong> That term divides by <em>q</em>, the number of rating
+  categories. This pipeline takes <em>q</em> from the <strong>protocol</strong>: the scoring rubric
+  defines all three dimensions on a 1&ndash;5 scale, so q&nbsp;=&nbsp;5 is a pre-registered property of
+  the instrument, fixed before any rating existed. The alternative is to take <em>q</em> from whichever
+  categories happen to appear &mdash; here only 4 and 5 among multiply-rated accuracy items, giving
+  q&nbsp;=&nbsp;2 and an AC1 of 0.771, which rounds to the published 0.77.</p>
+
+  <p class="note"><strong>Why we did not adopt that.</strong> An earlier revision of this pipeline did,
+  on the stated grounds that it reproduced the published values. Reproducing a target is not a
+  statistical argument. Deriving <em>q</em> after seeing the data is a post-hoc, sample-dependent
+  choice, and it makes coefficients incomparable across cohorts that use different parts of the scale.
+  The pipeline now emits a single AC1 on the protocol scale, with no alternative convention to pick
+  from, and the resulting difference from the manuscript is shown above rather than dissolved.</p>
+
+  <p class="note"><strong>Neither implementation reproduces 0.77.</strong> The manuscript may have been
+  produced in R. R is not installed here, but the Python <code>irrCAC</code> package is a direct port of
+  Gwet's R original and returns <strong>0.782</strong> on this data &mdash; 0.78, not 0.77. So the
+  published figure matches neither the protocol-scale definition (0.805) nor the reference package
+  (0.782); it matches only the data-derived variant (0.771). <em>Which software and settings produced
+  the published AC1 values remains an open question for the author &mdash; it is the one thing that
+  would close this properly.</em> Note the direction favours the paper: 0.805 is <em>higher</em>
+  agreement than 0.77, so nothing in the conclusions is weakened.</p>
 
   <h3>Rounding-convention only</h3>
   <p>These agree within one full printed digit — the manuscript truncates where we round-half — so

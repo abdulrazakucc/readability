@@ -163,7 +163,7 @@ def compute() -> dict[str, float]:
     c["p.irr.pairs"] = float(ei.loc["accuracy_1_5", "rater_pairs"])
     for axis, col in AXES.items():
         c[f"p.irr.{axis}_exact"] = float(ei.loc[col, "pct_exact"])
-        c[f"p.ac1.{axis}"] = float(ei.loc[col, "gwet_ac1_observed_categories"])
+        c[f"p.ac1.{axis}"] = float(ei.loc[col, "gwet_ac1"])
         c[f"p.kappa.{axis}"] = float(ei.loc[col, "quad_weighted_kappa"])
 
     for m in MODELS:
