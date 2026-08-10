@@ -181,13 +181,15 @@ well-known high-agreement/low-κ paradox. Three quantities are therefore reporte
 | Column | What it is |
 |---|---|
 | `pct_exact`, `pct_within_1` | Raw agreement — transparent, not chance-corrected |
-| `gwet_ac1_observed_categories` | Gwet's AC1 with categories taken from the data actually observed |
-| `gwet_ac1_full_scale` | Gwet's AC1 with categories fixed at the full 1–5 scale |
+| `gwet_ac1` | Gwet's AC1, computed over the protocol's full 1–5 category set |
 | `quad_weighted_kappa` | Quadratic-weighted Cohen's κ — expected near zero here |
 
-The two AC1 columns are not redundant. Under a ceiling they diverge materially (0.771 vs 0.805 for
-subspecialist accuracy), because the chance-agreement term depends on how many categories you assume.
-Both are reported so the choice is visible rather than buried.
+**One AC1, one convention.** The chance-agreement term depends on how many rating categories you
+assume, so q is taken from the protocol — `docs/accuracy_scoring_rubric.md` defines all three
+dimensions on a 1–5 scale — and never from whichever categories happen to appear in the sample.
+Deriving q from the data would be a post-hoc choice that moves subspecialist accuracy from 0.805 to
+0.771 and makes cohorts incomparable when they use different parts of the scale. The pipeline
+therefore emits a single value with no alternative to choose between.
 
 ---
 
