@@ -16,6 +16,46 @@ Reviewers will ask. Volunteer.
 
 ## Entries
 
+### 2026-08-10: Post-review corrections to the locked statistics implementation
+- What changed: An external implementation review identified defects and missing prespecified analyses. All were corrected in Python; the locked `src/stats.py` was edited, hence this entry.
+  1. **Signed rank-biserial effect size.** The Wilcoxon effect size was `W / [n(n+1)/2]`, which is unsigned and cannot reach ±1. Gemini's GFI, SMOG and ARI each had every paired difference negative yet reported an effect size of 0.0. Replaced with `(W+ − W−)/(W+ + W−)` on ranks of |difference|, zero differences dropped to match scipy's default. Primary FKGL rows use paired t-tests with Cohen d_z and are unaffected.
+  2. **Aim 2 across-model post-hoc.** The analysis plan requires pairwise follow-up after a significant omnibus; the pipeline stopped at Friedman. Added paired Wilcoxon for all three model pairs with Holm adjustment within each formula → `reports/aim2_posthoc_models.csv`.
+  3. **Aim 3 trade-off completed.** Spearman correlations now cover accuracy **and** completeness (previously accuracy only), with 95% CIs from 5000 bootstrap resamples of rewrites under a fixed seed. Reduction is defined once, positively (original − rewrite).
+  4. **Trade-off sign convention.** `aim3_tradeoff_correlations` correlated the stored `fkgl_delta` (rewrite − original) while the figures plotted `−fkgl_delta`, so report and figure used opposite x-axis signs. The helper now constructs positive reduction explicitly.
+  5. **Exact benchmark CI and IQR in reports.** Clopper–Pearson bounds and overall IQR are now emitted to `aim1_benchmark_meeting.csv` / `aim1_descriptives_overall.csv` rather than existing only in manuscript prose. Added `aim2_post_rewrite_descriptives.csv` so the benchmark counts (22/26, 20/26, 9/25) trace to a report.
+  6. **Dunn post-hoc available** for significant Kruskal–Wallis results.
+- Why: Each is either a defect in a reported quantity or an analysis the plan specified but the code omitted.
+- Affected outputs: `reports/aim2_paired_tests.csv` (Wilcoxon effect sizes only), `aim2_posthoc_models.csv` (new), `aim2_post_rewrite_descriptives.csv` (new), `aim1_benchmark_meeting.csv`, `aim1_descriptives_overall.csv`, `aim3_compiled_tradeoff.csv`, `aim3_llm_tradeoff.csv`.
+- Decided by: Project lead, following external implementation review.
+
+### 2026-08-10: Aim 3 primary unit is the rewrite, not the rating
+- What changed: Per-model clinical descriptives, the across-model comparison and the trade-off correlations now use **one expert mean per rewrite** (page × model), averaging when a rewrite carried more than one subspecialist score. `scripts/12` writes the canonical `data/scores/accuracy.csv` (77 rows: 26 Claude + 25 GPT-5.5 + 26 Gemini) and `scripts/07` consumes it, so there is one final Aim 3 path rather than two competing implementations.
+- Why: A rewrite scored by three subspecialists is one clinical observation, not three. Treating 155 rating events as 155 independent units overweights multiply-scored rewrites and misstates the degrees of freedom.
+- Retained at rating level: reviewer coverage, rating-level percentages, qualitative comments and interrater agreement, which are properly about rating events. `reports/aim3_compiled_by_model.csv` keeps the rating-weighted descriptives, explicitly labelled.
+- Affected outputs: `data/scores/accuracy.csv` (new, canonical), `aim3_compiled_by_model_primary.csv` (new), `aim3_compiled_across_model.csv`, `aim3_compiled_across_model_posthoc.csv` (new), `aim3_compiled_tradeoff.csv`.
+- Decided by: Project lead, following external implementation review.
+
+### 2026-08-10: Gwet AC1 added as a complementary agreement measure; category universe fixed at q = 5
+- What changed: The analysis plan names weighted kappa. Gwet's AC1 and exact/within-1 percent agreement were added alongside it. The production AC1 uses the **predefined 1–5 rubric** as the category universe for every dimension and cohort.
+- Why: Under this study's ceiling (~86% of expert accuracy ratings are the maximum) quadratic-weighted kappa collapses toward zero while raw agreement is excellent — the high-agreement/low-kappa paradox. AC1 is paradox-resistant. Fixing q as a design property stops it changing merely because a ceiling sample never used the low categories, and keeps cohorts comparable.
+- Consequence, stated plainly: the observed-category estimator (what `irrCAC` computes by default, `categ.labels = NULL`) gives ≈0.771/0.793/0.886 for the subspecialists, which is what the current manuscript prints. The q = 5 convention gives ≈0.805/0.797/0.895. These are the same ratings under different category universes; the manuscript values must be regenerated, not preserved by hand.
+- Kappa is reported as **mean pairwise quadratic-weighted Cohen kappa**, which is what the code computes.
+- Affected outputs: `reports/aim3_compiled_irr.csv` and every figure or text quoting AC1.
+- Decided by: Project lead, following external implementation review.
+
+### 2026-08-10: Secondary reader-type and presentation comparisons moved to the rewrite level
+- What changed: `expert_vs_lay` previously ran Mann–Whitney on 155 expert ratings against 385 pooled lay ratings, and `presentation_effect` compared 154 labelled against 231 neutral lay ratings the same way. Both now average to one value per rewrite within each cohort and use a **paired Wilcoxon** over matched rewrites. The reader-type comparison uses `expert_labeled` vs `layperson_labeled`, holding the instrument constant.
+- Why: Multiple raters scoring the same rewrite are repeated observations of one unit, so the previous P values were pseudo-replicated. The old lay pool also mixed two presentation conditions, confounding reader type with instrument wording.
+- Framing: both remain **secondary exploratory** analyses added after the primary protocol, not prespecified. Different readers scored each presentation, so reader identity is confounded with presentation; this is a descriptive presentation comparison and not evidence of an AI-labelling effect.
+- Affected outputs: `aim3_compiled_expert_vs_lay.csv`, `aim3_compiled_presentation_effect.csv`, `reports/figures/aim3_presentation_bias.png`.
+- Decided by: Project lead, following external implementation review.
+
+### 2026-08-10: Human review complete; script renumbering recorded
+- What changed: The blinded human review is complete (four cohorts; 565 rating events over 77 rewrites). Aim 3 is no longer an interim analysis. Separately, the analysis plan refers to `scripts/06_run_statistics.py`; the pipeline uses `scripts/07_run_statistics.py`. The historical plan is left unedited and the renumbering recorded here.
+- Why: The plan is a historical document. Later corrections must not be back-written into it to appear prespecified.
+- Decided by: Project lead.
+
+
 ### 2026-08-08: Cosmetic import change in the locked `src/stats.py` (no statistical effect)
 - What changed: `Iterable` is now imported from `collections.abc` instead of `typing` (`src/stats.py` line 11). Nothing else in the file was touched — no test, threshold, correction method, or column list changed.
 - Why: `typing.Iterable` has been deprecated since Python 3.9 and was the single remaining `ruff` finding (UP035) in the repository. `main` is the branch colleagues clone to reproduce results and reviewers read to evaluate them, so the lint run is left clean rather than carrying one unexplained warning.

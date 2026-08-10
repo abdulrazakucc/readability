@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
+from itertools import combinations
 
 import numpy as np
 import pandas as pd
@@ -104,6 +105,29 @@ def fraction_meeting_benchmark(df: pd.DataFrame, fkgl_threshold: float = 6.0) ->
 
 # --- Aim 2 -------------------------------------------------------------------
 
+def rank_biserial_from_differences(diff: np.ndarray) -> float:
+    """Signed matched-pairs rank-biserial correlation for a Wilcoxon signed-rank test.
+
+    r = (W+ - W-) / (W+ + W-), computed on the ranks of |difference| after dropping
+    zero differences, matching scipy's default zero handling.
+
+    The previous implementation used W / [n(n+1)/2], which is unsigned and does not
+    reach +/-1 when every difference points the same way: Gemini's GFI, SMOG and ARI
+    all had W = 0 with every difference negative, yet reported an effect size of 0.0
+    instead of -1.0. Sign convention here follows rewrite - original, so a uniform
+    reduction in grade level gives -1.0.
+    """
+    diff = np.asarray(diff, dtype=float)
+    diff = diff[np.isfinite(diff) & (diff != 0)]
+    if diff.size == 0:
+        return 0.0
+    ranks = stats.rankdata(np.abs(diff), method="average")
+    w_pos = float(ranks[diff > 0].sum())
+    w_neg = float(ranks[diff < 0].sum())
+    total = w_pos + w_neg
+    return (w_pos - w_neg) / total if total > 0 else 0.0
+
+
 @dataclass
 class PairedResult:
     score: str
@@ -161,8 +185,7 @@ def aim2_paired_per_model(
             else:
                 stat, p = stats.wilcoxon(merged[f"{col}_rewrite"], merged[f"{col}_orig"])
                 test = "wilcoxon"
-                # rank-biserial via Wilcoxon W
-                effect = float(stat) / (n * (n + 1) / 2) if n > 0 else 0.0
+                effect = rank_biserial_from_differences(deltas)
 
             results.append(
                 PairedResult(
@@ -229,8 +252,13 @@ def aim3_tradeoff_correlations(
     `deltas` has columns: page_id, model_id, <score>_delta (post - pre).
     `accuracy` has: page_id, model_id, accuracy_1_5, completeness_1_5, added_errors_1_5.
     """
-    delta_col = f"{primary_score}_delta"
+    # Correlate POSITIVE reduction (original - rewrite), so a larger x means more
+    # grade levels removed. The stored delta is rewrite - original, i.e. negative for
+    # a simplification; correlating it directly inverted the sign relative to the
+    # figures, which already plot -delta.
+    delta_col = f"{primary_score}_reduction"
     merged = deltas.merge(accuracy, on=["page_id", "model_id"], how="inner")
+    merged[delta_col] = -merged[f"{primary_score}_delta"]
     rows = []
     for model_id, sub in merged.groupby("model_id"):
         for axis in ("accuracy_1_5", "completeness_1_5", "added_errors_1_5"):
@@ -270,3 +298,124 @@ def aim3_clinical_model_comparison(accuracy: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
+
+
+# --- Post-protocol additions (see docs/stats_deviations.md, 2026-08-10) --------
+
+PROJECT_SEED = 42
+
+
+def pairwise_posthoc_models(
+    wide: pd.DataFrame,
+    models: Iterable[str],
+    label: str = "",
+) -> pd.DataFrame:
+    """Paired Wilcoxon post-hoc across every model pair, Holm-adjusted within `label`.
+
+    `wide` is one row per unit (page) with one column per model, already restricted
+    to units complete across all models. The SAP requires pairwise follow-up after a
+    significant omnibus test; only the omnibus was implemented, so this closes that
+    gap.
+    """
+    models = list(models)
+    rows = []
+    for a, b in combinations(models, 2):
+        pair = wide[[a, b]].dropna()
+        if len(pair) < 2:
+            continue
+        stat, p = stats.wilcoxon(pair[a], pair[b])
+        rows.append({
+            "label": label, "model_a": a, "model_b": b, "n_pairs": int(len(pair)),
+            "mean_a": float(pair[a].mean()), "mean_b": float(pair[b].mean()),
+            "median_diff": float((pair[a] - pair[b]).median()),
+            "wilcoxon_stat": float(stat), "p_raw": float(p),
+            "effect_size_rank_biserial": rank_biserial_from_differences(
+                (pair[a] - pair[b]).to_numpy()),
+        })
+    out = pd.DataFrame(rows)
+    if len(out):
+        _, p_adj, _, _ = multipletests(out["p_raw"], method="holm")
+        out["p_holm"] = p_adj
+    return out
+
+
+def spearman_bootstrap_ci(
+    x: np.ndarray,
+    y: np.ndarray,
+    n_boot: int = 5000,
+    seed: int = PROJECT_SEED,
+) -> dict:
+    """Spearman rho with a percentile bootstrap CI over resampled units.
+
+    Units are resampled with replacement; degenerate resamples (no variance in
+    either vector) are skipped rather than counted as rho = 0, which would pull the
+    interval toward the middle. The seed is fixed so the interval is reproducible.
+    """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    ok = np.isfinite(x) & np.isfinite(y)
+    x, y = x[ok], y[ok]
+    n = len(x)
+    if n < 4:
+        return {"n": n, "rho": np.nan, "ci_low": np.nan, "ci_high": np.nan,
+                "p_value": np.nan, "n_boot_valid": 0}
+    rho, p = stats.spearmanr(x, y)
+    rng = np.random.default_rng(seed)
+    boots = []
+    for _ in range(n_boot):
+        idx = rng.integers(0, n, n)
+        xb, yb = x[idx], y[idx]
+        if np.ptp(xb) == 0 or np.ptp(yb) == 0:
+            continue
+        r = stats.spearmanr(xb, yb).statistic
+        if np.isfinite(r):
+            boots.append(r)
+    if boots:
+        lo, hi = np.percentile(boots, [2.5, 97.5])
+    else:
+        lo = hi = np.nan
+    return {"n": int(n), "rho": float(rho), "ci_low": float(lo), "ci_high": float(hi),
+            "p_value": float(p), "n_boot_valid": len(boots)}
+
+
+def dunn_posthoc(groups: dict[str, np.ndarray], method: str = "holm") -> pd.DataFrame:
+    """Dunn's test for every group pair after a significant Kruskal-Wallis.
+
+    Uses the pooled mid-rank standard error with a tie correction, then adjusts the
+    pairwise family. Implemented here because the SAP requires post-hoc follow-up
+    and only the omnibus existed.
+    """
+    names = [k for k, v in groups.items() if len(v) > 0]
+    all_vals = np.concatenate([np.asarray(groups[k], dtype=float) for k in names])
+    all_ranks = stats.rankdata(all_vals)
+    N = len(all_vals)
+    sizes, mean_ranks, pos = {}, {}, 0
+    for k in names:
+        m = len(groups[k])
+        sizes[k] = m
+        mean_ranks[k] = all_ranks[pos:pos + m].mean()
+        pos += m
+    _, counts = np.unique(all_vals, return_counts=True)
+    ties = float((counts ** 3 - counts).sum())
+    sigma2 = (N * (N + 1) / 12.0) - ties / (12.0 * (N - 1)) if N > 1 else np.nan
+
+    rows = []
+    for a, b in combinations(names, 2):
+        se = np.sqrt(sigma2 * (1.0 / sizes[a] + 1.0 / sizes[b]))
+        z = (mean_ranks[a] - mean_ranks[b]) / se if se > 0 else np.nan
+        p = 2 * (1 - stats.norm.cdf(abs(z))) if np.isfinite(z) else np.nan
+        rows.append({"group_a": a, "group_b": b, "n_a": sizes[a], "n_b": sizes[b],
+                     "mean_rank_a": mean_ranks[a], "mean_rank_b": mean_ranks[b],
+                     "z": z, "p_raw": p})
+    out = pd.DataFrame(rows)
+    if len(out) and out["p_raw"].notna().any():
+        _, p_adj, _, _ = multipletests(out["p_raw"].fillna(1.0), method=method)
+        out["p_adj"] = p_adj
+    return out
+
+
+def clopper_pearson(k: int, n: int, alpha: float = 0.05) -> tuple[float, float]:
+    """Exact binomial CI; the beta quantile is degenerate at k = 0 and k = n."""
+    lo = 0.0 if k == 0 else float(stats.beta.ppf(alpha / 2, k, n - k + 1))
+    hi = 1.0 if k == n else float(stats.beta.ppf(1 - alpha / 2, k + 1, n - k))
+    return lo, hi

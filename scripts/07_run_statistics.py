@@ -25,8 +25,10 @@ from src.stats import (  # noqa: E402
     aim2_paired_per_model,
     aim3_clinical_model_comparison,
     aim3_tradeoff_correlations,
+    clopper_pearson,
     describe_by,
     fraction_meeting_benchmark,
+    pairwise_posthoc_models,
 )
 
 log = logging.getLogger("stats")
@@ -58,6 +60,8 @@ def main(argv: list[str] | None = None) -> int:
                 "mean": originals[col].mean(),
                 "sd": originals[col].std(ddof=1),
                 "median": originals[col].median(),
+                "iqr_low": originals[col].quantile(0.25),
+                "iqr_high": originals[col].quantile(0.75),
             }
             for col in SCORE_COLS
         ])
@@ -70,6 +74,12 @@ def main(argv: list[str] | None = None) -> int:
         aim1_across_groups(originals, "procedure").to_csv(REPORTS_DIR / "aim1_inference_by_procedure.csv", index=False)
 
         bench = fraction_meeting_benchmark(originals)
+        # Exact binomial CI belongs in the report, not only in the manuscript prose.
+        lo, hi = clopper_pearson(bench["meeting"], bench["n"])
+        bench["ci_low"] = lo
+        bench["ci_high"] = hi
+        bench["ci_low_pct"] = 100 * lo
+        bench["ci_high_pct"] = 100 * hi
         pd.DataFrame([bench]).to_csv(REPORTS_DIR / "aim1_benchmark_meeting.csv", index=False)
         log.info("Aim 1 benchmark: %d/%d pages meet FKGL <= 6", bench["meeting"], bench["n"])
 
@@ -79,8 +89,44 @@ def main(argv: list[str] | None = None) -> int:
         paired = aim2_paired_per_model(originals, rewrites)
         paired.to_csv(REPORTS_DIR / "aim2_paired_tests.csv", index=False)
 
+        # Post-rewrite descriptives + benchmark counts, so every manuscript figure
+        # of the form "22 of 26" traces to a generated report.
+        desc_rows = []
+        for mid, sub in rewrites.groupby("model_id"):
+            row = {"model_id": mid, "n_rewrites": len(sub)}
+            for col in SCORE_COLS:
+                row[f"{col}_mean"] = sub[col].mean()
+                row[f"{col}_sd"] = sub[col].std(ddof=1)
+                row[f"{col}_median"] = sub[col].median()
+                row[f"{col}_iqr_low"] = sub[col].quantile(0.25)
+                row[f"{col}_iqr_high"] = sub[col].quantile(0.75)
+            met = int((sub["fkgl"] <= 6.0).sum())
+            row["n_meeting_fkgl6"] = met
+            row["pct_meeting_fkgl6"] = 100.0 * met / len(sub)
+            lo_m, hi_m = clopper_pearson(met, len(sub))
+            row["meeting_ci_low_pct"] = 100 * lo_m
+            row["meeting_ci_high_pct"] = 100 * hi_m
+            desc_rows.append(row)
+        pd.DataFrame(desc_rows).to_csv(REPORTS_DIR / "aim2_post_rewrite_descriptives.csv", index=False)
+
         across = aim2_across_models(rewrites)
         across.to_csv(REPORTS_DIR / "aim2_across_models.csv", index=False)
+
+        # The analysis plan requires pairwise follow-up after a significant omnibus;
+        # previously the pipeline stopped at Friedman, leaving "Claude and Gemini
+        # both stronger than GPT-5.5" resting on an omnibus P value alone.
+        posthoc = []
+        for _, r in across.iterrows():
+            if not (r["p"] < 0.05):
+                continue
+            wide = rewrites.pivot_table(index="page_id", columns="model_id", values=r["score"])
+            models = [m for m in ("claude", "openai", "gemini") if m in wide.columns]
+            wide = wide.dropna(subset=models)
+            posthoc.append(pairwise_posthoc_models(wide, models, label=r["score"]))
+        if posthoc:
+            pd.concat(posthoc, ignore_index=True).to_csv(
+                REPORTS_DIR / "aim2_posthoc_models.csv", index=False)
+            log.info("Aim 2: wrote pairwise post-hoc for %d scores", len(posthoc))
 
     # --- Aim 3 ---
     if deltas is not None and accuracy is not None and len(accuracy):

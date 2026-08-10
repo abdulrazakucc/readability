@@ -35,10 +35,12 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.agreement import (  # noqa: E402
+    RATING_CATEGORIES,
     gwet_ac1,
     mean_pairwise_weighted_kappa,
 )
 from src.config import REPORTS_DIR, REVIEW_DIR, SCORES_DIR  # noqa: E402
+from src.stats import pairwise_posthoc_models, spearman_bootstrap_ci  # noqa: E402
 
 SCORES_ROOT = REVIEW_DIR / "reviewer_responses"
 AXES = ["accuracy_1_5", "completeness_1_5", "added_errors_1_5"]
@@ -129,6 +131,24 @@ def reviewers(df: pd.DataFrame) -> pd.DataFrame:
     return g
 
 
+def expert_rewrite_means(df: pd.DataFrame) -> pd.DataFrame:
+    """One expert mean per rewrite -- the PRIMARY Aim 3 unit of analysis.
+
+    A rewrite scored by three subspecialists is one clinical observation, not three.
+    Averaging first stops multiply-scored rewrites carrying extra weight in the model
+    descriptives, the model comparison and the trade-off correlations. Expect 77 rows:
+    26 Claude + 25 GPT-5.5 + 26 Gemini.
+
+    The 155 raw ratings remain the right unit for reviewer coverage, rating-level
+    percentages and interrater agreement, which are about rating events.
+    """
+    lab = df[df.condition == "expert_labeled"]
+    return (lab.groupby(["page_id", "model_id"], as_index=False)[AXES]
+               .mean()
+               .sort_values(["page_id", "model_id"])
+               .reset_index(drop=True))
+
+
 def _condition_groups(df: pd.DataFrame) -> list[tuple[str, pd.DataFrame]]:
     """The four cohorts, plus lay readers pooled across both presentations.
 
@@ -152,6 +172,19 @@ def by_model(df: pd.DataFrame) -> pd.DataFrame:
                 r[f"{ax}_sd"] = g[ax].std(ddof=1)
             r["pct_accuracy_max"] = 100 * (g.accuracy_1_5 == 5).mean()
             rows.append(r)
+    return pd.DataFrame(rows)
+
+
+def by_model_primary(rw: pd.DataFrame) -> pd.DataFrame:
+    """PRIMARY per-model clinical summary, one row per rewrite (not per rating)."""
+    rows = []
+    for m in MODEL_ORDER:
+        g = rw[rw.model_id == m]
+        r = {"model_id": m, "model": MODEL_LABEL[m], "n_rewrites": len(g)}
+        for ax in AXES:
+            r[f"{ax}_mean"] = g[ax].mean()
+            r[f"{ax}_sd"] = g[ax].std(ddof=1)
+        rows.append(r)
     return pd.DataFrame(rows)
 
 
@@ -201,99 +234,155 @@ def irr(df: pd.DataFrame) -> pd.DataFrame:
                          # the manuscript. The fixed-scale variant holds q at 5
                          # so cohorts stay comparable; under a ceiling the two
                          # diverge sharply, so both are reported.
-                         "gwet_ac1": gwet_ac1(piv) if len(piv.columns) > 1 else np.nan,
+                         "gwet_ac1": (
+                             gwet_ac1(piv, RATING_CATEGORIES)
+                             if len(piv.columns) > 1 else np.nan
+                         ),
                          "quad_weighted_kappa": (
                              mean_pairwise_weighted_kappa(piv) if len(piv.columns) > 1 else np.nan
                          )})
     return pd.DataFrame(rows)
 
 
+def _rewrite_means(df: pd.DataFrame, condition: str) -> pd.DataFrame:
+    """Mean rating per rewrite within one cohort, so each rewrite counts once."""
+    g = df[df.condition == condition]
+    return g.groupby("blind_id", as_index=False)[AXES].mean()
+
+
 def presentation_effect(df: pd.DataFrame) -> pd.DataFrame:
-    """Labeled vs neutral presentation, WITHIN the lay cohort.
+    """Labeled vs neutral presentation WITHIN the lay cohort, at the rewrite level.
 
-    Both presentations were scored by lay readers (2 labeled, 3 neutral), so this
-    is the contrast the manuscript reports. Different people scored each
-    presentation, so the effect is confounded with rater identity and is
-    descriptive only -- it is not evidence of an AI-labeling effect.
+    Both lay cohorts scored the same rewrites, and several readers scored each one,
+    so raw ratings are repeated observations of the same unit. Averaging to one value
+    per rewrite and pairing on blind_id gives a paired Wilcoxon over matched rewrites
+    instead of a Mann-Whitney over pseudo-replicated ratings.
 
-    The subspecialists are not used here: only one expert (M.N.) scored the
-    neutral instrument, which is too thin to support the contrast.
+    Different readers scored each presentation, so reader identity is confounded with
+    presentation. This is a descriptive presentation comparison, NOT evidence of an
+    AI-labeling effect.
     """
+    lab = _rewrite_means(df, "layperson_labeled").set_index("blind_id")
+    neu = _rewrite_means(df, "layperson_neutral").set_index("blind_id")
+    common = lab.index.intersection(neu.index)
+    key = df[["blind_id", "model_id"]].drop_duplicates().set_index("blind_id")
     rows = []
-    for _scope, m in [("overall", None)] + [("model", m) for m in MODEL_ORDER]:
-        lab = df[df.condition == "layperson_labeled"]
-        neu = df[df.condition == "layperson_neutral"]
-        if m:
-            lab, neu = lab[lab.model_id == m], neu[neu.model_id == m]
+    for scope in ["overall", *MODEL_ORDER]:
+        ids = common if scope == "overall" else common.intersection(
+            key[key.model_id == scope].index)
         for ax in AXES:
-            a, b = lab[ax].dropna(), neu[ax].dropna()
-            p = stats.mannwhitneyu(a, b, alternative="two-sided")[1] if len(a) and len(b) else np.nan
-            rows.append({"scope": m or "overall", "axis": ax,
-                         "labeled_mean": a.mean(), "labeled_n": len(a),
-                         "neutral_mean": b.mean(), "neutral_n": len(b),
-                         "mannwhitney_p": p})
+            a_, b_ = lab.loc[ids, ax], neu.loc[ids, ax]
+            p = stats.wilcoxon(a_, b_)[1] if len(ids) >= 2 and (a_ - b_).abs().sum() > 0 else np.nan
+            rows.append({"scope": scope, "axis": ax, "n_rewrites": len(ids),
+                         "labeled_mean": a_.mean(), "neutral_mean": b_.mean(),
+                         "mean_difference": (a_ - b_).mean(), "wilcoxon_p": p})
     return pd.DataFrame(rows)
 
 
 def expert_vs_lay(df: pd.DataFrame) -> pd.DataFrame:
+    """Subspecialists vs lay readers on the SAME (standard) instrument, per rewrite.
+
+    Comparing expert_labeled with layperson_labeled holds the instrument constant, so
+    the contrast is reader type rather than reader type confounded with presentation.
+    Ratings are averaged to one value per rewrite and paired on blind_id, avoiding the
+    pseudo-replication of testing 155 ratings against 385.
+
+    The pooled 385-rating lay mean remains available in the pooled table as a
+    descriptive summary only.
+    """
+    exp = _rewrite_means(df, "expert_labeled").set_index("blind_id")
+    lay = _rewrite_means(df, "layperson_labeled").set_index("blind_id")
+    common = exp.index.intersection(lay.index)
     rows = []
-    lab = df[df.condition == "expert_labeled"]
-    lay = df[df.condition.isin(LAY_CONDITIONS)]  # pooled across both presentations
     for ax in AXES:
-        a, b = lab[ax].dropna(), lay[ax].dropna()
-        rows.append({"axis": ax, "expert_mean": a.mean(), "expert_n": len(a),
-                     "layperson_mean": b.mean(), "layperson_n": len(b),
-                     "mannwhitney_p": stats.mannwhitneyu(a, b, alternative="two-sided")[1]})
+        a_, b_ = exp.loc[common, ax], lay.loc[common, ax]
+        p = stats.wilcoxon(a_, b_)[1] if len(common) >= 2 and (a_ - b_).abs().sum() > 0 else np.nan
+        rows.append({"axis": ax, "n_rewrites": len(common),
+                     "expert_mean": a_.mean(), "layperson_mean": b_.mean(),
+                     "mean_difference": (a_ - b_).mean(), "wilcoxon_p": p})
     return pd.DataFrame(rows)
 
 
-def tradeoff(df: pd.DataFrame) -> pd.DataFrame:
+def tradeoff(rw: pd.DataFrame) -> pd.DataFrame:
+    """Spearman correlation of FKGL reduction with expert accuracy AND completeness.
+
+    Reduction is defined once, positively (original - rewrite), so a larger value
+    always means more grade levels removed. 95% CIs come from 5000 bootstrap
+    resamples of rewrites with a fixed seed, as the analysis plan specifies.
+
+    Added errors are deliberately excluded from the primary trade-off; they are
+    reported elsewhere as descriptive.
+    """
     deltas = pd.read_csv(SCORES_DIR / "deltas.csv")[["page_id", "model_id", "fkgl_delta"]]
-    lab = df[df.condition == "expert_labeled"]
-    pm = lab.groupby(["page_id", "model_id"])[AXES].mean().reset_index().merge(deltas, on=["page_id", "model_id"])
-    pm["reduction"] = -pm["fkgl_delta"]
+    pm = rw.merge(deltas, on=["page_id", "model_id"])
+    pm["fkgl_reduction"] = -pm["fkgl_delta"]
     rows = []
     for m in MODEL_ORDER:
-        s = pm[pm.model_id == m]
-        rho, p = stats.spearmanr(s["reduction"], s["accuracy_1_5"])
-        rows.append({"model_id": m, "model": MODEL_LABEL[m], "n_pages": len(s),
-                     "spearman_rho_reduction_vs_accuracy": rho, "p_value": p})
+        s_ = pm[pm.model_id == m]
+        for ax in ("accuracy_1_5", "completeness_1_5"):
+            res = spearman_bootstrap_ci(s_["fkgl_reduction"].to_numpy(), s_[ax].to_numpy())
+            rows.append({"model_id": m, "model": MODEL_LABEL[m], "axis": ax,
+                         "n_rewrites": res["n"], "spearman_rho": res["rho"],
+                         "ci_low": res["ci_low"], "ci_high": res["ci_high"],
+                         "p_value": res["p_value"], "n_boot_valid": res["n_boot_valid"]})
     return pd.DataFrame(rows)
 
 
-def across_model(df: pd.DataFrame) -> pd.DataFrame:
-    """Friedman across the 3 models on per-page mean (labeled experts)."""
-    lab = df[df.condition == "expert_labeled"]
+def across_model(rw: pd.DataFrame) -> pd.DataFrame:
+    """Friedman across models on rewrite-level expert means."""
     rows = []
     for ax in AXES:
-        wide = lab.pivot_table(index="page_id", columns="model_id", values=ax, aggfunc="mean")
-        wide = wide.dropna(subset=MODEL_ORDER)
+        wide = rw.pivot_table(index="page_id", columns="model_id", values=ax).dropna(
+            subset=MODEL_ORDER)
         if len(wide) >= 3:
             chi2, p = stats.friedmanchisquare(*[wide[m] for m in MODEL_ORDER])
             rows.append({"axis": ax, "n_pages": len(wide),
-                         "claude": wide.claude.mean(), "openai": wide.openai.mean(),
-                         "gemini": wide.gemini.mean(), "friedman_chi2": chi2, "p_value": p})
+                         **{m: wide[m].mean() for m in MODEL_ORDER},
+                         "friedman_chi2": chi2, "p_value": p})
     return pd.DataFrame(rows)
+
+
+def across_model_posthoc(rw: pd.DataFrame, omnibus: pd.DataFrame) -> pd.DataFrame:
+    """Paired Wilcoxon-Holm post-hoc, run only where the omnibus is significant."""
+    out = []
+    for _, r in omnibus.iterrows():
+        if not (r.p_value < 0.05):
+            continue
+        wide = rw.pivot_table(index="page_id", columns=" model_id".strip(),
+                              values=r.axis).dropna(subset=MODEL_ORDER)
+        out.append(pairwise_posthoc_models(wide, MODEL_ORDER, label=r.axis))
+    return pd.concat(out, ignore_index=True) if out else pd.DataFrame(
+        columns=["label", "model_a", "model_b", "n_pairs", "p_raw", "p_holm"])
 
 
 def main() -> None:
     df = load()
+    rw = expert_rewrite_means(df)
+
+    # Canonical Aim 3 input: exactly one expert row per (page_id, model_id).
+    accuracy_path = SCORES_DIR / "accuracy.csv"
+    rw.to_csv(accuracy_path, index=False)
+
+    omnibus = across_model(rw)
     out = {
         "aim3_compiled_coverage.csv": coverage(df),
         "aim3_compiled_reviewers.csv": reviewers(df),
         "aim3_compiled_pooled.csv": pooled(df),
+        "aim3_compiled_by_model_primary.csv": by_model_primary(rw),
         "aim3_compiled_by_model.csv": by_model(df),
         "aim3_compiled_irr.csv": irr(df),
         "aim3_compiled_presentation_effect.csv": presentation_effect(df),
         "aim3_compiled_expert_vs_lay.csv": expert_vs_lay(df),
-        "aim3_compiled_tradeoff.csv": tradeoff(df),
-        "aim3_compiled_across_model.csv": across_model(df),
+        "aim3_compiled_tradeoff.csv": tradeoff(rw),
+        "aim3_compiled_across_model.csv": omnibus,
+        "aim3_compiled_across_model_posthoc.csv": across_model_posthoc(rw, omnibus),
     }
     for name, frame in out.items():
         frame.to_csv(REPORTS_DIR / name, index=False)
         print(f"\n=== {name} ===")
-        print(frame.round(3).to_string(index=False))
+        print(frame.round(4).to_string(index=False))
     print(f"\nWrote {len(out)} tables to {REPORTS_DIR}")
+    print(f"Wrote canonical Aim 3 input ({len(rw)} rewrites) to {accuracy_path}")
 
 
 if __name__ == "__main__":

@@ -194,7 +194,7 @@ def fig_bias(bym: pd.DataFrame, pe: pd.DataFrame) -> None:
     pe_acc = pe[pe.axis == "accuracy_1_5"].set_index("scope")
     ybar = 5.13
     for i, m in enumerate(MODELS):
-        p = pe_acc.loc[m, "mannwhitney_p"]
+        p = pe_acc.loc[m, "wilcoxon_p"]
         mark = "***" if p < .001 else "**" if p < .01 else "*" if p < .05 else "ns"
         pstr = "P < .001" if p < .001 else f"P = {p:.2f}"
         ax.plot([x[i] - w / 2, x[i] - w / 2, x[i] + w / 2, x[i] + w / 2],
@@ -204,9 +204,9 @@ def fig_bias(bym: pd.DataFrame, pe: pd.DataFrame) -> None:
                 color=(INK if mark != "ns" else MUTED), fontweight=("bold" if mark != "ns" else "normal"))
     ax.set_xticks(x)
     ax.set_xticklabels([LABELS[m] for m in MODELS])
-    ax.set_ylabel("Blinded expert accuracy (1–5), mean ± 95% CI")
+    ax.set_ylabel("Lay-reader accuracy (1–5), rewrite-level mean")
     ax.set_ylim(4.5, 5.28)
-    ax.set_title("Does labeling a passage “AI” change expert accuracy scoring?",
+    ax.set_title("Presentation comparison: labeled vs neutral instrument (lay readers)",
                  fontweight="bold", pad=42)
     ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), ncol=2, frameon=False, fontsize=9.5)
     fig.text(0.5, -0.02,
@@ -283,7 +283,7 @@ def fig_expert_vs_lay(evl: pd.DataFrame, cov: pd.DataFrame) -> None:
                              else f"Lay readers (n={n_lay}; {r_lay} ratings)"))
         _bar_labels(ax, bars, dy=0.03, size=9)
     for i, (a, _) in enumerate(axes_order):
-        p = e.loc[a, "mannwhitney_p"]
+        p = e.loc[a, "wilcoxon_p"]
         mark = f"P = {p:.3f}" if p < 0.01 else f"P = {p:.2f}" + (" (ns)" if p >= 0.05 else "")
         ax.text(i, 5.42, mark, ha="center", fontsize=9.5, color=MUTED)
     ax.set_xticks(x)
