@@ -182,6 +182,13 @@ def build_edits() -> list[dict]:
         "The deviation log records the judge panel as a later addition.")
 
     # ---- 7.11 non-causal language ----
+    # Reference integrity: SciPy and pandas are named in the text but never cited.
+    add("Analyses were performed in Python 3.11 using SciPy and pandas.",
+        "Analyses were performed in Python 3.11 using SciPy and pandas.19,20",
+        "References 19 and 20 appear in the reference list but were never cited; "
+        "this is the sentence that names both tools.",
+        "reference-list audit")
+
     add("the residual risk a simplification–completeness trade-off in the most aggressive simplifier",
         "the lowest observed completeness occurring in the most aggressive simplifier",
         "Across-model completeness is not significant (P ≈ .06), so causal phrasing is not supported.")
@@ -268,6 +275,32 @@ OUTSTANDING = [
 ]
 
 
+def clean_whitespace(document) -> int:
+    """Strip trailing/leading spaces from runs and collapse internal double spaces.
+
+    Applied silently rather than as tracked changes: seven invisible space removals
+    would add revision marks that tell a reader nothing, and would obscure the
+    substantive edits. Text content is unchanged.
+    """
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    fixed = 0
+    for para in document.paragraphs:
+        nodes = [n for n in para._element.iter() if n.tag == f"{W}t" and n.text]
+        for k, node in enumerate(nodes):
+            original = node.text
+            text = original.replace("\u00a0", " ")
+            while "  " in text:
+                text = text.replace("  ", " ")
+            if k == 0:
+                text = text.lstrip()
+            if k == len(nodes) - 1:
+                text = text.rstrip()
+            if text != original:
+                node.text = text
+                fixed += 1
+    return fixed
+
+
 def main() -> int:
     if not MANUSCRIPT.exists():
         print(f"manuscript not found: {MANUSCRIPT}")
@@ -297,6 +330,7 @@ def main() -> int:
     for idx, group in assigned.items():
         apply_paragraph_edits(paragraphs[idx], group)
 
+    n_ws = clean_whitespace(document)
     document.save(str(MANUSCRIPT))
 
     audit = pd.DataFrame(applied)[["status", "rationale", "source", "old", "new"]]
@@ -309,6 +343,7 @@ def main() -> int:
     print(f"  file   : {MANUSCRIPT.name}")
     print(f"  backup : {backup.relative_to(REPO_ROOT)}")
     print(f"  audit  : {AUDIT.name}")
+    print(f"  whitespace runs cleaned: {n_ws}")
     print(f"\n  {n_ok} of {len(applied)} edits applied as tracked revisions\n")
     for _, r in audit.iterrows():
         print(f"  [{'OK ' if r.status == 'APPLIED' else 'MISS'}] {r.rationale[:72]}")
