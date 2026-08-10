@@ -57,7 +57,6 @@ def compute() -> dict[str, float]:
     site = pd.read_csv(REPORTS_DIR / "aim1_inference_by_site.csv").set_index("score")
     paired = pd.read_csv(REPORTS_DIR / "aim2_paired_tests.csv").set_index(["score", "model_id"])
     across = pd.read_csv(REPORTS_DIR / "aim2_across_models.csv").set_index("score")
-    bym = pd.read_csv(REPORTS_DIR / "aim3_compiled_by_model.csv")
     pooled = pd.read_csv(REPORTS_DIR / "aim3_compiled_pooled.csv").set_index("condition")
     cov = pd.read_csv(REPORTS_DIR / "aim3_compiled_coverage.csv").set_index("condition")
     irr = pd.read_csv(REPORTS_DIR / "aim3_compiled_irr.csv")
