@@ -8,12 +8,12 @@ so every score sheet is keyed by an opaque participant ID instead:
   * `L01`-`L05`  blinded lay reviewers
 
 What this changes, per sheet:
-  - filename    `..._muhammad_naeem_expert.csv` -> `..._e06_expert.csv`
+  - filename    `..._<given>_<family>_expert.csv` -> `..._e06_expert.csv`
   - reviewer_name  free-text name -> the participant ID
   - reviewer_role  free-text job title -> `expert` / `layperson`
 
-Job titles are removed as well as names: "Sr Software Quality Assurance Manager"
-identifies a person about as effectively as their name in a study this small.
+Job titles are removed as well as names: a specific job title identifies a person
+about as effectively as their name in a study this small.
 
 Ratings, blind IDs, dates and clinical notes are untouched. The notes were
 checked and contain no participant names -- they are comments about the rewrites.
