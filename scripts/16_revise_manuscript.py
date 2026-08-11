@@ -65,8 +65,8 @@ def _p(x: float) -> str:
 def build_edits() -> list[dict]:
     """Every substitution, with its source. Numeric values come from reports."""
     prim = pd.read_csv(REPORTS_DIR / "aim3_compiled_by_model_primary.csv").set_index("model_id")
-    irr = pd.read_csv(REPORTS_DIR / "aim3_compiled_irr.csv")
-    irr = irr[irr.condition == "expert_labeled"].set_index("axis")
+    irr_all = pd.read_csv(REPORTS_DIR / "aim3_compiled_irr.csv")
+    irr = irr_all[irr_all.condition == "expert_labeled"].set_index("axis")
     trade = pd.read_csv(REPORTS_DIR / "aim3_compiled_tradeoff.csv")
     evl = pd.read_csv(REPORTS_DIR / "aim3_compiled_expert_vs_lay.csv").set_index("axis")
     ph = pd.read_csv(REPORTS_DIR / "aim2_posthoc_models.csv")
@@ -253,6 +253,60 @@ def build_edits() -> list[dict]:
         "The repository deviation log now records 14 dated entries.",
         "docs/stats_deviations.md")
 
+    # ---- Audit 4.3 / 10.1: pooled accuracy is rewrite-level, not rating-weighted ----
+    pooled_acc = pd.read_csv(REPO_ROOT / "data" / "scores" / "accuracy.csv").accuracy_1_5.mean()
+    add("pooled 4.84", f"pooled {pooled_acc:.2f} across rewrites",
+        "4.84 is the rating-weighted mean over 155 rating events. The primary unit is "
+        "the rewrite, which gives 4.79.",
+        "data/scores/accuracy.csv")
+
+    # ---- Audit 5.5: exact benchmark percentages ----
+    rw = pd.read_csv(REPO_ROOT / "data" / "scores" / "rewrites.csv")
+    pct = {}
+    for m in ("claude", "gemini", "openai"):
+        sub = rw[rw.model_id == m]
+        pct[m] = (int((sub.fkgl <= 6.0).sum()), len(sub))
+    add("met the benchmark on roughly 80% of pages",
+        f"met the benchmark on {pct['claude'][0]}/{pct['claude'][1]} "
+        f"({100*pct['claude'][0]/pct['claude'][1]:.1f}%) and "
+        f"{pct['gemini'][0]}/{pct['gemini'][1]} "
+        f"({100*pct['gemini'][0]/pct['gemini'][1]:.1f}%) of pages respectively",
+        "Replaces an approximation with the exact proportions.",
+        "data/scores/rewrites.csv")
+
+    # ---- Audit 4.5 / 5.7: neutral-lay AC1 range is stale ----
+    ln = irr_all[irr_all.condition == "layperson_neutral"].set_index("axis")
+    lo = min(ln.loc[a, "gwet_ac1"] for a in ("accuracy_1_5", "completeness_1_5", "added_errors_1_5"))
+    hi = max(ln.loc[a, "gwet_ac1"] for a in ("accuracy_1_5", "completeness_1_5", "added_errors_1_5"))
+    add("Agreement among the blinded lay readers was substantial (Gwet AC1 0.76\u20130.90 across dimensions).",
+        f"Agreement among the neutral-presentation lay readers was substantial "
+        f"(Gwet AC1 {lo:.2f}\u2013{hi:.2f} across dimensions, using the predefined 1\u20135 category "
+        f"universe). All reviewers were blinded to model identity; only this cohort was "
+        f"additionally blinded to the original-versus-AI framing.",
+        "The 0.76-0.90 range predates the q = 5 convention, and 'blinded' needed "
+        "qualifying: every reviewer was blinded to model identity.",
+        "reports/aim3_compiled_irr.csv")
+
+    # ---- Audit 5.6: precision about the single low rating ----
+    add("a single rewrite received the lowest accuracy score",
+        "one expert accuracy rating was 3 or lower",
+        "The pooled table establishes one rating <= 3, which is a rating event, not a "
+        "verified rewrite-level minimum.")
+
+    # ---- Audit 5.8: the automated panel is not concordant on model ranking ----
+    add("and the automated LLM-judge panel was concordant",
+        "and the automated LLM-judge panel independently flagged the same specific "
+        "errors, although it ranked the models differently",
+        "Automated consensus ranks GPT-5.5 highest and Gemini lowest, whereas primary "
+        "human accuracy does not differ significantly by model.",
+        "reports/aim3_llm_descriptives.csv")
+
+    # ---- Audit 5.6: completeness trade-off correlations were all nonsignificant ----
+    add("Completeness showed no association for any model",
+        "No completeness correlation reached statistical significance for any model",
+        "States the inferential conclusion rather than only listing rho values.",
+        "reports/aim3_compiled_tradeoff.csv")
+
     # Reference integrity: SciPy and pandas are named in the text but never cited.
     add("Analyses were performed in Python 3.11 using SciPy and pandas.",
         "Analyses were performed in Python 3.11 using SciPy and pandas.19,20",
@@ -311,6 +365,11 @@ def find_in(text: str, needle: str) -> int:
     return _fold(text).find(_fold(needle))
 
 
+def _para_accepted(para) -> str:
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    return "".join(n.text for n in para._element.iter() if n.tag == f"{W}t" and n.text)
+
+
 def apply_paragraph_edits(para, edits: list[dict]) -> int:
     """Apply every edit belonging to this paragraph in ONE pass.
 
@@ -320,6 +379,13 @@ def apply_paragraph_edits(para, edits: list[dict]) -> int:
     silently delete the first insertion along with the surrounding prose. This bug
     destroyed text on an earlier run, hence the single-pass rebuild.
     """
+    # A paragraph may already carry revisions from an earlier run. python-docx
+    # cannot see runs nested in w:ins, so rebuilding from para.text would silently
+    # delete those earlier insertions. Refuse to touch such a paragraph rather than
+    # corrupt it; the edit is reported as not found and can be reviewed by hand.
+    if para._element.find(qn("w:ins")) is not None or para._element.find(qn("w:del")) is not None:
+        return 0
+
     text = para.text
     spans = sorted((find_in(text, e["old"]), e) for e in edits if find_in(text, e["old"]) >= 0)
     if not spans:
@@ -461,7 +527,7 @@ def main() -> int:
     applied = []
     for e in build_edits():
         target = next((i for i, para in enumerate(paragraphs)
-                       if find_in(para.text, e["old"]) >= 0), None)
+                       if find_in(_para_accepted(para), e["old"]) >= 0), None)
         applied.append({**e, "status": "NOT FOUND" if target is None else "APPLIED"})
         if target is not None:
             assigned.setdefault(target, []).append(e)
