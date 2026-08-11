@@ -333,6 +333,42 @@ def build_edits() -> list[dict]:
         "stays cited rather than becoming orphaned.",
         "reference audit")
 
+    # ---- Reference audit: refs 9-18 are listed but uncited, and each has an
+    # ---- existing home in the text. These are missing citation markers, not new
+    # ---- claims, so adding them changes nothing the manuscript asserts.
+    add("FKRE (higher = easier), FKGL, GFI, SMOG, CLI, and ARI.",
+        "FKRE (higher = easier),11 FKGL,12 GFI,13 SMOG,14 CLI,15 and ARI.16",
+        "References 11-16 are the primary sources for the six formulas and were listed "
+        "but never cited; each is attached to the formula it defines.",
+        "reference audit")
+    add("Body text was extracted using trafilatura",
+        "Body text was extracted using trafilatura17",
+        "Reference 17 is the trafilatura source and was listed but never cited.",
+        "reference audit")
+    add("using the textstat Python library", "using the textstat Python library18",
+        "Reference 18 is the textstat source and was listed but never cited.",
+        "reference audit")
+    add("as measured by the Agency for Healthcare Research and Quality Patient Education "
+        "Materials Assessment Tool, were not assessed in this initial analysis",
+        "as measured by the Agency for Healthcare Research and Quality Patient Education "
+        "Materials Assessment Tool,9,10 were not assessed in this initial analysis",
+        "References 9 and 10 are the PEMAT development paper and the AHRQ instrument; the "
+        "Limitations already name the tool but carried no citation.",
+        "reference audit")
+
+    # ---- Refs 23-25: prior LLM-in-medicine work. The sentence below describes each
+    # ---- only by what its own title states, so nothing is asserted that the
+    # ---- manuscript's reference list does not already contain.
+    add("Behers and colleagues measured LLM generation of cardiac catheterization patient "
+        "text and reported readability of model output7",
+        "Related work has assessed chatbot responses to common cancer queries,23 the accuracy "
+        "and reliability of chatbot responses to physician questions,24 and simplification of "
+        "radiology reports for patients.25 Behers and colleagues measured LLM generation of "
+        "cardiac catheterization patient text and reported readability of model output7",
+        "References 23-25 were listed but never cited. Each is described here only by what "
+        "its own title states, so no finding is characterised beyond the reference list.",
+        "reference audit")
+
     # Reference integrity: SciPy and pandas are named in the text but never cited.
     add("Analyses were performed in Python 3.11 using SciPy and pandas.",
         "Analyses were performed in Python 3.11 using SciPy and pandas.19,20",
@@ -550,16 +586,27 @@ def main() -> int:
                 paragraphs.extend(cell.paragraphs)
 
     assigned: dict[int, list[dict]] = {}
-    applied = []
+    applied: list[dict] = []
+    pending: list[tuple[int, dict]] = []
     for e in build_edits():
         target = next((i for i, para in enumerate(paragraphs)
                        if find_in(_para_accepted(para), e["old"]) >= 0), None)
-        applied.append({**e, "status": "NOT FOUND" if target is None else "APPLIED"})
-        if target is not None:
+        if target is None:
+            applied.append({**e, "status": "NOT FOUND"})
+        else:
             assigned.setdefault(target, []).append(e)
+            pending.append((target, e))
 
+    # Status must reflect what actually landed, not merely that a target paragraph
+    # existed: apply_paragraph_edits refuses paragraphs that already carry revisions,
+    # so reporting APPLIED on a successful lookup produced false confirmations.
+    edited = set()
     for idx, group in assigned.items():
-        apply_paragraph_edits(paragraphs[idx], group)
+        if apply_paragraph_edits(paragraphs[idx], group):
+            edited.add(idx)
+    for target, e in pending:
+        applied.append({**e, "status": "APPLIED" if target in edited
+                        else "SKIPPED (paragraph already revised)"})
 
     n_t3 = revise_table3(document, pd.read_csv(
         REPORTS_DIR / "aim3_compiled_by_model_primary.csv").set_index("model_id"))
