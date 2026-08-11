@@ -40,9 +40,11 @@ scripts/14_validate_manuscript.py
 scripts/15_comparison_report.py
 scripts/16_revise_manuscript.py
 scripts/17_add_review_comments.py
+scripts/18_manuscript_change_report.py
 tests/test_manuscript.py
 reports/manuscript_validation.csv
 reports/comparison_report.html
+reports/manuscript_change_report.html
 publication/manuscript_revision_audit.csv
 
 # Superseded combined instrument. Reviewers were given the balanced A/B/C sets,
