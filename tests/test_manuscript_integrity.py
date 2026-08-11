@@ -19,6 +19,7 @@ reviewer will see once the revisions are applied.
 
 from __future__ import annotations
 
+import importlib.util
 import re
 
 import pytest
@@ -26,9 +27,16 @@ import pytest
 from src.config import CONFIG_DIR, REPO_ROOT
 
 MANUSCRIPT = REPO_ROOT / "publication" / "Naeem_final_clean_cardiac_CT_readability.docx"
+
+# These tests need BOTH the manuscript and the parser that reads it. The parser lives
+# on the working branch only, since it must not travel with a journal submission, and
+# the manuscript sits in gitignored publication/. Checking only for the manuscript
+# left the tests erroring on the reproduction branch instead of skipping, because the
+# import failed inside the fixture rather than at collection.
+_HAS_PARSER = importlib.util.find_spec("src.manuscript") is not None
 pytestmark = pytest.mark.skipif(
-    not MANUSCRIPT.exists(),
-    reason="manuscript lives in gitignored publication/; skip where it is absent",
+    not (MANUSCRIPT.exists() and _HAS_PARSER),
+    reason="needs the manuscript (gitignored) and src.manuscript (working branch only)",
 )
 
 LABEL_RE = re.compile(r"^(e?(?:Table|Figure) \d+)(?:\s*\([^)]*\))?\.\s+\S")
