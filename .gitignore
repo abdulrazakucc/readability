@@ -23,10 +23,28 @@ CLAUDE.md
 # them (notebooks/, literature/, IRB/, and the planning/background docs), so the
 # ignore rules are deliberately absent here.
 
+<<<<<<< HEAD
 # NOTE: this block differs from `main` on purpose - do not merge it across.
 # `main` blocks the manuscript cross-check tooling and the reviewer guide so they
 # cannot reach a journal submission. `draft` is the full working branch and DOES
 # keep them, so those ignore rules are deliberately absent here.
+=======
+# Manuscript cross-check tooling and the reviewer guide live on `draft` only.
+# `main` is the journal reproduction package: it must not carry the manuscript,
+# anything parsed from it, or any file naming a participant.
+docs/reviewer_guide_*.md
+src/manuscript.py
+scripts/14_validate_manuscript.py
+scripts/15_comparison_report.py
+scripts/16_revise_manuscript.py
+scripts/17_add_review_comments.py
+scripts/18_manuscript_change_report.py
+tests/test_manuscript.py
+reports/manuscript_validation.csv
+reports/comparison_report.html
+reports/manuscript_change_report.html
+publication/manuscript_revision_audit.csv
+>>>>>>> main
 
 # Superseded combined instrument. Reviewers were given the balanced A/B/C sets,
 # never this single-file version; build_review_questionnaire.py still emits it, so
