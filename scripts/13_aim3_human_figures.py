@@ -29,7 +29,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from scipy import stats  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
@@ -95,79 +94,66 @@ def _bar_labels(ax, bars, fmt="{:.2f}", dy=0.06, size=8.5):
 
 
 def fig_primary(bym: pd.DataFrame, raw: pd.DataFrame, cov: pd.DataFrame) -> None:
-    lab = bym[bym.condition == "expert_labeled"].set_index("model_id")
+    """Aim 3 primary endpoint: the per-rewrite readability-accuracy relationship.
+
+    Deliberately a single panel. An earlier version also carried grouped bars of the
+    per-model means, but Table 3 states those numbers exactly and the cross-model
+    comparison figure shows them again - three presentations of one result. A table
+    reports point estimates better than a bar chart; what a table cannot show is the
+    per-rewrite scatter, the ceiling in the accuracy ratings, and where the individual
+    outliers sit. That is what this figure contributes.
+
+    No fitted line is drawn. The inferential statistic is a Spearman rank correlation
+    on an ordinal outcome with a hard ceiling; an ordinary-least-squares line would
+    imply a linear model that was never fitted and would overstate an association
+    whose confidence interval includes zero.
+    """
     n_rev = int(cov.loc[cov.condition == "expert_labeled", "reviewers"].iloc[0])
     n_rat = int(cov.loc[cov.condition == "expert_labeled", "ratings"].iloc[0])
-    n_rw = int(cov.loc[cov.condition == "expert_labeled", "rewrites_total"].iloc[0])
 
-    fig, (axA, axB) = plt.subplots(1, 2, figsize=(13.2, 5.7),
-                                   gridspec_kw={"width_ratios": [1.05, 1]})
-
-    # ---- Panel A: grouped bars, 3 dimensions x 3 models ----
-    dims = [("accuracy_1_5", "Accuracy"), ("completeness_1_5", "Completeness"),
-            ("added_errors_1_5", "Added errors\n(1 = best)")]
-    x = np.arange(len(dims))
-    w = 0.26
-    for i, m in enumerate(MODELS):
-        means = [lab.loc[m, f"{a}_mean"] for a, _ in dims]
-        sds = [lab.loc[m, f"{a}_sd"] for a, _ in dims]
-        bars = axA.bar(x + (i - 1) * w, means, w, yerr=sds, capsize=3,
-                       label=LABELS[m], color=COLORS[m], edgecolor="white", linewidth=0.6,
-                       error_kw={"elinewidth": 1, "ecolor": "#95a3ae"})
-        _bar_labels(axA, bars)
-    axA.axhline(5, color="#b9c4cd", lw=1, ls=(0, (2, 2)), zorder=0)
-    axA.set_xticks(x)
-    axA.set_xticklabels([n for _, n in dims])
-    axA.set_ylabel("Blinded expert score (1–5), mean ± SD")
-    axA.set_ylim(0, 5.75)
-    axA.set_title("A   Clinical ratings by model", loc="left", fontweight="bold", pad=10)
-    # annotate the completeness dip
-    gem_comp = lab.loc["gemini", "completeness_1_5_mean"]
-    axA.annotate("aggressive simplification\nlowers completeness",
-                 xy=(1 + w, gem_comp), xytext=(1.45, 3.05),
-                 fontsize=8, color=MUTED, ha="left",
-                 arrowprops=dict(arrowstyle="->", color=MUTED, lw=1))
-
-    # ---- Panel B: readability reduction vs accuracy (per page) ----
     deltas = pd.read_csv(SCORES_DIR / "deltas.csv")[["page_id", "model_id", "fkgl_delta"]]
     pm = (raw[raw.condition == "expert_labeled"]
           .groupby(["page_id", "model_id"])[AXES].mean().reset_index()
           .merge(deltas, on=["page_id", "model_id"]))
     pm["reduction"] = -pm["fkgl_delta"]
+    trade = pd.read_csv(REPORTS_DIR / "aim3_compiled_tradeoff.csv")
+
+    fig, ax = plt.subplots(figsize=(9.4, 6.2))
     rng = np.random.default_rng(42)
     for m in MODELS:
-        s = pm[pm.model_id == m]
-        jit = rng.normal(0, 0.02, len(s))
-        axB.scatter(s["reduction"], s["accuracy_1_5"] + jit, s=42, alpha=0.65,
-                    color=COLORS[m], label=LABELS[m], edgecolor="white", linewidth=0.6)
-    # Gemini trend (the one significant association) + rho labels
+        s_ = pm[pm.model_id == m]
+        jit = rng.normal(0, 0.022, len(s_))
+        ax.scatter(s_["reduction"], s_["accuracy_1_5"] + jit, s=58, alpha=0.62,
+                   color=COLORS[m], label=LABELS[m], edgecolor="white", linewidth=0.7)
     for m in MODELS:
-        s = pm[pm.model_id == m]
-        rho, p = stats.spearmanr(s["reduction"], s["accuracy_1_5"])
-        axB.scatter(s["reduction"].mean(), s["accuracy_1_5"].mean(), s=300, color=COLORS[m],
-                    marker="X", edgecolor=INK, linewidth=1.3, zorder=6)
-        if m == "gemini":
-            b1, b0 = np.polyfit(s["reduction"], s["accuracy_1_5"], 1)
-            xs = np.array([s["reduction"].min(), s["reduction"].max()])
-            axB.plot(xs, b0 + b1 * xs, color=COLORS[m], lw=2, ls="--", zorder=4)
-            axB.text(0.97, 0.06, f"Gemini ρ = {rho:.2f} (P = {p:.02f})", transform=axB.transAxes,
-                     ha="right", fontsize=8.5, color=COLORS[m], fontweight="bold")
-    axB.set_xlabel("Reading-level reduction (FKGL grade levels removed)")
-    axB.set_ylabel("Blinded expert accuracy (1–5)")
-    axB.set_title("B   Readability reduction vs accuracy", loc="left", fontweight="bold", pad=10)
-    axB.set_ylim(3.7, 5.15)
+        s_ = pm[pm.model_id == m]
+        ax.scatter(s_["reduction"].mean(), s_["accuracy_1_5"].mean(), s=330,
+                   color=COLORS[m], marker="X", edgecolor=INK, linewidth=1.4, zorder=6)
 
-    handles = [plt.Line2D([0], [0], marker="s", ls="", markersize=9, markerfacecolor=COLORS[m],
-                          markeredgecolor="white", label=LABELS[m]) for m in MODELS]
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=3,
-               frameon=False, fontsize=10, handletextpad=0.4, columnspacing=1.8)
-    fig.suptitle("Aim 3 primary endpoint (interim): blinded subspecialist review of LLM rewrites",
-                 fontsize=13.5, fontweight="bold", x=0.5, y=1.05)
+    lines = []
+    for m in MODELS:
+        r = trade[(trade.model_id == m) & (trade.axis == "accuracy_1_5")].iloc[0]
+        p_txt = "< .001" if r.p_value < 0.001 else f"= {r.p_value:.2f}".replace("0.", ".")
+        lines.append(f"{LABELS[m]}:  \u03c1 = {r.spearman_rho:+.2f}   "
+                     f"95% CI {r.ci_low:.2f} to {r.ci_high:.2f}   P {p_txt}")
+    ax.text(0.015, 0.035, "\n".join(lines), transform=ax.transAxes, fontsize=9.2,
+            va="bottom", ha="left", color=INK, family="DejaVu Sans",
+            bbox=dict(boxstyle="round,pad=0.55", facecolor="#f7fafc",
+                      edgecolor="#d6dfe7", linewidth=0.9))
+
+    ax.set_xlabel("Reading-level reduction (Flesch–Kincaid grade levels removed)")
+    ax.set_ylabel("Blinded subspecialist accuracy (1–5), mean per rewrite")
+    ax.set_ylim(3.6, 5.25)
+    ax.legend(loc="upper right", frameon=False, fontsize=9.5)
+    ax.set_title("Aim 3 primary endpoint: reading-level reduction versus expert-rated accuracy",
+                 loc="left", fontweight="bold", fontsize=12.5, pad=12)
     fig.text(0.5, -0.035,
-             f"{n_rev} subspecialist reviewers · {n_rat} ratings · all {n_rw} rewrites · labeled instrument. "
-             "Large X = model mean; points jittered vertically to separate ties.",
-             ha="center", fontsize=8, color=MUTED, style="italic")
-    fig.tight_layout(w_pad=2.5)
+             f"{n_rev} subspecialists, {n_rat} rating events, all 77 rewrites, standard instrument; "
+             "each point is one rewrite (mean of its expert ratings), jittered vertically to "
+             "separate ties.\nLarge X marks the model mean. No confidence interval excludes zero, "
+             "so none of the three associations is statistically significant.",
+             ha="center", fontsize=8.6, color=MUTED, style="italic")
+    fig.tight_layout()
     fig.savefig(FIGURES_DIR / "aim3_human_compiled.png", bbox_inches="tight")
     plt.close(fig)
 
