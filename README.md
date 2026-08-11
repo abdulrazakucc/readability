@@ -18,7 +18,7 @@ Everything needed to regenerate every published number and figure is in this bra
 | **Aim 2** | Reading-level change after LLM rewriting (77 rewrites, 3 models) |
 | **Aim 3** | Clinical accuracy — blinded subspecialist review (primary) + automated LLM-judge panel (secondary) |
 | **Reproducibility** | Three consecutive full runs produce byte-identical output |
-| **Figures** | 13, all 600 dpi |
+| **Figures** | 11, all 600 dpi |
 | **Participants** | De-identified: `E01`–`E06` subspecialists, `L01`–`L05` lay readers |
 
 ---
@@ -46,7 +46,21 @@ from its committed cache:
 .venv/bin/python scripts/12_aim3_human_results.py
 .venv/bin/python scripts/13_aim3_human_figures.py
 .venv/bin/python scripts/19_model_comparison_figure.py
+.venv/bin/python scripts/21_build_submission_displays.py   # journal-named copies + consistency check
 ```
+
+### Display naming
+
+Repository figures are named for the analysis that produced them
+(`aim3_human_compiled.png`); the manuscript names them for where they appear
+(`Figure 1`). `config/displays.yaml` is the single source of truth linking the two, plus the script
+that generates each one. `scripts/21_build_submission_displays.py` reads it, writes journal-named
+copies to `reports/submission/`, and fails if the manifest, the figures on disk and the manuscript
+disagree — so a display cannot be renumbered in one place and left stale in another.
+
+Main displays carry no prefix and count toward the journal limit; supplementary displays are
+prefixed `e` (`eFigure 1`, `eTable 1`), which is JAMA house style. A different target journal would
+use `Figure S1`, changed by editing the manifest rather than by renaming files.
 
 Confirm nothing drifted:
 
