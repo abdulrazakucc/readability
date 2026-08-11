@@ -28,7 +28,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from src.config import REPORTS_DIR, SCORES_DIR, ensure_dirs  # noqa: E402
-from src.stats import aim3_clinical_model_comparison, aim3_tradeoff_correlations  # noqa: E402
+from src.stats import (  # noqa: E402
+    aim3_clinical_model_comparison,
+    aim3_tradeoff_correlations,
+    pairwise_posthoc_models,  # noqa: E402
+)
 
 log = logging.getLogger("aim3-llm")
 DIMS = ["accuracy_1_5", "completeness_1_5", "added_errors_1_5"]
@@ -111,5 +115,32 @@ def main() -> int:
     return 0
 
 
+def _judge_posthoc() -> None:
+    """Pairwise model comparison for the automated judge panel (EXPLORATORY).
+
+    The panel's across-model accuracy test is significant, and the write-up ranks all
+    three models against each other. An omnibus test cannot support that: it says the
+    three are not all alike, not which differs from which. These pairwise tests close
+    that gap. They remain exploratory - this panel is a screening signal, never the
+    clinical endpoint.
+    """
+    cons = pd.read_csv(SCORES_DIR / "accuracy_llm.csv")
+    omni = pd.read_csv(REPORTS_DIR / "aim3_llm_model_comparison.csv")
+    out = []
+    for _, r in omni.iterrows():
+        if not (r["p"] < 0.05):
+            continue
+        wide = cons.pivot_table(index="page_id", columns="model_id", values=r["axis"])
+        models = [m for m in ("claude", "openai", "gemini") if m in wide.columns]
+        wide = wide.dropna(subset=models)
+        out.append(pairwise_posthoc_models(wide, models, label=r["axis"]))
+    if out:
+        pd.concat(out, ignore_index=True).to_csv(
+            REPORTS_DIR / "aim3_llm_posthoc_models.csv", index=False)
+        print("wrote reports/aim3_llm_posthoc_models.csv")
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    rc = main()
+    _judge_posthoc()
+    sys.exit(rc)
