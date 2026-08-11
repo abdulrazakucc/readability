@@ -263,8 +263,17 @@ def build_edits() -> list[dict]:
         "docs/stats_deviations.md")
 
     # ---- Front matter must state the true display counts (audit issue 12) ----
-    n_fig = 8   # Figures 1-8 in the legend block; eFigure 1 is supplementary
-    add("Figures: 7", f"Figures: {n_fig} (plus eFigure 1, supplementary)",
+    add("Figures: 8 (plus eFigure 1, supplementary)",
+        "Figures: 2 (main); eFigures 1-7 (supplementary)",
+        "The manuscript is reduced to five main displays - Tables 1-3 and Figures 1-2 - "
+        "to meet the journal limit for a cross-sectional Original Investigation. "
+        "Exploratory, non-significant and text-redundant displays move to the supplement.",
+        "manuscript display inventory")
+    add("Tables: 4 (Tables 1-4)", "Tables: 3 (main); eTable 1 (supplementary)",
+        "Table 4 reports the automated judge panel, which the manuscript itself frames "
+        "as exploratory, so it belongs in the supplement.",
+        "manuscript display inventory")
+    add("Figures: 7", "Figures: 2 (main); eFigures 1-7 (supplementary)",
         "A new Figure 8 was added, and the count on the title page must match the "
         "displays actually present. eFigure 1 is listed separately because "
         "supplementary figures do not count toward the main-display limit.",
