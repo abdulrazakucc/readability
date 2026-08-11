@@ -27,6 +27,7 @@ the run summary as outstanding.
 from __future__ import annotations
 
 import copy
+import re
 import shutil
 import sys
 from datetime import datetime, timezone
@@ -75,6 +76,10 @@ def build_edits() -> list[dict]:
     am = pd.read_csv(REPORTS_DIR / "aim3_compiled_across_model.csv").set_index("axis")
     ph = pd.read_csv(REPORTS_DIR / "aim2_posthoc_models.csv")
     ph = ph[ph.label == "fkgl"]
+
+    pooled_acc = pd.read_csv(REPO_ROOT / "data" / "scores" / "accuracy.csv").accuracy_1_5.mean()
+    dev_log = (REPO_ROOT / "docs" / "stats_deviations.md").read_text()
+    n_dev = len(re.findall(r"^### \d{4}-", dev_log, re.M))
 
     E: list[dict] = []
 
@@ -255,6 +260,33 @@ def build_edits() -> list[dict]:
     add("Five deviations from the prespecified protocol are noted",
         "Fourteen deviations from the prespecified protocol are noted",
         "The repository deviation log now records 14 dated entries.",
+        "docs/stats_deviations.md")
+
+    # ---- Front matter must state the true display counts (audit issue 12) ----
+    n_fig = 8   # Figures 1-8 in the legend block; eFigure 1 is supplementary
+    add("Figures: 7", f"Figures: {n_fig} (plus eFigure 1, supplementary)",
+        "A new Figure 8 was added, and the count on the title page must match the "
+        "displays actually present. eFigure 1 is listed separately because "
+        "supplementary figures do not count toward the main-display limit.",
+        "manuscript display inventory")
+    add("Tables: 4", "Tables: 4 (Tables 1-4)",
+        "Stated explicitly so the display inventory is unambiguous.",
+        "manuscript display inventory")
+
+    # ---- Conclusion contradicted the Abstract on pooled accuracy ----
+    add("accuracy was largely preserved across all 3 models (pooled 4.84 of 5)",
+        f"expert-rated accuracy remained high across all 3 models "
+        f"(pooled {pooled_acc:.2f} of 5, one mean per rewrite)",
+        "The Conclusion said 4.84 while the Abstract said 4.79 - the manuscript "
+        "contradicted itself. 4.84 was the rating-weighted figure. 'Largely preserved' "
+        "also implies an equivalence test that was never performed, so the wording now "
+        "states what was observed.",
+        "data/scores/accuracy.csv")
+
+    # ---- Deviation count was stale ----
+    add("Five deviations are noted:", f"{n_dev} deviations are noted, summarized below:",
+        "The deviation log now records more entries than the five originally listed, "
+        "including the post-review statistical corrections.",
         "docs/stats_deviations.md")
 
     # ---- Aim 3 completeness sentence still carried rating-level means ----

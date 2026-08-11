@@ -18,7 +18,7 @@ Everything needed to regenerate every published number and figure is in this bra
 | **Aim 2** | Reading-level change after LLM rewriting (77 rewrites, 3 models) |
 | **Aim 3** | Clinical accuracy — blinded subspecialist review (primary) + automated LLM-judge panel (secondary) |
 | **Reproducibility** | Three consecutive full runs produce byte-identical output |
-| **Figures** | 10, all 600 dpi |
+| **Figures** | 13, all 600 dpi |
 | **Participants** | De-identified: `E01`–`E06` subspecialists, `L01`–`L05` lay readers |
 
 ---
@@ -45,6 +45,7 @@ from its committed cache:
 .venv/bin/python scripts/11_aim3_llm_figures.py
 .venv/bin/python scripts/12_aim3_human_results.py
 .venv/bin/python scripts/13_aim3_human_figures.py
+.venv/bin/python scripts/19_model_comparison_figure.py
 ```
 
 Confirm nothing drifted:
@@ -150,8 +151,11 @@ contain no participant names.
 
 ## Reproducibility guarantees
 
-- **Deterministic.** All shuffling seeds from `random_seed` in `config/default.yaml`. Three consecutive
-  full runs produce byte-identical CSVs.
+- **Deterministic downstream reproduction.** All shuffling seeds from `random_seed` in
+  `config/default.yaml`. Three consecutive runs of the analysis steps reproduce byte-identical CSVs
+  **from the frozen committed inputs**. This is not re-creation from live sources: page capture,
+  cleaning of the bot-blocked pages, and rewrite generation are deliberately not re-runnable (see the
+  table above), so the guarantee covers everything downstream of `data/raw` and `data/rewrites`.
 - **No hard-coded results.** Every reported quantity is computed from the data; counts such as the
   rewrite total are derived, not written in.
 - **Pinned environment.** `requirements-lock.txt` holds exact versions for the environment that
@@ -165,10 +169,11 @@ contain no participant names.
 
 ### Known state
 
-`data/scores/accuracy.csv` is **not** checked in: it requires collapsing the multi-rater sheets to one
-row per page × model, and that aggregation rule must be pre-registered in the statistical analysis plan
-before it is computed. Step `07` therefore runs Aims 1–2 and skips the Aim 3 block. The interim
-human-review results are in `reports/aim3_compiled_*.csv` from step `12`.
+The blinded human review is **complete**. `scripts/12` writes the canonical
+`data/scores/accuracy.csv` — one expert mean per (page × model), 77 rows — and `scripts/07` consumes
+it, so Aim 3 runs end to end through a single path. The aggregation rule (average multiply-scored
+rewrites so each contributes once) is recorded in `docs/stats_deviations.md`. Rating-level tables in
+`reports/aim3_compiled_*.csv` remain as supporting descriptives.
 
 ---
 
@@ -184,14 +189,12 @@ well-known high-agreement/low-κ paradox. Three quantities are therefore reporte
 | `gwet_ac1` | Gwet's AC1, computed over the protocol's full 1–5 category set |
 | `quad_weighted_kappa` | Quadratic-weighted Cohen's κ — expected near zero here |
 
-**One AC1, one convention.** The chance-agreement term depends on q, the number of rating
-categories. The pipeline uses the estimator as defined by Gwet's reference implementation: q is taken
-from the categories actually observed among items that carry agreement information. `irrCAC`
-documents `categ.labels = NULL` as its default for exactly this, and our implementation reproduces
-that package to within 4×10⁻⁶ across all nine cohort × axis combinations — an external check, pinned
-in `tests/test_agreement.py`, not a match to any target. Fixing q at the full 1–5 scale instead is a
-different estimator and reads materially higher under a ceiling (0.805 vs 0.771 for subspecialist
-accuracy); it is available for comparison but is not what the pipeline reports.
+**One AC1, one convention.** Chance agreement depends on q, the number of rating categories. The
+pipeline fixes q at the **full 1–5 scale defined by the scoring rubric**, for every axis and cohort, so
+q cannot shrink merely because a ceiling sample never used the low categories. Taking q from the
+observed categories instead is a different estimator and reads materially lower under a ceiling (0.771
+vs 0.805 for subspecialist accuracy); it is reachable by passing an explicit category set and is pinned
+in the tests as the contrast, but it is not what the pipeline reports.
 
 ---
 
