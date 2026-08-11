@@ -72,6 +72,7 @@ def build_edits() -> list[dict]:
     irr = irr_all[irr_all.condition == "expert_labeled"].set_index("axis")
     trade = pd.read_csv(REPORTS_DIR / "aim3_compiled_tradeoff.csv")
     evl = pd.read_csv(REPORTS_DIR / "aim3_compiled_expert_vs_lay.csv").set_index("axis")
+    am = pd.read_csv(REPORTS_DIR / "aim3_compiled_across_model.csv").set_index("axis")
     ph = pd.read_csv(REPORTS_DIR / "aim2_posthoc_models.csv")
     ph = ph[ph.label == "fkgl"]
 
@@ -256,6 +257,22 @@ def build_edits() -> list[dict]:
         "The repository deviation log now records 14 dated entries.",
         "docs/stats_deviations.md")
 
+    # ---- Aim 3 completeness sentence still carried rating-level means ----
+    add("Completeness was similarly high but lowest for the most aggressive simplifier "
+        "(4.94, 4.84, and 4.64 for Claude, GPT-5.5, and Gemini; across-model Friedman P = .06)",
+        f"Completeness was similarly high but lowest for the most aggressive simplifier "
+        f"({prim.loc['claude','completeness_1_5_mean']:.2f}, "
+        f"{prim.loc['openai','completeness_1_5_mean']:.2f}, and "
+        f"{prim.loc['gemini','completeness_1_5_mean']:.2f} for Claude, GPT-5.5, and Gemini). "
+        f"Across-model Friedman tests were not significant for accuracy "
+        f"(P = {am.loc['accuracy_1_5','p_value']:.2f}".replace("0.", ".") +
+        f"), completeness (P = {am.loc['completeness_1_5','p_value']:.2f}".replace("0.", ".") +
+        f"), or added errors (P = {am.loc['added_errors_1_5','p_value']:.2f}".replace("0.", ".") + ")",
+        "These were the rating-weighted means; the primary unit is the rewrite. Accuracy "
+        "and added-error tests were also missing, so only the borderline completeness "
+        "result appeared, making it look more prominent than the analysis supports.",
+        "reports/aim3_compiled_by_model_primary.csv")
+
     # ---- Audit 4.3 / 10.1: pooled accuracy is rewrite-level, not rating-weighted ----
     pooled_acc = pd.read_csv(REPO_ROOT / "data" / "scores" / "accuracy.csv").accuracy_1_5.mean()
     add("pooled 4.84", f"pooled {pooled_acc:.2f} across rewrites",
@@ -435,6 +452,45 @@ def _para_accepted(para) -> str:
     return "".join(n.text for n in para._element.iter() if n.tag == f"{W}t" and n.text)
 
 
+def replace_in_run(para, old: str, new: str) -> bool:
+    """Track-change a phrase inside ONE run, leaving the rest of the paragraph alone.
+
+    Needed for paragraphs that already carry revisions. Rebuilding such a paragraph
+    from `para.text` destroys earlier insertions, which is why apply_paragraph_edits
+    refuses them; splitting a single run instead touches nothing else.
+
+    Only runs that are direct children of the paragraph are eligible. Text already
+    sitting inside a w:ins is skipped, because nesting a revision inside a revision
+    is not valid WordprocessingML.
+    """
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    for node in list(para._element.iter()):
+        if node.tag != f"{W}t" or not node.text:
+            continue
+        run = node.getparent()
+        if run.getparent() is not para._element:      # nested in w:ins / w:del
+            continue
+        idx = find_in(node.text, old)
+        if idx < 0:
+            continue
+        text = node.text
+        prefix, matched, suffix = text[:idx], text[idx:idx + len(old)], text[idx + len(old):]
+        rpr = run.find(qn("w:rPr"))
+        pos = list(para._element).index(run)
+        para._element.remove(run)
+        new_nodes = []
+        if prefix:
+            new_nodes.append(_run(prefix, rpr))
+        new_nodes.append(_revision("w:del", _run(matched, rpr, deleted=True)))
+        new_nodes.append(_revision("w:ins", _run(new, rpr)))
+        if suffix:
+            new_nodes.append(_run(suffix, rpr))
+        for offset, el in enumerate(new_nodes):
+            para._element.insert(pos + offset, el)
+        return True
+    return False
+
+
 def apply_paragraph_edits(para, edits: list[dict]) -> int:
     """Apply every edit belonging to this paragraph in ONE pass.
 
@@ -604,9 +660,17 @@ def main() -> int:
     # existed: apply_paragraph_edits refuses paragraphs that already carry revisions,
     # so reporting APPLIED on a successful lookup produced false confirmations.
     edited = set()
+    per_edit_ok: dict[int, bool] = {}
     for idx, group in assigned.items():
         if apply_paragraph_edits(paragraphs[idx], group):
             edited.add(idx)
+        else:
+            # Paragraph already revised: fall back to editing the single run that
+            # holds each phrase, which leaves the earlier revisions intact.
+            for e in group:
+                if replace_in_run(paragraphs[idx], e["old"], e["new"]):
+                    edited.add(idx)
+                    per_edit_ok[id(e)] = True
     for target, e in pending:
         applied.append({**e, "status": "APPLIED" if target in edited
                         else "SKIPPED (paragraph already revised)"})
