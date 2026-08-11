@@ -307,6 +307,32 @@ def build_edits() -> list[dict]:
         "States the inferential conclusion rather than only listing rho values.",
         "reports/aim3_compiled_tradeoff.csv")
 
+    # ---- Audit 5.3: reference 3 does not support the attribution ----
+    add("The National Library of Medicine, the American Medical Association, and the Centers for "
+        "Disease Control have recommended that patient-facing health information be written at or "
+        "below a 6th-grade reading level, because roughly one-third of United States adults read "
+        "at or below that level",
+        "Health-literacy guidance commonly recommends that patient-facing health information be "
+        "written at or below a 6th-grade reading level, because roughly one-third of United States "
+        "adults read at or below that level",
+        "Reference 3 (Kutner, National Assessment of Adult Literacy) is a literacy survey. It "
+        "supports the reading-level statistic but contains no NLM, AMA or CDC recommendation, so "
+        "the attribution is unsupported by the cited source. Softened rather than removed; cite the "
+        "actual guidance documents if the named attribution is wanted.",
+        "reference audit")
+
+    # ---- Audit 5.3: reference 8 is not a cardiology readability study ----
+    add("Several recent reports have evaluated the readability of LLM-generated answers to "
+        "cardiology patient questions7,8 but have not evaluated rewriting of existing pages",
+        "Recent reports have evaluated the readability of LLM-generated answers to cardiology "
+        "patient questions7 and have compared physician and chatbot responses to general patient "
+        "questions,8 but have not evaluated rewriting of existing pages",
+        "Reference 8 (Ayers et al.) compared physician and chatbot responses to general patient "
+        "questions on a public social-media forum; it is neither cardiology-specific nor a "
+        "readability study. Each citation now carries only the claim it supports, and reference 8 "
+        "stays cited rather than becoming orphaned.",
+        "reference audit")
+
     # Reference integrity: SciPy and pandas are named in the text but never cited.
     add("Analyses were performed in Python 3.11 using SciPy and pandas.",
         "Analyses were performed in Python 3.11 using SciPy and pandas.19,20",
