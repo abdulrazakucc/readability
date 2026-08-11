@@ -39,6 +39,7 @@ src/manuscript.py
 scripts/14_validate_manuscript.py
 scripts/15_comparison_report.py
 scripts/16_revise_manuscript.py
+scripts/17_add_review_comments.py
 tests/test_manuscript.py
 reports/manuscript_validation.csv
 reports/comparison_report.html
