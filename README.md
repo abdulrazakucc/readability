@@ -141,8 +141,8 @@ contrast — an extra row, never a replacement.
 
 Reviewers are human participants. **No name appears anywhere in this repository.** Sheets are keyed by
 opaque IDs (`E01`–`E06`, `L01`–`L05`) applied by `scripts/deidentify_reviewers.py`, which also strips
-free-text job titles. The name-to-ID crosswalk is written to `private/`, is gitignored, and belongs
-with the IRB records.
+free-text job titles. The name-to-ID crosswalk is written to `private/`, is gitignored, and is kept with the
+study's ethics documentation outside this repository.
 
 Clinical free-text notes are retained — they are commentary on the rewrites and were checked to
 contain no participant names.
@@ -215,7 +215,7 @@ net working — update the pin and the expected values deliberately, and log it.
 ## Scope of this branch
 
 `main` is the reproduction package. Manuscript drafts, the manuscript cross-check tooling, background
-literature, planning notes, the IRB package and exploratory notebooks are deliberately **not** here —
+literature, planning notes and exploratory notebooks are deliberately **not** here —
 they live on the `draft` branch.
 
 ## License

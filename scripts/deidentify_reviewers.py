@@ -19,8 +19,8 @@ Ratings, blind IDs, dates and clinical notes are untouched. The notes were
 checked and contain no participant names -- they are comments about the rewrites.
 
 The name-to-ID crosswalk is written to `private/reviewer_crosswalk.csv`, which is
-gitignored. That file is the ONLY place the mapping exists; keep it with your IRB
-records and never commit it.
+gitignored. That file is the ONLY place the mapping exists; keep it with the study's
+ethics documentation outside this repository and never commit it.
 
 Idempotent: sheets already carrying an ID are left alone, so re-running is safe.
 """
