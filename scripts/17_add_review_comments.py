@@ -36,8 +36,9 @@ sys.path.insert(0, str(REPO_ROOT))
 
 MANUSCRIPT = REPO_ROOT / "publication" / "Naeem_final_clean_cardiac_CT_readability.docx"
 BACKUP_DIR = REPO_ROOT / "private" / "manuscript_backups"
-AUTHOR = "Implementation review"
-INITIALS = "IR"
+# Comments carry the author's name so the co-author knows who raised the question.
+AUTHOR = "Abdul Razak"
+INITIALS = "AR"
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = f'xmlns:w="{W}"'

@@ -45,7 +45,10 @@ PUB = REPO_ROOT / "publication"
 MANUSCRIPT = PUB / "Naeem_final_clean_cardiac_CT_readability.docx"
 BACKUP_DIR = REPO_ROOT / "private" / "manuscript_backups"
 AUDIT = PUB / "manuscript_revision_audit.csv"
-REVISION_AUTHOR = "Implementation review"
+# Revisions are attributed to the author making them, not to the tooling: the
+# manuscript goes to a co-author for review, and "Implementation review" told him
+# nothing about who to discuss a change with.
+REVISION_AUTHOR = "Abdul Razak"
 _rev_id = [1000]
 
 MODEL_NAME = {"claude": "Claude Opus 4.8", "openai": "GPT-5.5", "gemini": "Gemini 3.1 Pro"}
