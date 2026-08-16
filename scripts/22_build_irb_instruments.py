@@ -62,6 +62,49 @@ PACKET = REVIEW_DIR / "blinded_review_packet_with_text.csv"
 STUDY = "Readability of Online Patient-Education Materials for Pre-Procedure Cardiac CT"
 SUBTITLE = "Clinical Accuracy Review Instrument"
 
+MANUSCRIPT = REPO_ROOT / "publication" / "Naeem_final_clean_cardiac_CT_readability.docx"
+
+# Fallback used only when the manuscript is unavailable (it is gitignored, so a fresh
+# clone will not have it). Keeping the manuscript as the primary source means the
+# investigator block cannot drift from the paper.
+_FALLBACK_PI = [
+    "Muhammad Naeem, MBBS, MD",
+    "Division of Cardiothoracic Imaging, Department of Radiology",
+    "Mayo Clinic AZ",
+    "5777 East Mayo Blvd,",
+    "Phoenix, AZ, 85054",
+    "Email: naeem.muhammad@mayo.edu",
+]
+
+
+def principal_investigator() -> list[str]:
+    """The investigator block, read from the manuscript's corresponding-author section.
+
+    Reading it rather than retyping it means the address on an IRB submission and the
+    address in the paper cannot disagree.
+    """
+    if not MANUSCRIPT.exists():
+        return _FALLBACK_PI
+    try:
+        import docx as _docx
+
+        from src.manuscript import paragraph_texts
+    except ImportError:
+        return _FALLBACK_PI
+    paras = [p.strip() for p in paragraph_texts(_docx.Document(str(MANUSCRIPT))) if p.strip()]
+    try:
+        i = paras.index("Corresponding Author")
+    except ValueError:
+        return _FALLBACK_PI
+    block = []
+    for line in paras[i + 1:]:
+        block.append(line)
+        if line.lower().startswith("email:"):
+            break
+        if len(block) >= 8:
+            break
+    return block or _FALLBACK_PI
+
 INK = RGBColor(0x1F, 0x2D, 0x3A)
 ACCENT = RGBColor(0x2F, 0x5D, 0x8A)
 PDF_INK = colors.HexColor("#1f2d3a")
@@ -151,6 +194,13 @@ def build_docx(variant: str, items: pd.DataFrame, path: Path) -> None:
     para(STUDY, size=17, bold=True, color=ACCENT, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=4)
     para(SUBTITLE, size=13, color=INK, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=2)
     para(cfg["name"], size=12, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=16)
+
+    pi = principal_investigator()
+    para("Principal Investigator", size=11, bold=True, color=ACCENT,
+         align=WD_ALIGN_PARAGRAPH.CENTER, space_after=3)
+    for line in pi:
+        para(line, size=10.5, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=1)
+    doc.add_paragraph()
 
     meta = doc.add_table(rows=0, cols=2)
     meta.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -276,8 +326,14 @@ def build_pdf(variant: str, items: pd.DataFrame, path: Path) -> None:
                             leftMargin=0.85 * inch, rightMargin=0.85 * inch,
                             topMargin=0.9 * inch, bottomMargin=0.9 * inch,
                             title=f"{SUBTITLE} — {cfg['name']}", author="Study team")
-    story = [Spacer(1, 1.1 * inch), Paragraph(STUDY, h1), Paragraph(SUBTITLE, sub),
-             Paragraph(f"<b>{cfg['name']}</b>", sub), Spacer(1, 0.3 * inch)]
+    pi_style = ParagraphStyle("pi", parent=ss["Normal"], fontSize=10.5, leading=13.5,
+                              alignment=TA_CENTER, textColor=PDF_INK, spaceAfter=1)
+    story = [Spacer(1, 0.85 * inch), Paragraph(STUDY, h1), Paragraph(SUBTITLE, sub),
+             Paragraph(f"<b>{cfg['name']}</b>", sub), Spacer(1, 0.28 * inch),
+             Paragraph("<b>Principal Investigator</b>", ParagraphStyle(
+                 "pih", parent=pi_style, textColor=PDF_ACCENT, fontSize=11, spaceAfter=4))]
+    story += [Paragraph(line, pi_style) for line in principal_investigator()]
+    story += [Spacer(1, 0.28 * inch)]
 
     meta = [["Document", "Review instrument as administered"],
             ["Variant", cfg["name"]],
